@@ -64,7 +64,7 @@ public class DataInitSessionBean {
         outletSessionBean.createNewOutlet(o3);
         
 
-        Employee a1 = new Employee("Employee", "A1", "socsales", "123", EmployeeRoleEnum.SALES_MANAGER, o1);
+        Employee a1 = new Employee("Employee", "A1", "socsales", "123", EmployeeRoleEnum.SALES_MANAGER, o1);//Always use object id. In the employee session bean, we inser tthe outletsession bean
         employeeSessionBean.createNewEmployee(a1);
         o1.getEmployeesList().add(a1);
         
