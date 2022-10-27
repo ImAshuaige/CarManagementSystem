@@ -38,7 +38,7 @@ public class Customer implements Serializable {
     @Column(nullable = false, length = 250, unique = true)
     private String customerEmail;
     
-    @Column(nullable = false, length = 16, unique = true)
+    @Column(nullable = false, length = 16, unique = false)
     private String customerPassword;
 
     

@@ -42,7 +42,7 @@ public class Employee implements Serializable {
     @Column(nullable = false, length = 40, unique = true)
     private String employeeUserName;
     
-    @Column(nullable = false, length = 16, unique = true)
+    @Column(nullable = false, length = 16, unique = false)
     private String employeePassword; 
     
     @Enumerated(EnumType.STRING)
@@ -62,15 +62,17 @@ public class Employee implements Serializable {
         this.transitDriverDispatchRecord = new ArrayList<> ();
     }
 
-    public Employee(String employeeFirstName, String employeeLastName, String employeeUserName, String employeePassword, EmployeeRoleEnum employeeRole,Outlet outlet) {
+    public Employee(String employeeFirstName, String employeeLastName, String employeeUserName, String employeePassword, EmployeeRoleEnum employeeRole) {
         this.transitDriverDispatchRecord = new ArrayList<> ();
         this.employeeFirstName = employeeFirstName;
         this.employeeLastName = employeeLastName;
         this.employeeUserName = employeeUserName;
         this.employeePassword = employeePassword;
         this.employeeRole = employeeRole;
-        this.outlet = outlet;
+        this.outlet = new Outlet();
     }
+    
+    
 
     
     

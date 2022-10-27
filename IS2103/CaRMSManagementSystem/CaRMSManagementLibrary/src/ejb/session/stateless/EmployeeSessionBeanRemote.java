@@ -16,7 +16,7 @@ import javax.ejb.Remote;
 @Remote
 public interface EmployeeSessionBeanRemote {
     
-    public Long createNewEmployee(Employee employee);
+    public Long createNewEmployee(Employee employee, long outletId);
     
     public List<Employee> retrieveAllEmployees();
     

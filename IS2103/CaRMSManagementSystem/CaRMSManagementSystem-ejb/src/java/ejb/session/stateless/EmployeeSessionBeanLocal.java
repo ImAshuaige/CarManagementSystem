@@ -16,8 +16,9 @@ import javax.ejb.Local;
 @Local
 public interface EmployeeSessionBeanLocal {
 
-    public Long createNewEmployee(Employee employee);
 
     public List<Employee> retrieveAllEmployees();
+
+    public Long createNewEmployee(Employee employee, long outletId);
     
 }

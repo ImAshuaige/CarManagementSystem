@@ -29,7 +29,7 @@ public class Partner implements Serializable {
     private Long partnerId;
     @Column(nullable = false, length = 40, unique = true) 
     private String partnerName;
-    @Column(nullable = false, length = 16, unique = true) 
+    @Column(nullable = false, length = 16, unique = false) 
     private String partnerPassword;
     
     @OneToMany(mappedBy = "reservationPartner")

@@ -64,25 +64,25 @@ public class DataInitSessionBean {
         outletSessionBean.createNewOutlet(o3);
         
 
-        Employee a1 = new Employee("Employee", "A1", "socsales", "123", EmployeeRoleEnum.SALES_MANAGER, o1);//Always use object id. In the employee session bean, we inser tthe outletsession bean
-        employeeSessionBean.createNewEmployee(a1);
-        o1.getEmployeesList().add(a1);
+        Employee a1 = new Employee("Employee", "A1", "socsales", "123", EmployeeRoleEnum.SALES_MANAGER);//Always use object id. In the employee session bean, we inser tthe outletsession bean
+        employeeSessionBean.createNewEmployee(a1,o1.getOutletId());
+        //o1.getEmployeesList().add(a1);
         
-        Employee a2 = new Employee("Employee", "A2", "socops", "123", EmployeeRoleEnum.OPERATIONS_MANAGER, o2);
-        employeeSessionBean.createNewEmployee(a2);
-        o2.getEmployeesList().add(a2);
+        Employee a2 = new Employee("Employee", "A2", "socops", "123", EmployeeRoleEnum.OPERATIONS_MANAGER);
+        employeeSessionBean.createNewEmployee(a2,o2.getOutletId());
+        //o2.getEmployeesList().add(a2);
         
-        Employee a3 = new Employee("Employee", "A3", "soccust", "123", EmployeeRoleEnum.CUSTOMER_SERVICE_EXCUTIVE, o3);     
-        employeeSessionBean.createNewEmployee(a3);
-        o3.getEmployeesList().add(a3);
+        Employee a3 = new Employee("Employee", "A3", "soccust", "123", EmployeeRoleEnum.CUSTOMER_SERVICE_EXCUTIVE );     
+        employeeSessionBean.createNewEmployee(a3, o3.getOutletId());
+        //o3.getEmployeesList().add(a3);
         
-        Employee a4 = new Employee("Employee", "A4", "socemployee4", "123", EmployeeRoleEnum.EMPLOYEE, o1);
-        employeeSessionBean.createNewEmployee(a4);
-        o1.getEmployeesList().add(a4);
+        Employee a4 = new Employee("Employee", "A4", "socemployee4", "123", EmployeeRoleEnum.EMPLOYEE);
+        employeeSessionBean.createNewEmployee(a4, o1.getOutletId());
+        //o1.getEmployeesList().add(a4);
         
-        Employee a5 = new Employee("Employee", "A4", "socemployee4", "123", EmployeeRoleEnum.ADMINISTRATOR, o2);
-        employeeSessionBean.createNewEmployee(a5);
-        o2.getEmployeesList().add(a5);
+        Employee a5 = new Employee("Employee", "A4", "socemployee5", "123", EmployeeRoleEnum.ADMINISTRATOR);
+        employeeSessionBean.createNewEmployee(a5, o2.getOutletId());
+        //o2.getEmployeesList().add(a5);
         
         /*this.isApplied = false; 
         this.rentalName = rentalName;

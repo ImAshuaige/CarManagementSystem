@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.Employee;
+import entity.Outlet;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -24,8 +25,11 @@ public class EmployeeSessionBean implements EmployeeSessionBeanRemote, EmployeeS
     
     //Added create new employee method
     @Override
-    public Long createNewEmployee (Employee employee) {
+    public Long createNewEmployee (Employee employee,long outletId) {
         em.persist(employee);
+        Outlet o = em.find(Outlet.class, outletId);
+        o.getEmployeesList().add(employee);
+        employee.setOutlet(o);
         em.flush();
         return employee.getEmployeeId();
     }
