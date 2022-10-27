@@ -31,7 +31,7 @@ public class Main {
         // TODO code application logic here
         List<Outlet> outlets = outletSessionBean.retrieveAllOutlets();
         for (Outlet outlet:outlets) {
-            
+            //trying to see merge conflict
             System.out.println("outletId = " + outlet.getOutletId() + "; outletName = " + outlet.getOutletName() 
                                + "outlet Opening Time = " + outlet.getOutletOpeningTime()
                                + "outlet Closing Time = " + outlet.getOutletClosingTime());
