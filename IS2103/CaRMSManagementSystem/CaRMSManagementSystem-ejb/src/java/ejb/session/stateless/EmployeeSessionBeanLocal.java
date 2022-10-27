@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.Employee;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.InvalidLoginException;
 
 /**
  *
@@ -21,4 +22,5 @@ public interface EmployeeSessionBeanLocal {
 
     public Long createNewEmployee(Employee employee, long outletId);
     
+    public Employee login(String username, String password) throws InvalidLoginException;
 }

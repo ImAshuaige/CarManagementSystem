@@ -19,17 +19,21 @@ import javax.ejb.EJB;
 public class Main {
 
     @EJB
-    private static EmployeeSessionBeanRemote employeeSessionBean;
-
+    private static EmployeeSessionBeanRemote employeeSessionBeanRemote;
+   
     @EJB
-    private static OutletSessionBeanRemote outletSessionBean;
+    private static OutletSessionBeanRemote outletSessionBeanRemote;
+    
+    
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        MainApp mainApp = new MainApp(employeeSessionBeanRemote,outletSessionBeanRemote);
+        mainApp.runApp();
         // TODO code application logic here
-        List<Outlet> outlets = outletSessionBean.retrieveAllOutlets();
+        /*List<Outlet> outlets = outletSessionBean.retrieveAllOutlets();
         for (Outlet outlet:outlets) {
             //trying to see merge conflict
             System.out.println("outletId = " + outlet.getOutletId() + "; outletName = " + outlet.getOutletName() 
@@ -43,7 +47,7 @@ public class Main {
         this.employeeUserName = employeeUserName;
         this.employeePassword = employeePassword;
         this.employeeRole = employeeRole;
-        this.outlet = outlet;*/
+        this.outlet = outlet;
         
         List<Employee> employees = employeeSessionBean.retrieveAllEmployees();
         for (Employee employee:employees) {
@@ -55,7 +59,7 @@ public class Main {
                                + "employeeRole = " + employee.getEmployeeRole()
                                + "employeeOutlet = " + employee.getOutlet());
             
-        }
+        }*/
         
     }
     }
