@@ -32,7 +32,7 @@ public class DataInitSessionBean {
 
     @EJB
     private RentalRateSessionBeanLocal rentalRateSessionBean;
-
+     //try
     @EJB
     private EmployeeSessionBeanLocal employeeSessionBean;
 
