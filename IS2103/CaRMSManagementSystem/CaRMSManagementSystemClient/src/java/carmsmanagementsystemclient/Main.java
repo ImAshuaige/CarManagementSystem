@@ -11,6 +11,7 @@ import entity.Employee;
 import entity.Outlet;
 import java.util.List;
 import javax.ejb.EJB;
+import util.exception.InvalidLoginException;
 
 /**
  *
@@ -29,7 +30,7 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InvalidLoginException {
         MainApp mainApp = new MainApp(employeeSessionBeanRemote,outletSessionBeanRemote);
         mainApp.runApp();
         // TODO code application logic here

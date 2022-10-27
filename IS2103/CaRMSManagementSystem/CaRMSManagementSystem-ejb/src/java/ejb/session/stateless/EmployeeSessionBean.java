@@ -43,7 +43,7 @@ public class EmployeeSessionBean implements EmployeeSessionBeanRemote, EmployeeS
     //assume that the username is always valid
     @Override
     public Employee login(String username, String password) throws InvalidLoginException {
-        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.username = :inUsername");
+        Query query = em.createQuery("SELECT e FROM Employee e WHERE e.employeeUserName = :inUsername");
         query.setParameter("inUsername", username);
         Employee currEmployee = (Employee) query.getSingleResult();
 
