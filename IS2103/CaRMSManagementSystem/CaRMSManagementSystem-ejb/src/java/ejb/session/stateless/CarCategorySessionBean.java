@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import javax.ejb.Stateless;
 
+
 /**
  *
  * @author 60540
@@ -16,4 +17,6 @@ public class CarCategorySessionBean implements CarCategorySessionBeanRemote, Car
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
+    
+    
 }
