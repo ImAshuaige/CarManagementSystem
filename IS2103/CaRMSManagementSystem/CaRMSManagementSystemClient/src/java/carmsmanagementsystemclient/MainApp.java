@@ -50,12 +50,18 @@ public class MainApp {
                     try {
                     login();
                     System.out.println("***Login Successfully***");
+                    operationsMenu();
                     } catch (InvalidLoginException ex) {
-                        System.out.println("Invalid Login" + ex.getMessage());
+                        System.out.println("Invalid Login: " + ex.getMessage());
                     }
-                } else {
+                } else if (input == 2){
+                    break;//to be written
+                } else if (input == 3){
                     break;
+                }else {
+                    System.out.println("Invalid input, please try again!");
                 }
+                  
             }
             if (input == 3) {
                 break;//break the main true loop
@@ -82,6 +88,49 @@ public class MainApp {
         }
         
         
+    }
+    
+    
+    private void operationsMenu() {
+        Scanner sc = new Scanner(System.in);
+        Integer input = 0;
+
+        while (true) {
+            System.out.println("*** Welcome to the Operations Menu ***");
+            System.out.println("Hello! " + currEmployee.getEmployeeFirstName() + " " + currEmployee.getEmployeeLastName());
+            System.out.println("Your role is: " + currEmployee.getEmployeeRole().toString());
+            System.out.println("Input 1 to Sales Management Menu");
+            System.out.println("Input 2 to Customer Service Menu");
+            System.out.println("Input 3 to log out");
+            
+            input = 0;
+
+            while (input < 1 || input > 3) {
+                System.out.print("Your input: ");
+                input = sc.nextInt();
+
+                //try {
+                    if (input == 1) {
+                        break;//to be written
+                    } else if (input == 2) {
+                        break;//to be writtem
+                    } else if (input == 3) {
+                        break;
+                    } else {
+                        System.out.println("Invalid input, please try again!");
+                    }
+                    //to be uncomment
+                //} catch (InvalidAccessRightException ex) {
+                //    System.out.println("Invalid option, please try again!: " + ex.getMessage() + "\n");
+                //} catch (UnpaidRentalReservationException ex) {
+                //    System.out.println("Customer has not paid for the car rental reservation!");
+                //}
+            }
+            if (input == 3) {
+                System.out.println("***Logout Successfully***");
+                break;
+            }
+        }
     }
 
 }
