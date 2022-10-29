@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.CarCategory;
 import javax.ejb.Remote;
 
 /**
@@ -13,5 +14,7 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface CarCategorySessionBeanRemote {
+    
+    public Long createNewCarCategory(CarCategory carCategory);
     
 }

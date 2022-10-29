@@ -5,10 +5,12 @@
  */
 package ejb.session.singleton;
 
+import ejb.session.stateless.CarCategorySessionBeanLocal;
 import ejb.session.stateless.EmployeeSessionBeanLocal;
 import ejb.session.stateless.OutletSessionBeanLocal;
 import ejb.session.stateless.PartnerSessionBeanLocal;
 import ejb.session.stateless.RentalRateSessionBeanLocal;
+import entity.CarCategory;
 import entity.Partner;
 import entity.Employee;
 import entity.Outlet;
@@ -31,6 +33,9 @@ import util.enumeration.EmployeeRoleEnum;
 @LocalBean
 @Startup
 public class DataInitSessionBean {
+
+    @EJB
+    private CarCategorySessionBeanLocal carCategorySessionBean;
 
     @EJB
     private PartnerSessionBeanLocal partnerSessionBean;
@@ -84,10 +89,15 @@ public class DataInitSessionBean {
         //Partner Backend data initialisation
         Partner holidayReservation = new Partner("HolidayReservation", "123");
         partnerSessionBean.createNewPartner(holidayReservation);
-
-
-
-
+        
+            CarCategory hondaCivic = new CarCategory("Honda Civic");
+            carCategorySessionBean.createNewCarCategory(hondaCivic);
+            CarCategory bmw = new CarCategory("BMW");
+            carCategorySessionBean.createNewCarCategory(bmw);
+            CarCategory mercedes = new CarCategory("Mercedes Benz");
+            carCategorySessionBean.createNewCarCategory(mercedes);
+            CarCategory mitsubishi = new CarCategory("Mitsubishi");
+            carCategorySessionBean.createNewCarCategory(mitsubishi);
        //o2.getEmployeesList().add(a5);
         /*this.isApplied = false; 
         this.rentalName = rentalName;
