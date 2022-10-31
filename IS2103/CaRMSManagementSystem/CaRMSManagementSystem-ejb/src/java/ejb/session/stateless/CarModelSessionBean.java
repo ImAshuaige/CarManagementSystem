@@ -7,12 +7,14 @@ package ejb.session.stateless;
 
 import entity.CarCategory;
 import entity.CarModel;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 import util.exception.CarCategoryNotFoundException;
-
+import util.exception.CarModelNotFoundException;
 
 /**
  *
@@ -26,93 +28,73 @@ public class CarModelSessionBean implements CarModelSessionBeanRemote, CarModelS
 
     @Override
     public Long createNewCarModel(Long carCategoryId, CarModel model) throws CarCategoryNotFoundException {
-        CarCategory carCategory = em.find(CarCategory.class,carCategoryId);
-        
-        if(carCategory == null) throw new CarCategoryNotFoundException();
-        
+        CarCategory carCategory = em.find(CarCategory.class, carCategoryId);
+
+        if (carCategory == null) {
+            throw new CarCategoryNotFoundException();
+        }
+
         //bi-directional relationship, always remember to set both sides
         model.setBelongsCategory(carCategory);
         carCategory.getModelList().add(model);
-        
+
         try {
             em.persist(model);
             em.flush();
             return model.getModelId();
         } catch (PersistenceException ex) {
-          return (long)-1;  
-          //throw new UnknownPersistenceException(ex.getMessage());
+            return (long) -1;
         }
     }
-    
-    /*    @Override
-    public long createModel(Model m, long categoryId) throws CategoryNotFoundException {
-        Category c = em.find(Category.class, categoryId);
-        
-        if(c==null) throw new CategoryNotFoundException();
-        
-        m.setCategory(c);
-        c.getModel().add(m);
-        try 
-        {
-            em.persist(m);
-            em.flush();
-            return m.getModelId();
-        } 
-        catch (PersistenceException ex) 
-        {
-            return -1;
-        }
-    }
-    
+
     @Override
-    public List<Model> retrieveModels() {
-        Query query = em.createQuery("SELECT m FROM Model m WHERE m.active = TRUE ORDER BY m.category.categoryId ASC, m.make ASC, m.modelName ASC");
-        
+    public List<CarModel> retrieveAllCarModels() {
+        Query query = em.createQuery("SELECT m FROM CarModel m ORDER BY m.belongsCategory.categoryId ASC, m.make ASC, m.model ASC");
         return query.getResultList();
     }
-    
+
     @Override
-    public long updateModel(Model m, Long categoryId) throws CategoryNotFoundException {
-        Category oldCategory = em.find(Category.class, m.getCategory().getCategoryId());
-        Category newCategory = em.find(Category.class, categoryId);
-        
-        if(newCategory == null) throw new CategoryNotFoundException();
+    public long updateModel(CarModel m, Long categoryId) throws CarCategoryNotFoundException {
+        CarCategory currCategory = em.find(CarCategory.class, m.getBelongsCategory().getCategoryId());
+        CarCategory newCategory = em.find(CarCategory.class, categoryId);
+
+        if (newCategory == null) {
+            throw new CarCategoryNotFoundException();
+        }
         
         try {
-            em.merge(m);
-            em.flush();
-            if(m.getCategory().getCategoryId() != categoryId) {
-                m.setCategory(newCategory);
-                oldCategory.getModel().remove(m);
-                newCategory.getModel().add(m);
+            CarModel updatedModel = retrieveCarModelById(m.getModelId());
+            updatedModel.setMake(m.getMake());
+            updatedModel.setModel(m.getModel());
+            //em.merge(m);
+            if (updatedModel.getBelongsCategory().getCategoryId() != categoryId) { // need to update id 
+                updatedModel.setBelongsCategory(newCategory);
+                currCategory.getModelList().remove(updatedModel);
+                newCategory.getModelList().add(updatedModel);
             }
-            return m.getModelId();
+            return updatedModel.getModelId();
+        } catch (PersistenceException ex) {
+            return (long) -1;
         }
-        catch (PersistenceException ex) {
-            return -1;
+    }
+
+    @Override
+    public void deleteModel(Long modelId) throws CarModelNotFoundException {
+        CarModel model = em.find(CarModel.class, modelId);
+        
+        if(model == null) throw new CarModelNotFoundException();
+        
+        if(!model.getDisabled()) {
+            model.setDisabled(true);
         }
+        model.getBelongsCategory().getModelList().remove(model);
     }
     
     @Override
-    public void deleteModel(Long modelId) throws ModelNotFoundException {
-        Model model = em.find(Model.class, modelId);
-        
-        if(model == null) throw new ModelNotFoundException();
-        
-        if(model.isActive()) {
-            model.setActive(false);
-        }
-        model.getCategory().getModel().remove(model);
-        em.flush();
-    }
-    
-    @Override
-    public Model retrieveModelById(long modelId) {
-        Model m = em.find(Model.class, modelId);
-       
+    public CarModel retrieveCarModelById(long modelId) {
+        CarModel m = em.find(CarModel.class, modelId);
+
         return m;
-    }*/
-    
+    }
+
 }
-
-

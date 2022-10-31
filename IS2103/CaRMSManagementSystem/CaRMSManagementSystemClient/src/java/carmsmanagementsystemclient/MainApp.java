@@ -11,11 +11,12 @@ import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.OutletSessionBeanRemote;
 import entity.CarModel;
 import entity.Employee;
+import java.util.List;
 import java.util.Scanner;
 import javax.persistence.PersistenceException;
 import util.exception.CarCategoryNotFoundException;
+import util.exception.CarModelNotFoundException;
 import util.exception.InvalidLoginException;
-
 
 /**
  *
@@ -33,12 +34,12 @@ public class MainApp {
 
     }
 
-    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, OutletSessionBeanRemote outletSessionBeanRemote,CarCategorySessionBeanRemote carCategorySessionBeanRemote, CarModelSessionBeanRemote carModelSessionBeanRemote ) {
+    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, OutletSessionBeanRemote outletSessionBeanRemote, CarCategorySessionBeanRemote carCategorySessionBeanRemote, CarModelSessionBeanRemote carModelSessionBeanRemote) {
         this();
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
         this.outletSessionBeanRemote = outletSessionBeanRemote;
         this.carModelSessionBeanRemote = carModelSessionBeanRemote;
-        this.carCategorySessionBeanRemote =carCategorySessionBeanRemote;
+        this.carCategorySessionBeanRemote = carCategorySessionBeanRemote;
     }
 
     public void runApp() throws InvalidLoginException {
@@ -164,13 +165,14 @@ public class MainApp {
                     createNewModel();
                     break;
                 } else if (input == 2) {
-                    //viewAllModels();
+                    viewAllModels();
                     break;
                 } else if (input == 3) {
-                    //updateModel();
+                    updateModel();
                     break;
                 } else if (input == 4) {
-                    //deleteModel();
+                    deleteModel();
+                    break;
                 } else if (input == 5) {
                     break;
                 } else {
@@ -197,18 +199,18 @@ public class MainApp {
         System.out.print("Enter the make of the model: ");
         String make = sc.nextLine().trim();
         m.setMake(make);
-        
+
         System.out.print("Enter the belonged car category Id: ");
         long categoryId = sc.nextLong();
         long modelId = 0;
         try {
-            modelId = carModelSessionBeanRemote.createNewCarModel(categoryId,m);
-            
+            modelId = carModelSessionBeanRemote.createNewCarModel(categoryId, m);
+
             if (modelId == -1) {
                 System.out.print("An Persistence Error Occured While Creating a New Car Model.");
                 return;
             }
-              
+
         } catch (CarCategoryNotFoundException ex) {
             System.out.println("Car Category Not Found! Please Enter an Valid Car Category Id.");
             return;
@@ -217,9 +219,108 @@ public class MainApp {
             System.out.println(ex.getMessage());
             return;
         }
-        
+
         System.out.println("*** The new car model is successfully created ***");
         System.out.println("The new car model id is:[ " + modelId + " ]");
+
+        System.out.println();
+        System.out.println("Press any key to continue.");
+        System.out.println();
     }
 
+    private void viewAllModels() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("*** View All Models ***");
+        List<CarModel> models = carModelSessionBeanRemote.retrieveAllCarModels();
+        System.out.printf("%8s%30s%30s%30s\n", "Model Id", "Name", "Make", "Category");
+        for (CarModel m : models) {
+            System.out.printf("%8s%30s%30s%30s\n", m.getModelId(), m.getModel(), m.getMake(), m.getBelongsCategory().getCarCategoryName());
+        }
+        System.out.println();
+
+    }
+
+    private void updateModel() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("*** Update Model ***");
+
+        System.out.print("Enter the model id: ");
+        long modelId = sc.nextLong();
+        sc.nextLine();
+        CarModel model = carModelSessionBeanRemote.retrieveCarModelById(modelId);
+
+        if (model == null) {
+            System.out.println("The model is not found! Please enter an valid model id.");
+            System.out.println("");
+            return;
+        }
+
+        System.out.println("");
+        System.out.print("Do you want to update the model name? [1]YES/[2]NO : ");
+        int modelInput = sc.nextInt();
+        if (modelInput == 1) {
+            System.out.print("Enter the new model name: ");
+            String updatedModel = sc.nextLine().trim();
+            sc.nextLine();
+            model.setModel(updatedModel);
+        }
+
+        System.out.println("");
+        System.out.print("Do you want to update the make name? [1]YES/[2]NO : ");
+        int makeInput = sc.nextInt();
+        if (makeInput == 1) {
+            System.out.print("Enter the new make name: ");
+            String updatedMake = sc.nextLine().trim();
+            sc.nextLine();
+            model.setMake(updatedMake);
+        }
+        long categoryId = model.getBelongsCategory().getCategoryId();
+        System.out.println("");
+        System.out.print("Do you want to update the belonged car category? [1]YES/[2]NO : ");
+        int categoryInput = sc.nextInt();
+        if (categoryInput == 1) {
+            System.out.print("Enter the new car category id: ");
+            categoryId = sc.nextLong();
+            sc.nextLine();
+        }
+        long updatedModelId;
+        try {
+            updatedModelId = carModelSessionBeanRemote.updateModel(model, categoryId);
+            if (updatedModelId == -1) {
+                System.out.println("An Persistence Error Occured While Creating a New Car Model.\n");
+                return;
+            }
+        } catch (CarCategoryNotFoundException ex) {
+            System.out.println("Car Category Not Found! Please Enter an Valid Car Category Id.");
+            return;
+        }
+
+        System.out.println("*** The car model is successfully updated ***");
+        System.out.println();
+        System.out.println("Press any key to continue.");
+        System.out.println();
+    }
+
+    private void deleteModel() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("***Delete Model ***");
+
+        System.out.print("Enter the model id: ");
+        long modelId = sc.nextLong();
+        sc.nextLine();
+
+        try {
+            carModelSessionBeanRemote.deleteModel(modelId);
+        } catch (CarModelNotFoundException ex) {
+            System.out.println("The model is not found! Please enter an valid model id.");
+            return;
+        }
+
+        System.out.println("*** The car model is successfully deleted ***");
+        System.out.println("The deleted car model id is:[ " + modelId + " ]");
+
+        System.out.println();
+        System.out.println("Press any key to continue.");
+        System.out.println();
+    }
 }
