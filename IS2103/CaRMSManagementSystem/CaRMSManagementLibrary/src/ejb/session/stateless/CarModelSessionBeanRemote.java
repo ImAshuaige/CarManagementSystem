@@ -5,7 +5,10 @@
  */
 package ejb.session.stateless;
 
+import entity.CarModel;
 import javax.ejb.Remote;
+import util.exception.CarCategoryNotFoundException;
+
 
 /**
  *
@@ -13,5 +16,5 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface CarModelSessionBeanRemote {
-    
+        public Long createNewCarModel(Long carCategoryId, CarModel model) throws CarCategoryNotFoundException;
 }

@@ -5,7 +5,10 @@
  */
 package ejb.session.stateless;
 
+import entity.CarModel;
 import javax.ejb.Local;
+import util.exception.CarCategoryNotFoundException;
+
 
 /**
  *
@@ -13,5 +16,5 @@ import javax.ejb.Local;
  */
 @Local
 public interface CarModelSessionBeanLocal {
-    
+        public Long createNewCarModel(Long carCategoryId, CarModel model) throws CarCategoryNotFoundException;
 }

@@ -40,12 +40,14 @@ public class CarModel implements Serializable {
     private CarCategory belongsCategory;
 
     public CarModel() {
+        this.disabled = false;
     }
 
     public CarModel(String make, String model, CarCategory belongsCategory) {
+        this();
         this.make = make;
         this.model = model;
-        this.disabled = false;
+        //this.disabled = false;
         this.belongsCategory = belongsCategory;
     }
 

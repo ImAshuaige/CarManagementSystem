@@ -90,15 +90,16 @@ public class DataInitSessionBean {
         Partner holidayReservation = new Partner("HolidayReservation", "123");
         partnerSessionBean.createNewPartner(holidayReservation);
         
-            CarCategory hondaCivic = new CarCategory("Honda Civic");
-            carCategorySessionBean.createNewCarCategory(hondaCivic);
-            CarCategory bmw = new CarCategory("BMW");
-            carCategorySessionBean.createNewCarCategory(bmw);
-            CarCategory mercedes = new CarCategory("Mercedes Benz");
-            carCategorySessionBean.createNewCarCategory(mercedes);
-            CarCategory mitsubishi = new CarCategory("Mitsubishi");
-            carCategorySessionBean.createNewCarCategory(mitsubishi);
-       //o2.getEmployeesList().add(a5);
+        //Car Category backend data initialisation
+        CarCategory hondaCivic = new CarCategory("Honda Civic");
+        carCategorySessionBean.createNewCarCategory(hondaCivic);
+        CarCategory bmw = new CarCategory("BMW");
+        carCategorySessionBean.createNewCarCategory(bmw);
+        CarCategory mercedes = new CarCategory("Mercedes Benz");
+        carCategorySessionBean.createNewCarCategory(mercedes);
+        CarCategory mitsubishi = new CarCategory("Mitsubishi");
+        carCategorySessionBean.createNewCarCategory(mitsubishi);
+        //o2.getEmployeesList().add(a5);
         /*this.isApplied = false; 
         this.rentalName = rentalName;
         this.dailyRate = dailyRate;
