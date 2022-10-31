@@ -6,9 +6,13 @@
 package ejb.session.stateless;
 
 import entity.CarCategory;
+import entity.RentalRate;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import util.exception.CarCategoryNotFoundException;
 
 
 /**
@@ -28,6 +32,30 @@ public class CarCategorySessionBean implements CarCategorySessionBeanRemote, Car
         em.persist(carCategory);
         em.flush();
         return carCategory.getCategoryId();
+    }
+    
+  
+    
+    @Override
+    public List<CarCategory> retrieveAllCarCategory() {
+       Query query = em.createQuery("SELECT cat FROM CarCategory cat");
+       return query.getResultList();
+    }
+    
+        
+
+    public CarCategory retrieveCarCategoryByCarCategoryId(Long CarCategoryId) throws CarCategoryNotFoundException
+    {
+        CarCategory carCategory = em.find(CarCategory.class, CarCategoryId);
+        
+        if(carCategory != null)
+        {
+            return carCategory;
+        }
+        else
+        {
+            throw new CarCategoryNotFoundException("Car Category ID " + CarCategoryId + " does not exist!");
+        }               
     }
 
     
