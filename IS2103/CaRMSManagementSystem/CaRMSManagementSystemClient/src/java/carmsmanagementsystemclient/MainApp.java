@@ -9,14 +9,27 @@ import ejb.session.stateless.CarCategorySessionBeanRemote;
 import ejb.session.stateless.CarModelSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.OutletSessionBeanRemote;
+import ejb.session.stateless.RentalRateSessionBeanRemote;
+import entity.CarCategory;
 import entity.CarModel;
 import entity.Employee;
+import entity.RentalRate;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
 import util.exception.CarCategoryNotFoundException;
 import util.exception.CarModelNotFoundException;
+import util.exception.EndDateBeforeStartDateException;
+import util.exception.InputDataValidationException;
 import util.exception.InvalidLoginException;
+import util.exception.RentalRateNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -24,6 +37,7 @@ import util.exception.InvalidLoginException;
  */
 public class MainApp {
 
+    private RentalRateSessionBeanRemote rentalRateSessionBeanRemote;
     private EmployeeSessionBeanRemote employeeSessionBeanRemote;
     private OutletSessionBeanRemote outletSessionBeanRemote;
     private CarModelSessionBeanRemote carModelSessionBeanRemote;
@@ -34,15 +48,16 @@ public class MainApp {
 
     }
 
-    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, OutletSessionBeanRemote outletSessionBeanRemote, CarCategorySessionBeanRemote carCategorySessionBeanRemote, CarModelSessionBeanRemote carModelSessionBeanRemote) {
+    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, OutletSessionBeanRemote outletSessionBeanRemote, CarCategorySessionBeanRemote carCategorySessionBeanRemote, CarModelSessionBeanRemote carModelSessionBeanRemote, RentalRateSessionBeanRemote rentalRateSessionBeanRemote) {
         this();
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
         this.outletSessionBeanRemote = outletSessionBeanRemote;
         this.carModelSessionBeanRemote = carModelSessionBeanRemote;
         this.carCategorySessionBeanRemote = carCategorySessionBeanRemote;
+        this.rentalRateSessionBeanRemote = rentalRateSessionBeanRemote;
     }
 
-    public void runApp() throws InvalidLoginException {
+    public void runApp() throws InvalidLoginException, InputDataValidationException {
         Scanner sc = new Scanner(System.in);
         Integer input = 0;
 
@@ -153,11 +168,17 @@ public class MainApp {
             System.out.println("[2] View All Models");
             System.out.println("[3] Update Model");
             System.out.println("[4] Delete Model");
-            System.out.println("[5] Exit");
+            System.out.println("[5] Create New Rental Rate");
+            System.out.println("[6] View All Rental Rates");
+            System.out.println("[7] View Rental Rate Details");
+            System.out.println("[8] Update Rental Rate");
+            System.out.println("[9] Delete Rental Rate");
+            System.out.println("[10] Exit"); //Remember to make changes to the while loop
+            //Issues are hard to resolve
 
             input = 0;
 
-            while (input < 1 || input > 5) {
+            while (input < 1 || input > 10) {
                 System.out.print("Your input: ");
                 input = sc.nextInt();
 
@@ -174,13 +195,28 @@ public class MainApp {
                     deleteModel();
                     break;
                 } else if (input == 5) {
+                    createNewRentalRate(); 
+                    break;
+                } else if (input == 6) {
+                    viewAllRentalRates();
+                    break;
+                } else if (input == 7) {
+                    viewRentalRateDetails();
+                    break;
+                } else if (input == 8) {
+                    updateRentalRate();
+                    break;
+                } else if (input == 9) {
+                    deleteRentalRate();
+                    break;
+                } else if (input == 10) {
                     break;
                 } else {
                     System.out.println("Invalid input, please try again!");
                 }
             }
 
-            if (input == 5) {
+            if (input == 10) {
                 break;
             }
         }
@@ -227,7 +263,65 @@ public class MainApp {
         System.out.println("Press any key to continue.");
         System.out.println();
     }
+    
+    private void createNewRentalRate() {
+        Scanner sc = new Scanner(System.in);
 
+        System.out.println("*** Create New Rental Rate ***");
+
+        RentalRate r = new RentalRate();
+  
+       
+        System.out.print("Enter the car category ID of this rental rate: ");
+        long carCategoryId = sc.nextLong();
+        sc.nextLine();
+        
+        //SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        /*System.out.print("Enter the start date of this rental rate (DD/MM/YYYY HH:MM) > ");
+        String stringStartDate = sc.nextLine().trim();
+        */
+        
+        try {
+            r.setCarCategory(carCategorySessionBeanRemote.retrieveCarCategoryByCarCategoryId(carCategoryId));
+            
+            System.out.print("Enter the name of the rental rate: ");
+            String rentalName = sc.nextLine().trim();
+            r.setRentalName(rentalName);
+             
+            System.out.print("Enter the daily rental rate: ");
+            BigDecimal dailyRate = sc.nextBigDecimal();
+            r.setDailyRate(dailyRate);
+            sc.nextLine();
+       
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            System.out.print("Enter start date (DD/MM/YYYY HH:MM)> ");
+            Date startDate = sdf.parse(sc.nextLine().trim());
+            System.out.print("Enter end date (DD/MM/YYYY HH:MM)> ");
+            Date endDate = sdf.parse(sc.nextLine().trim());
+                if (endDate.before(startDate)) {
+                    throw new EndDateBeforeStartDateException();
+                }
+                r.setRateStartDate(startDate);
+                r.setRateEndDate(endDate);
+            
+            Long rentalRateId = rentalRateSessionBeanRemote.createNewRentalRate(carCategoryId, r);
+            System.out.println("Rental Rate ID: " + rentalRateId + " sucessfully created!");
+        } catch (ParseException ex) {
+            System.out.println("Invalid Date/Time Format!");
+        } catch (CarCategoryNotFoundException ex) {
+            System.out.println("No such Car Category of ID: " + carCategoryId);
+        } catch (UnknownPersistenceException ex) {
+            System.out.println("UnknownPersistenceException when creating new Rental Rate");
+        } catch (InputDataValidationException ex) {
+            System.out.println("Invalid fields for the rental rate");
+        } catch (EndDateBeforeStartDateException ex) {
+            System.out.println("End date is before start date!");
+        }
+
+
+        
+    }
+    
     private void viewAllModels() {
         Scanner sc = new Scanner(System.in);
         System.out.println("*** View All Models ***");
@@ -237,9 +331,62 @@ public class MainApp {
             System.out.printf("%8s%30s%30s%30s\n", m.getModelId(), m.getModel(), m.getMake(), m.getBelongsCategory().getCarCategoryName());
         }
         System.out.println();
-
     }
 
+      private void viewAllRentalRates() {
+        //Scanner sc = new Scanner(System.in);
+        System.out.println("*** View All Rental Rates ***");
+        
+        List<RentalRate> rentalRates = rentalRateSessionBeanRemote.retrieveAllRentalRates();
+        
+        System.out.printf("%4s%32s%32s%16s%16s%20s%20s\n", "ID", "Rental Rate Name", "Car Category", "Rate Per Day", "Is Applied?", "Start Period", "End Period");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        for (RentalRate rentalRate : rentalRates) {
+            String startDate = "null";
+            if (rentalRate.getRateStartDate() != null) {
+                startDate = sdf.format(rentalRate.getRateStartDate());
+            }
+            String endDate = "null";
+            if (rentalRate.getRateEndDate() != null) {
+                endDate = sdf.format(rentalRate.getRateEndDate());
+            }
+            System.out.printf("%4s%32s%32s%16s%16s%20s%20s\n", rentalRate.getRentalRateId(),
+                    rentalRate.getRentalName(), rentalRate.getCarCategory().getCarCategoryName(),
+                    rentalRate.getDailyRate(), true, startDate, endDate); //Change true to the isApplied attribute, although it should be the isEnabled attribute
+        }
+        System.out.println();
+
+    }
+      
+      private void viewRentalRateDetails() {
+        Scanner sc = new Scanner(System.in);
+          
+        System.out.print("Enter Rental Rate ID> ");
+        Long rentalRateId = sc.nextLong();
+        
+        try {
+            RentalRate r = rentalRateSessionBeanRemote.retrieveRentalRateByRentalRateId(rentalRateId);
+            
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            String startDate = "Always Available";
+            if (r.getRateStartDate() != null) {
+                startDate = sdf.format(r.getRateStartDate());
+            }
+            
+            String endDate = "";
+            if (r.getRateEndDate()!= null) {
+                endDate = sdf.format(r.getRateEndDate());
+            }
+            System.out.printf("%4s%32s%32s%16s%16s%20s%20s\n", "ID", "Rental Rate Name", "Car Category", "Rate Per Day", "Is Enabled?", "Start Period", "End Period");
+            System.out.printf("%4s%32s%32s%16s%16s%20s%20s\n", r.getRentalRateId(),
+                    r.getRentalName(), r.getCarCategory().getCarCategoryName(),
+                    r.getDailyRate(), true, startDate, endDate);
+        } catch (RentalRateNotFoundException ex) {
+            System.out.println("Rental Rate not found for ID: " + rentalRateId);
+        }
+        System.out.println();
+      }
+      
     private void updateModel() {
         Scanner sc = new Scanner(System.in);
         System.out.println("*** Update Model ***");
@@ -300,6 +447,81 @@ public class MainApp {
         System.out.println("Press any key to continue.");
         System.out.println();
     }
+    
+    private void updateRentalRate() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("*** Update Rental Rate ***");
+
+        System.out.print("Enter the rental rate id: ");
+        long rentalRateId = sc.nextLong();
+        sc.nextLine();
+        RentalRate r = new RentalRate();
+        try {
+            r = rentalRateSessionBeanRemote.retrieveRentalRateByRentalRateId(rentalRateId);
+        } catch (RentalRateNotFoundException ex) {
+            System.out.println("Rental Rate Not Found! Please Enter an Valid Rental Rate Id.");
+        }
+        try {
+            System.out.print("Do you want to update the car category? [1]YES/[2]NO : ");
+            int catInput = sc.nextInt();
+            if (catInput == 1) {
+                System.out.print("Enter the new category ID: ");
+                Long updatedCategoryId = sc.nextLong();
+                sc.nextLine();
+                try {
+                    r.setCarCategory(carCategorySessionBeanRemote.retrieveCarCategoryByCarCategoryId(updatedCategoryId));
+                } catch (CarCategoryNotFoundException ex) {
+                    System.out.println("Car Category Not Found! Please Enter an Valid Car Category Id.");
+                }
+            }
+            
+            System.out.println("");
+            System.out.print("Do you want to update the rate per day? [1]YES/[2]NO : ");
+            int rateInput = sc.nextInt();
+            if (rateInput == 1) {
+                System.out.print("Enter the new rate: ");
+                BigDecimal updateRate = sc.nextBigDecimal();
+                sc.nextLine();
+                r.setDailyRate(updateRate);
+            }
+            
+            System.out.println("");
+            System.out.print("Do you want to update the start date? [1]YES/[2]NO : ");
+            int startDateInput = sc.nextInt();
+            if (startDateInput == 1) {
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                System.out.print("Enter the new start date (DD/MM/YYYY HH:MM)> ");
+                Date startDate = sdf.parse(sc.nextLine().trim());
+                sc.nextLine();
+                r.setRateStartDate(startDate);
+            }
+        
+            System.out.println("");
+            System.out.print("Do you want to update the end date? [1]YES/[2]NO : ");
+            int endDateInput = sc.nextInt();
+            if (endDateInput == 1) {
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                System.out.print("Enter the new end date (DD/MM/YYYY HH:MM)> ");
+                Date endDate = sdf.parse(sc.nextLine().trim());
+                sc.nextLine();
+                r.setRateStartDate(endDate);
+            }
+         
+            rentalRateSessionBeanRemote.updateRentalRate(r);
+            System.out.println("Rental Rate ID: " + rentalRateId + " updated!");
+        } catch (RentalRateNotFoundException ex) {
+            System.out.println("No Rental Rate of ID: " + rentalRateId);
+        } catch (InputDataValidationException ex) {
+            System.out.println("Rental Rate name already exists in the database! " + r.getRentalName());
+        } catch (ParseException ex) {
+            System.out.println("Invalid Date/Time Format!");
+        }
+        
+        System.out.println("Press any key to continue.");
+        System.out.println();
+        
+    }
+    
 
     private void deleteModel() {
         Scanner sc = new Scanner(System.in);
@@ -322,5 +544,29 @@ public class MainApp {
         System.out.println();
         System.out.println("Press any key to continue.");
         System.out.println();
+    }
+    
+    private void deleteRentalRate() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("***Delete Rental Rate ***");
+        
+        System.out.print("Enter the rental rate id: ");
+        long rateId = sc.nextLong();
+        sc.nextLine();
+        
+        try {
+            rentalRateSessionBeanRemote.deleteRentalRate(rateId);
+        } catch (RentalRateNotFoundException ex) {
+            System.out.println("The rental rate is not found! Please enter an valid model id.");
+            return;
+        }
+        
+        System.out.println("*** The rental rate has been successfully deleted ***");
+        System.out.println("The deleted rental rate id is:[ " + rateId + " ]");
+
+        System.out.println();
+        System.out.println("Press any key to continue.");
+        System.out.println();
+        
     }
 }
