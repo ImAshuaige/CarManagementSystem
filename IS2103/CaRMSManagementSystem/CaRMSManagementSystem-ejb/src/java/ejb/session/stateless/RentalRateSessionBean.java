@@ -12,6 +12,8 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
@@ -21,6 +23,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.exception.CarCategoryNotFoundException;
 import util.exception.InputDataValidationException;
+import util.exception.RentalRateNotFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -106,6 +109,70 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
        return query.getResultList();
     }
     
+        
+   
+    @Override
+    public RentalRate retrieveRentalRateByRentalRateId(Long rentalRateId) throws RentalRateNotFoundException
+    {
+        RentalRate rentalRate = em.find(RentalRate.class, rentalRateId);
+        
+        if (rentalRate != null) {
+            return rentalRate;
+        } else {
+            throw new RentalRateNotFoundException("Rental Rate ID " + rentalRateId + " does not exist!");
+        }
+    }
+        
+   
+    @Override
+    public void updateRentalRate(RentalRate rentalRate) throws RentalRateNotFoundException, InputDataValidationException
+    {
+        if(rentalRate != null && rentalRate.getRentalRateId()!= null)
+        {
+            Set<ConstraintViolation<RentalRate>>constraintViolations = validator.validate(rentalRate);
+        
+            if(constraintViolations.isEmpty())
+            {
+                RentalRate rentalRateToUpdate = retrieveRentalRateByRentalRateId(rentalRate.getRentalRateId());
+
+                if(rentalRateToUpdate.getRentalRateId().equals(rentalRate.getRentalRateId()))
+                {
+                    rentalRateToUpdate.setRentalName(rentalRate.getRentalName());
+                    rentalRateToUpdate.setCarCategory(rentalRate.getCarCategory());
+                    rentalRateToUpdate.setDailyRate(rentalRate.getDailyRate());
+                    rentalRateToUpdate.setRateStartDate(rentalRate.getRateStartDate());
+                    rentalRateToUpdate.setRateEndDate(rentalRate.getRateEndDate());
+                  
+                }
+               
+            }
+            else
+            {
+                throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
+            }
+        }
+        else
+        {
+            throw new RentalRateNotFoundException("Rental Rate Id not found for the rental rate that needs to be update");
+        }
+    }
+    
+    
+    @Override
+    public void deleteRentalRate(Long rentalRateId) throws RentalRateNotFoundException {
+        try {
+            RentalRate rentalRateToRemove = retrieveRentalRateByRentalRateId(rentalRateId);
+            if (rentalRateToRemove.isIsApplied() == false) { //Hester, I think we need a list of rental days and another isRentalRateEnabled attribute. 
+                //It is different from IsApplied.
+                em.remove(rentalRateToRemove);
+            } /*else {
+                rentalRateToRemove.se.setIsEnabled(false);
+            }*/
+        } catch (RentalRateNotFoundException ex) {
+            throw new RentalRateNotFoundException("Rental rate of ID: " + rentalRateId + " not found!");
+        }
+    }
+    
         private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<RentalRate>>constraintViolations)
     {
         String msg = "Input data validation error!:";
@@ -118,5 +185,6 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
         return msg;
     }
     
+        
     
 }

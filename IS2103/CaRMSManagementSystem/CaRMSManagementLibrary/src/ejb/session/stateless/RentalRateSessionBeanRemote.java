@@ -10,6 +10,7 @@ import java.util.List;
 import javax.ejb.Remote;
 import util.exception.CarCategoryNotFoundException;
 import util.exception.InputDataValidationException;
+import util.exception.RentalRateNotFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -21,7 +22,11 @@ public interface RentalRateSessionBeanRemote {
    
    public Long createNewRentalRate(Long carCategoryId, RentalRate rentalRate) throws CarCategoryNotFoundException, UnknownPersistenceException, InputDataValidationException;
 
-    public List<RentalRate> retrieveAllRentalRates();
+   public List<RentalRate> retrieveAllRentalRates();
     
-    
+   public RentalRate retrieveRentalRateByRentalRateId(Long rentalRateId) throws RentalRateNotFoundException;
+
+   public void updateRentalRate(RentalRate rentalRate) throws RentalRateNotFoundException, InputDataValidationException;
+
+   public void deleteRentalRate(Long rentalRateId) throws RentalRateNotFoundException;
 }
