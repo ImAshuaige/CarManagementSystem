@@ -15,6 +15,9 @@ import entity.Partner;
 import entity.Employee;
 import entity.Outlet;
 import entity.RentalRate;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -24,6 +27,9 @@ import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import util.enumeration.EmployeeRoleEnum;
+import util.exception.CarCategoryNotFoundException;
+import util.exception.InputDataValidationException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -62,6 +68,7 @@ public class DataInitSessionBean {
     // "Insert Code > Add Business Method")
 
     private void initializeData() {
+        try {
         //Outlet Backend data initialisation
         Outlet o1 = new Outlet("Outlet A", "Ang Mo Kio", new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 1, 1, 23, 59, 0));
         outletSessionBean.createNewOutlet(o1);
@@ -90,27 +97,41 @@ public class DataInitSessionBean {
         Partner holidayReservation = new Partner("HolidayReservation", "123");
         partnerSessionBean.createNewPartner(holidayReservation);
         
-        //Car Category backend data initialisation
-        CarCategory hondaCivic = new CarCategory("Honda Civic");
-        carCategorySessionBean.createNewCarCategory(hondaCivic);
-        CarCategory bmw = new CarCategory("BMW");
-        carCategorySessionBean.createNewCarCategory(bmw);
-        CarCategory mercedes = new CarCategory("Mercedes Benz");
-        carCategorySessionBean.createNewCarCategory(mercedes);
-        CarCategory mitsubishi = new CarCategory("Mitsubishi");
-        carCategorySessionBean.createNewCarCategory(mitsubishi);
-        //o2.getEmployeesList().add(a5);
-        /*this.isApplied = false; 
-        this.rentalName = rentalName;
-        this.dailyRate = dailyRate;
-        this.rateStartDate = rateStartDate;
-        this.rateEndDate = rateEndDate;
-        this.carCategory = carCategory;*/
- /*
-        RentalRate rentalRate = new RentalRateEntity("Weekend Promo", 80, new Date(119, 11, 6, 12, 0), new Date(119, 11, 8, 0, 0));
-        rentalRateSessionBean.createRentalRateEntity(rentalRateEntity);
-         */
+            CarCategory hondaCivic = new CarCategory("Honda Civic");
+            carCategorySessionBean.createNewCarCategory(hondaCivic);
+            CarCategory bmw = new CarCategory("BMW");
+            carCategorySessionBean.createNewCarCategory(bmw);
+            CarCategory mercedes = new CarCategory("Mercedes Benz");
+            carCategorySessionBean.createNewCarCategory(mercedes);
+            CarCategory mitsubishi = new CarCategory("Mitsubishi");
+            carCategorySessionBean.createNewCarCategory(mitsubishi);
+            
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            Date startDateTime = dateFormat.parse("06/12/2019 12:00");
+            Date endDateTime = dateFormat.parse("08/12/2019 00:00");
+            RentalRate hondaCivicDefault = new RentalRate("Honda Civic: Default", BigDecimal.valueOf(70.0), startDateTime, endDateTime, hondaCivic);
+            rentalRateSessionBean.createNewRentalRate(hondaCivic.getCategoryId(), hondaCivicDefault);
+            
+            startDateTime = dateFormat.parse("02/12/2019 00:00");
+            endDateTime = dateFormat.parse("02/12/2019 23:59");
+            RentalRate bmwDefault = new RentalRate("BMW: Default", BigDecimal.valueOf(200.0), startDateTime, endDateTime, hondaCivic);
+            rentalRateSessionBean.createNewRentalRate(bmw.getCategoryId(), bmwDefault);
+            
+            startDateTime = dateFormat.parse("03/12/2019 00:00");
+            endDateTime = dateFormat.parse("03/12/2019 23:59");
+            RentalRate mercedesDefault = new RentalRate("Mercedes: Default", BigDecimal.valueOf(100.0), startDateTime, endDateTime, hondaCivic);
+            rentalRateSessionBean.createNewRentalRate(mercedes.getCategoryId(), mercedesDefault);
+            
+            startDateTime = dateFormat.parse("04/12/2019 00:00");
+            endDateTime = dateFormat.parse("04/12/2019 23:59");
+            RentalRate mitsubishiDefault = new RentalRate("Mitsubishi: Default", BigDecimal.valueOf(80.0), startDateTime, endDateTime, hondaCivic);
+            rentalRateSessionBean.createNewRentalRate(mitsubishi.getCategoryId(), mitsubishiDefault);
         //standardSedan.getRentalRates().add(rentalRateEntity); Add this later when we create a car to establish the relationship
+    } catch (ParseException | CarCategoryNotFoundException | UnknownPersistenceException | InputDataValidationException ex) {
+        ex.printStackTrace();
+        
+    }
+      
     }
 
 }

@@ -8,6 +8,10 @@ package ejb.session.stateless;
 import entity.RentalRate;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.CarCategoryNotFoundException;
+import util.exception.InputDataValidationException;
+import util.exception.RentalRateNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -15,9 +19,14 @@ import javax.ejb.Local;
  */
 @Local
 public interface RentalRateSessionBeanLocal {
-
-    public Long createNewRentalRate(RentalRate rentalRate);
+    
+    public Long createNewRentalRate(Long carCategoryId, RentalRate rentalRate) throws CarCategoryNotFoundException, UnknownPersistenceException, InputDataValidationException;
 
     public List<RentalRate> retrieveAllRentalRates();
-    
+
+    public RentalRate retrieveRentalRateByRentalRateId(Long rentalRateId) throws RentalRateNotFoundException;
+
+    public void updateRentalRate(RentalRate rentalRate) throws RentalRateNotFoundException, InputDataValidationException;
+
+    public void deleteRentalRate(Long rentalRateId) throws RentalRateNotFoundException;
 }

@@ -6,7 +6,10 @@
 package ejb.session.stateless;
 
 import entity.CarCategory;
+import entity.RentalRate;
+import java.util.List;
 import javax.ejb.Remote;
+import util.exception.CarCategoryNotFoundException;
 
 /**
  *
@@ -16,5 +19,10 @@ import javax.ejb.Remote;
 public interface CarCategorySessionBeanRemote {
     
     public Long createNewCarCategory(CarCategory carCategory);
+    
+    public List<CarCategory> retrieveAllCarCategory();
+    
+    public CarCategory retrieveCarCategoryByCarCategoryId(Long CarCategoryId) throws CarCategoryNotFoundException;
+
     
 }

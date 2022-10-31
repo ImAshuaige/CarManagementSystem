@@ -119,4 +119,10 @@ public class CarCategory implements Serializable {
         this.rateList = rateList;
     }
     
+    public void addRentalRate(RentalRate rentalRate) {
+        if (!this.rateList.contains(rentalRate)) {
+            this.rateList.add(rentalRate);
+        }
+    }
+    
 }
