@@ -448,29 +448,23 @@ public class MainApp {
     
     private void updateRentalRate() {
         Scanner sc = new Scanner(System.in);
+        RentalRate r = new RentalRate();
         System.out.println("*** Update Rental Rate ***");
 
         System.out.print("Enter the rental rate id: ");
         long rentalRateId = sc.nextLong();
         sc.nextLine();
-        RentalRate r = new RentalRate();
+        
         try {
             r = rentalRateSessionBeanRemote.retrieveRentalRateByRentalRateId(rentalRateId);
-        } catch (RentalRateNotFoundException ex) {
-            System.out.println("Rental Rate Not Found! Please Enter an Valid Rental Rate Id.");
-        }
-        try {
             System.out.print("Do you want to update the car category? [1]YES/[2]NO : ");
             int catInput = sc.nextInt();
             if (catInput == 1) {
                 System.out.print("Enter the new category ID: ");
                 Long updatedCategoryId = sc.nextLong();
                 sc.nextLine();
-                try {
-                    r.setCarCategory(carCategorySessionBeanRemote.retrieveCarCategoryByCarCategoryId(updatedCategoryId));
-                } catch (CarCategoryNotFoundException ex) {
-                    System.out.println("Car Category Not Found! Please Enter an Valid Car Category Id.");
-                }
+                r.setCarCategory(carCategorySessionBeanRemote.retrieveCarCategoryByCarCategoryId(updatedCategoryId));
+                
             }
             
             System.out.println("");
@@ -486,23 +480,23 @@ public class MainApp {
             System.out.println("");
             System.out.print("Do you want to update the start date? [1]YES/[2]NO : ");
             int startDateInput = sc.nextInt();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             if (startDateInput == 1) {
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                System.out.print("Enter the new start date (DD/MM/YYYY HH:MM)> ");
-                Date startDate = sdf.parse(sc.nextLine().trim());
                 sc.nextLine();
-                r.setRateStartDate(startDate);
+                System.out.print("Enter the new start date (DD/MM/YYYY HH:MM)> ");
+                Date updatedStartDate = sdf.parse(sc.nextLine().trim());
+                
+                r.setRateStartDate(updatedStartDate);
             }
         
             System.out.println("");
             System.out.print("Do you want to update the end date? [1]YES/[2]NO : ");
             int endDateInput = sc.nextInt();
             if (endDateInput == 1) {
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                System.out.print("Enter the new end date (DD/MM/YYYY HH:MM)> ");
-                Date endDate = sdf.parse(sc.nextLine().trim());
                 sc.nextLine();
-                r.setRateStartDate(endDate);
+                System.out.print("Enter the new end date (DD/MM/YYYY HH:MM)> ");
+                Date updatedEndDate = sdf.parse(sc.nextLine().trim());
+                r.setRateEndDate(updatedEndDate);
             }
          
             rentalRateSessionBeanRemote.updateRentalRate(r);
@@ -513,6 +507,8 @@ public class MainApp {
             System.out.println("Rental Rate name already exists in the database! " + r.getRentalName());
         } catch (ParseException ex) {
             System.out.println("Invalid Date/Time Format!");
+        } catch (CarCategoryNotFoundException ex) {
+            System.out.println("Car Category Not Found! Please Enter an Valid Car Category Id.");
         }
         
         System.out.println("Press any key to continue.");

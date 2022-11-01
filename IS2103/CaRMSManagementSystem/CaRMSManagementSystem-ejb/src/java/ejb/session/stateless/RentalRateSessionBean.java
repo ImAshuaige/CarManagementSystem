@@ -133,17 +133,17 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
         
             if(constraintViolations.isEmpty())
             {
-                RentalRate rentalRateToUpdate = retrieveRentalRateByRentalRateId(rentalRate.getRentalRateId());
-
-                if(rentalRateToUpdate.getRentalRateId().equals(rentalRate.getRentalRateId()))
-                {
+                
+               // if(rentalRateToUpdate.getRentalRateId().equals(rentalRate.getRentalRateId()))
+               // {
+                    RentalRate rentalRateToUpdate = retrieveRentalRateByRentalRateId(rentalRate.getRentalRateId());
                     rentalRateToUpdate.setRentalName(rentalRate.getRentalName());
                     rentalRateToUpdate.setCarCategory(rentalRate.getCarCategory());
                     rentalRateToUpdate.setDailyRate(rentalRate.getDailyRate());
                     rentalRateToUpdate.setRateStartDate(rentalRate.getRateStartDate());
                     rentalRateToUpdate.setRateEndDate(rentalRate.getRateEndDate());
                   
-                }
+               // }
                
             }
             else
