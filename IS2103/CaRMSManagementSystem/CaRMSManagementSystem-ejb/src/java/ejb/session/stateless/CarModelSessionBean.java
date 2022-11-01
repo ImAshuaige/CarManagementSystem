@@ -14,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import util.exception.CarCategoryNotFoundException;
+import util.exception.CarModelDeletionException;
 import util.exception.CarModelNotFoundException;
 
 /**
@@ -54,12 +55,15 @@ public class CarModelSessionBean implements CarModelSessionBeanRemote, CarModelS
     }
 
     @Override
-    public long updateModel(CarModel m, Long categoryId) throws CarCategoryNotFoundException {
+    public long updateModel(CarModel m, Long categoryId) throws CarCategoryNotFoundException, CarModelDeletionException {
         CarCategory currCategory = em.find(CarCategory.class, m.getBelongsCategory().getCategoryId());
         CarCategory newCategory = em.find(CarCategory.class, categoryId);
 
         if (newCategory == null) {
             throw new CarCategoryNotFoundException();
+        }
+        if (m.getDisabled() == true) {
+            throw new CarModelDeletionException();
         }
         
         try {

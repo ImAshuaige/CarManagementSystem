@@ -9,6 +9,7 @@ import entity.CarModel;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.CarCategoryNotFoundException;
+import util.exception.CarModelDeletionException;
 import util.exception.CarModelNotFoundException;
 
 
@@ -20,7 +21,7 @@ import util.exception.CarModelNotFoundException;
 public interface CarModelSessionBeanLocal {
         public Long createNewCarModel(Long carCategoryId, CarModel model) throws CarCategoryNotFoundException;
         public List<CarModel> retrieveAllCarModels();
-        public long updateModel(CarModel m, Long categoryId) throws CarCategoryNotFoundException;
+        public long updateModel(CarModel m, Long categoryId) throws CarCategoryNotFoundException, CarModelDeletionException;
         public CarModel retrieveCarModelById(long modelId);
         public void deleteModel(Long modelId) throws CarModelNotFoundException;
 }

@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
 import util.exception.CarCategoryNotFoundException;
+import util.exception.CarModelDeletionException;
 import util.exception.CarModelNotFoundException;
 import util.exception.EndDateBeforeStartDateException;
 import util.exception.InputDataValidationException;
@@ -168,6 +169,7 @@ public class MainApp {
             System.out.println("[2] View All Models");
             System.out.println("[3] Update Model");
             System.out.println("[4] Delete Model");
+            System.out.println("");
             System.out.println("[5] Create New Rental Rate");
             System.out.println("[6] View All Rental Rates");
             System.out.println("[7] View Rental Rate Details");
@@ -437,6 +439,9 @@ public class MainApp {
             }
         } catch (CarCategoryNotFoundException ex) {
             System.out.println("Car Category Not Found! Please Enter an Valid Car Category Id.");
+            return;
+        } catch (CarModelDeletionException ex) {
+            System.out.println("This model is deleted! Please Enter an Valid Car Category Id.");
             return;
         }
 
