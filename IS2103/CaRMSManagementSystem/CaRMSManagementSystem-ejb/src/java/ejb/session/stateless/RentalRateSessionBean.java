@@ -23,6 +23,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.exception.CarCategoryNotFoundException;
 import util.exception.InputDataValidationException;
+import util.exception.RentalDateDeletionException;
 import util.exception.RentalRateNotFoundException;
 import util.exception.UnknownPersistenceException;
 
@@ -74,8 +75,8 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
             Set<ConstraintViolation<RentalRate>> constraintViolations = validator.validate(rentalRate);
 
             if (constraintViolations.isEmpty()) {
-                try {
-                     CarCategory carCategory = carCategorySessionBean.retrieveCarCategoryByCarCategoryId(carCategoryId);
+                try { 
+                    CarCategory carCategory = carCategorySessionBean.retrieveCarCategoryByCarCategoryId(carCategoryId);
                         carCategory.addRentalRate(rentalRate);
                         rentalRate.setCarCategory(carCategory);
                         em.persist(rentalRate);
@@ -105,8 +106,15 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
      */
     @Override
     public List<RentalRate> retrieveAllRentalRates() {
-       Query query = em.createQuery("SELECT rate FROM RentalRate rate");
+       Query query = em.createQuery("SELECT r FROM RentalRate r ORDER BY r.carCategory.carCategoryName ASC, r.rateStartDate ASC, r.rateEndDate ASC");
        return query.getResultList();
+       
+       /*  this.rentalName = rentalName;
+        this.dailyRate = dailyRate;
+        this.rateStartDate = rateStartDate;
+        this.rateEndDate = rateEndDate;
+        this.carCategory = carCategory;
+       */
     }
     
         
@@ -125,7 +133,7 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
         
    
     @Override
-    public void updateRentalRate(RentalRate rentalRate) throws RentalRateNotFoundException, InputDataValidationException
+    public void updateRentalRate(RentalRate rentalRate) throws RentalRateNotFoundException, InputDataValidationException, RentalDateDeletionException
     {
         if(rentalRate != null && rentalRate.getRentalRateId()!= null)
         {
@@ -133,17 +141,19 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
         
             if(constraintViolations.isEmpty())
             {
+                if(rentalRate.isIsDisabled() == true) {
+                     throw new RentalDateDeletionException();
+                 }
                 
-               // if(rentalRateToUpdate.getRentalRateId().equals(rentalRate.getRentalRateId()))
-               // {
+                 if (rentalRate.isIsDisabled() == false) {
                     RentalRate rentalRateToUpdate = retrieveRentalRateByRentalRateId(rentalRate.getRentalRateId());
                     rentalRateToUpdate.setRentalName(rentalRate.getRentalName());
                     rentalRateToUpdate.setCarCategory(rentalRate.getCarCategory());
                     rentalRateToUpdate.setDailyRate(rentalRate.getDailyRate());
                     rentalRateToUpdate.setRateStartDate(rentalRate.getRateStartDate());
                     rentalRateToUpdate.setRateEndDate(rentalRate.getRateEndDate());
-                  
-               // }
+                 } 
+                      
                
             }
             else
@@ -162,12 +172,10 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
     public void deleteRentalRate(Long rentalRateId) throws RentalRateNotFoundException {
         try {
             RentalRate rentalRateToRemove = retrieveRentalRateByRentalRateId(rentalRateId);
-            if (rentalRateToRemove.isIsApplied() == false) { //Hester, I think we need a list of rental days and another isRentalRateEnabled attribute. 
+            if (rentalRateToRemove.isIsDisabled() == false) { //Hester, I think we need a list of rental days and another isRentalRateEnabled attribute. 
                 //It is different from IsApplied.
-                em.remove(rentalRateToRemove);
-            } /*else {
-                rentalRateToRemove.se.setIsEnabled(false);
-            }*/
+                rentalRateToRemove.setIsDisabled(true);
+            } 
         } catch (RentalRateNotFoundException ex) {
             throw new RentalRateNotFoundException("Rental rate of ID: " + rentalRateId + " not found!");
         }

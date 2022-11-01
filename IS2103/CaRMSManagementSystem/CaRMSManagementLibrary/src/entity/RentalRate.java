@@ -29,43 +29,48 @@ public class RentalRate implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rentalRateId;
-    
+
     @Column(nullable = false, length = 40) //Length constraint?
     private String rentalName;
-    
+
     @Column(nullable = false)
     @DecimalMin("0.00")
     //Digits constraint?
     private BigDecimal dailyRate;
-    
-    @Column(nullable = false) 
+
+    @Column(nullable = false)
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date rateStartDate;
-    
-    @Column(nullable = false) 
+
+    @Column(nullable = false)
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date rateEndDate;
-    
-    @Column(nullable = false) 
+
+    @Column(nullable = false)
     private boolean isApplied;
-    
-    @ManyToOne(optional = false) 
+
+    @Column(nullable = false)
+    private boolean isDisabled;
+
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
-    private CarCategory carCategory; 
+    private CarCategory carCategory;
 
     public RentalRate() {
-        this.isApplied = false; 
+        this.isApplied = false;
+        this.isDisabled = false;
     }
 
     public RentalRate(String rentalName, BigDecimal dailyRate, Date rateStartDate, Date rateEndDate, CarCategory carCategory) {
-        this.isApplied = false; 
+        this.isApplied = false;
+        this.isDisabled = false;
         this.rentalName = rentalName;
         this.dailyRate = dailyRate;
         this.rateStartDate = rateStartDate;
         this.rateEndDate = rateEndDate;
         this.carCategory = carCategory;
     }
-    
+
     public Long getRentalRateId() {
         return rentalRateId;
     }
@@ -182,5 +187,19 @@ public class RentalRate implements Serializable {
     public void setRentalName(String rentalName) {
         this.rentalName = rentalName;
     }
-    
+
+    /**
+     * @return the isDisabled
+     */
+    public boolean isIsDisabled() {
+        return isDisabled;
+    }
+
+    /**
+     * @param isDisabled the isDisabled to set
+     */
+    public void setIsDisabled(boolean isDisabled) {
+        this.isDisabled = isDisabled;
+    }
+
 }

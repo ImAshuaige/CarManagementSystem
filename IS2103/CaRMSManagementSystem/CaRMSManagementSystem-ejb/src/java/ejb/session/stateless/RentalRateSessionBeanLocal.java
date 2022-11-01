@@ -10,6 +10,7 @@ import java.util.List;
 import javax.ejb.Local;
 import util.exception.CarCategoryNotFoundException;
 import util.exception.InputDataValidationException;
+import util.exception.RentalDateDeletionException;
 import util.exception.RentalRateNotFoundException;
 import util.exception.UnknownPersistenceException;
 
@@ -26,7 +27,7 @@ public interface RentalRateSessionBeanLocal {
 
     public RentalRate retrieveRentalRateByRentalRateId(Long rentalRateId) throws RentalRateNotFoundException;
 
-    public void updateRentalRate(RentalRate rentalRate) throws RentalRateNotFoundException, InputDataValidationException;
+    public void updateRentalRate(RentalRate rentalRate) throws RentalRateNotFoundException, InputDataValidationException, RentalDateDeletionException;
 
     public void deleteRentalRate(Long rentalRateId) throws RentalRateNotFoundException;
 }
