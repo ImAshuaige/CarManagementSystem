@@ -260,8 +260,7 @@ public class MainApp {
         int modelInput = sc.nextInt();
         if (modelInput == 1) {
             System.out.print("Enter the new model name: ");
-            String updatedModel = sc.nextLine().trim();
-            sc.nextLine();
+            String updatedModel = sc.next();
             model.setModel(updatedModel);
         }
 
@@ -270,8 +269,7 @@ public class MainApp {
         int makeInput = sc.nextInt();
         if (makeInput == 1) {
             System.out.print("Enter the new make name: ");
-            String updatedMake = sc.nextLine().trim();
-            sc.nextLine();
+            String updatedMake = sc.next();
             model.setMake(updatedMake);
         }
         long categoryId = model.getBelongsCategory().getCategoryId();
