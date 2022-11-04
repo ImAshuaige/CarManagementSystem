@@ -57,21 +57,20 @@ public class Car implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private CarModel carModel;
+    @ManyToOne
+    private Outlet outlet;
 
     public Car() {
+        this.disabled = false;
+        this.carStatus = CarStatusEnum.AVAILABLE;
     }
 
     //ID is defined by defualt and the reservation is null by default
-    public Car(String carLicensePlateNum, String colour, Outlet latestOutlet, CarStatusEnum carStatus, CarModel carModel) {
+    public Car(String carLicensePlateNum, String colour) {
+        this();
         this.carLicensePlateNum = carLicensePlateNum;
         this.colour = colour;
-        this.latestOutlet = latestOutlet;
-        this.disabled = false;
-        this.carStatus = carStatus;
-        this.carModel = carModel;
     }
-    
-    
     
     public Long getCarId() {
         return carId;

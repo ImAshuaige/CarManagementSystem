@@ -7,6 +7,7 @@ package carmsmanagementsystemclient;
 
 import ejb.session.stateless.CarCategorySessionBeanRemote;
 import ejb.session.stateless.CarModelSessionBeanRemote;
+import ejb.session.stateless.CarSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.OutletSessionBeanRemote;
 import ejb.session.stateless.RentalRateSessionBeanRemote;
@@ -24,6 +25,9 @@ import util.exception.InvalidLoginException;
  * @author Mehak
  */
 public class Main {
+
+    @EJB
+    private static CarSessionBeanRemote carSessionBeanRemote;
 
     @EJB
     private static RentalRateSessionBeanRemote rentalRateSessionBeanRemote;
@@ -46,7 +50,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws InvalidLoginException {
-        MainApp mainApp = new MainApp(employeeSessionBeanRemote,outletSessionBeanRemote,carCategorySessionBeanRemote,carModelSessionBeanRemote,rentalRateSessionBeanRemote);
+        MainApp mainApp = new MainApp(rentalRateSessionBeanRemote, employeeSessionBeanRemote, outletSessionBeanRemote, carModelSessionBeanRemote, carCategorySessionBeanRemote, carSessionBeanRemote);
         try {
             mainApp.runApp();
             // TODO code application logic here

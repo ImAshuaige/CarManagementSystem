@@ -5,7 +5,16 @@
  */
 package ejb.session.stateless;
 
+import entity.Car;
+import java.util.List;
 import javax.ejb.Remote;
+import util.exception.CarNotFoundException;
+import util.exception.InputDataValidationException;
+import util.exception.InvalidModelException;
+import util.exception.LicensePlateExistException;
+import util.exception.ModelDisabledException;
+import util.exception.OutletNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -13,5 +22,15 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface CarSessionBeanRemote {
+
+    public void deleteCar(Long carId) throws CarNotFoundException;
+
+    public long updateCar(Car c, long outletId, long modelId) throws InvalidModelException, OutletNotFoundException;
+
+    public Car retrieveCarByCarId(Long carId) throws CarNotFoundException;
+
+    public List<Car> retrieveCars();
+
+    public long createNewCar(long modelId, long outletId, Car newCar) throws UnknownPersistenceException, LicensePlateExistException, ModelDisabledException, OutletNotFoundException, InputDataValidationException;
     
 }

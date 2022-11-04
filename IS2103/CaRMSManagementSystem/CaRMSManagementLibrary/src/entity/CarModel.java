@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -38,6 +40,9 @@ public class CarModel implements Serializable {
     @ManyToOne
     @JoinColumn(nullable = false)
     private CarCategory belongsCategory;
+    
+    @OneToMany(mappedBy = "carModel")
+    private List<Car> listOfCars;
 
     public CarModel() {
         this.disabled = false;
@@ -47,7 +52,6 @@ public class CarModel implements Serializable {
         this();
         this.make = make;
         this.model = model;
-        //this.disabled = false;
         this.belongsCategory = belongsCategory;
     }
 
@@ -138,6 +142,26 @@ public class CarModel implements Serializable {
      */
     public void setBelongsCategory(CarCategory belongsCategory) {
         this.belongsCategory = belongsCategory;
+    }
+    
+    public void addCar(Car car) {
+        if (!this.listOfCars.contains(car)) {
+            this.getListOfCars().add(car);
+        }
+    }
+
+    /**
+     * @return the listOfCars
+     */
+    public List<Car> getListOfCars() {
+        return listOfCars;
+    }
+
+    /**
+     * @param listOfCars the listOfCars to set
+     */
+    public void setListOfCars(List<Car> listOfCars) {
+        this.listOfCars = listOfCars;
     }
     
 }

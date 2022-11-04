@@ -51,6 +51,9 @@ public class Outlet implements Serializable {
     @OneToMany(mappedBy = "destinationOutlet")
     private List<TransitDriverDispatch> transitDriverDispatchList;
     
+    @OneToMany(mappedBy = "outlet")
+    private List<Car> listOfCars;
+    
     /* Since outlet has a relationship with reservation, should we include these codes as well
     @OneToMany(mappedBy = "pickupLocation")
     private List<Reservation> pickReservation = new ArrayList<>();
@@ -204,6 +207,10 @@ public class Outlet implements Serializable {
         this.transitDriverDispatchList = transitDriverDispatchList;
     }
 
-
+    public void addCar(Car car) {
+        if (!this.carsList.contains(car)) {
+            this.carsList.add(car);
+        }
+    }
     
 }

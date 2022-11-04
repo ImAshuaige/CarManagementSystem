@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.Outlet;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.OutletNotFoundException;
 
 /**
  *
@@ -19,5 +20,7 @@ public interface OutletSessionBeanLocal {
     public Long createNewOutlet(Outlet outlet);
 
     public List<Outlet> retrieveAllOutlets();
+    
+     public Outlet retrieveOutletById(Long outletId) throws OutletNotFoundException;
     
 }
