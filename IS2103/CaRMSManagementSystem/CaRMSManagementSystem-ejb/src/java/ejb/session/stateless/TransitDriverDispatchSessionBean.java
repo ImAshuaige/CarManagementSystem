@@ -19,6 +19,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.OutletNotFoundException;
 import util.exception.ReservationNotFoundException;
+import util.exception.TransitDriverDispatchNotFoundException;
 
 /**
  *
@@ -51,7 +52,7 @@ public class TransitDriverDispatchSessionBean implements TransitDriverDispatchSe
         query.setParameter("inNextDay", nextDay);
         return query.getResultList();
     }
-    
+
     @Override
     public long createNewTranspatchDriverRecord(Long destinationOutletId, Long reservationId, Date transitStartDate) throws OutletNotFoundException, ReservationNotFoundException {
         try {
@@ -60,7 +61,7 @@ public class TransitDriverDispatchSessionBean implements TransitDriverDispatchSe
             //Importing the outletsessionbean
             Outlet destinationOutlet = outletSessionBean.retrieveOutletById(destinationOutletId);
             //Import the reservationSessionBeanLocal
-            
+
             //Creating retrieveRentalReservationByRentalReservationId method in the reservationSessionBeanLocal
             Reservation rentalReservation = reservationSessionBean.retrieveReservationByReservationId(reservationId);
             transitDriverDispatch.setDestinationOutlet(destinationOutlet);
@@ -77,4 +78,24 @@ public class TransitDriverDispatchSessionBean implements TransitDriverDispatchSe
         }
     }
 
+    @Override
+    public void updateTransitAsCompleted(Long transitDriverDispatchId) throws TransitDriverDispatchNotFoundException {
+        try {
+            TransitDriverDispatch transitDriverDispatch = retrieveTransitDriverDispatchByTransitDriverDispatchId(transitDriverDispatchId);
+            transitDriverDispatch.setIsCompleted(true);
+        } catch (TransitDriverDispatchNotFoundException ex) {
+            throw new TransitDriverDispatchNotFoundException("Transit Driver Dispatch with Id: " + transitDriverDispatchId + " does not exist!");
+        }
+    }
+
+    @Override
+    public TransitDriverDispatch retrieveTransitDriverDispatchByTransitDriverDispatchId(Long transitDriverDispatchId) throws TransitDriverDispatchNotFoundException {
+        TransitDriverDispatch transitDriverDispatch = em.find(TransitDriverDispatch.class, transitDriverDispatchId);
+
+        if (transitDriverDispatch == null) {
+            throw new TransitDriverDispatchNotFoundException("Transit Driver Dispatch with Id: " + transitDriverDispatchId + " does not exist!");
+        } else {
+            return transitDriverDispatch;
+        }
+    }
 }

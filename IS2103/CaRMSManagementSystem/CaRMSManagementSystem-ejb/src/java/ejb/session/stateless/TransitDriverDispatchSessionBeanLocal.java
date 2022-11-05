@@ -11,6 +11,7 @@ import java.util.List;
 import javax.ejb.Local;
 import util.exception.OutletNotFoundException;
 import util.exception.ReservationNotFoundException;
+import util.exception.TransitDriverDispatchNotFoundException;
 
 /**
  *
@@ -22,5 +23,9 @@ public interface TransitDriverDispatchSessionBeanLocal {
     public List<TransitDriverDispatch> retrieveTransitDriverDispatchByOutletId(Date date, Long outletId);
     
     public long createNewTranspatchDriverRecord(Long destinationOutletId, Long reservationId, Date transitStartDate) throws OutletNotFoundException, ReservationNotFoundException;
+
+    public void updateTransitAsCompleted(Long transitDriverDispatchId) throws TransitDriverDispatchNotFoundException;
+
+    public TransitDriverDispatch retrieveTransitDriverDispatchByTransitDriverDispatchId(Long transitDriverDispatchId) throws TransitDriverDispatchNotFoundException;
     
 }

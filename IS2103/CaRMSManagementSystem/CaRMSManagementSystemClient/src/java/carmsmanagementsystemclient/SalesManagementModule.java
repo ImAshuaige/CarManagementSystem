@@ -39,6 +39,7 @@ import util.exception.ModelDisabledException;
 import util.exception.OutletNotFoundException;
 import util.exception.RentalDateDeletionException;
 import util.exception.RentalRateNotFoundException;
+import util.exception.TransitDriverDispatchNotFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -774,16 +775,16 @@ public class SalesManagementModule {
     private void viewTransitDriverDispatchRecordsForCurrentDayReservations() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** View Transit Driver Dispatch Records for Current Day Reservations ***\n");
-        System.out.print("Enter Date (DD/MM/YYYY) > ");
+        System.out.print("Enter Current Date (DD/MM/YYYY) > ");
         String inputDate = scanner.nextLine().trim();
         try {
-            SimpleDateFormat inputFormat = new SimpleDateFormat("DD/MM/YYYY");
+            SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
             Date date = inputFormat.parse(inputDate);
 
             System.out.println("Transit Driver Dispatch records for current Outlet:" + currEmployee.getOutlet().getOutletName() + " on " + inputDate + "\n");
             List<TransitDriverDispatch> transitDriverDispatchs = transitDriverDispatchSessionBeanRemote.retrieveTransitDriverDispatchByOutletId(date, currEmployee.getOutlet().getOutletId());
             System.out.printf("%15s%30s%20s%20s%20s\n", "Record ID", "Destination Outlet", "Driver", "Status", "Transit Time");
-            SimpleDateFormat sdf = new SimpleDateFormat("DD/MM/YYYY HH:MM");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
             for (TransitDriverDispatch transitDriverDispatch : transitDriverDispatchs) {
                 String completionStatus = "Not Completed";
@@ -813,6 +814,52 @@ public class SalesManagementModule {
     }
 
     private void updateTransitAsCompleted() {
+        Scanner scanner = new Scanner(System.in);
+        try {
+            System.out.println("*** Update Transit As Completed ***");
+            System.out.print("Enter the Current Date (DD/MM/YYYY) > ");
+            String inputDate = scanner.nextLine().trim();
+            System.out.println("Transit Driver Dispatch records for current Outlet:" + currEmployee.getOutlet().getOutletName() + " on " + inputDate + "\n");
+            SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+            Date date = inputFormat.parse(inputDate);
+            List<TransitDriverDispatch> transitDriverDispatchRecords = transitDriverDispatchSessionBeanRemote.
+                    retrieveTransitDriverDispatchByOutletId(date, currEmployee.getOutlet().getOutletId());
+            if (transitDriverDispatchRecords.isEmpty()) {
+                System.out.println("There Is No Transit Driver Dispatch Record To Be Completed.");
+            } else {
+                System.out.printf("%15s%30s%20s%20s%20s\n",
+                        "Record ID", "Destination Outlet", "Driver", "Status", "Transit Time");
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
+                for (TransitDriverDispatch transitDriverDispatchRecord : transitDriverDispatchRecords) {
+                    String completionStatus = "Not Completed";
+                    if (transitDriverDispatchRecord.isIsCompleted()) {
+                        completionStatus = "Completed";
+                    }
+                    String dispatchDriverName = "Unassigned";
+                    if (transitDriverDispatchRecord.getDispatchDriver() != null) {
+                        dispatchDriverName = transitDriverDispatchRecord.getDispatchDriver().getEmployeeFirstName() + " "
+                                + transitDriverDispatchRecord.getDispatchDriver().getEmployeeLastName();
+                    }
+                    String transitDate = sdf.format(transitDriverDispatchRecord.getTransitDate());
+                    System.out.printf("%15s%30s%20s%20s%20s\n",
+                            transitDriverDispatchRecord.getTransitDriverDispatchId(),
+                            transitDriverDispatchRecord.getDestinationOutlet().getOutletName(),
+                            dispatchDriverName, completionStatus, transitDate);
+                }
+                System.out.print("Enter Transit Dispatch Record ID to Update As Completed > ");
+                Long transitDriverDispatchRecordId = scanner.nextLong();
+                scanner.nextLine();
+                transitDriverDispatchSessionBeanRemote.updateTransitAsCompleted(transitDriverDispatchRecordId);
+                System.out.println("Successfully Updated Transit Driver Dispatch Record id: " + transitDriverDispatchRecordId + " as completed!");
+            }
+        } catch (TransitDriverDispatchNotFoundException ex) {
+            System.out.println(ex.getMessage());
+        } catch (ParseException ex) {
+            System.out.println("Invalid Input! Please Try Again!");
+        }
+        System.out.print("Press any key to continue...> ");
+        scanner.nextLine();
     }
 }
+
