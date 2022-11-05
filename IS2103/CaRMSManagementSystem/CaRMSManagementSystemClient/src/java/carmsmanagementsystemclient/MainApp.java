@@ -8,6 +8,7 @@ package carmsmanagementsystemclient;
 import ejb.session.stateless.CarCategorySessionBeanRemote;
 import ejb.session.stateless.CarModelSessionBeanRemote;
 import ejb.session.stateless.CarSessionBeanRemote;
+import ejb.session.stateless.EjbTimerSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.OutletSessionBeanRemote;
 import ejb.session.stateless.RentalRateSessionBeanRemote;
@@ -49,6 +50,7 @@ public class MainApp {
     private CarCategorySessionBeanRemote carCategorySessionBeanRemote;
     private CarSessionBeanRemote carSessionBeanRemote;
     private TransitDriverDispatchSessionBeanRemote transitDriverDispatchSessionBeanRemote;
+    private EjbTimerSessionBeanRemote ejbTimerSessionBeanRemote;
     private Employee currEmployee;
     
     private SalesManagementModule salesManagementModule;
@@ -59,7 +61,7 @@ public class MainApp {
 /* MainApp mainApp = new MainApp(employeeSessionBeanRemote,outletSessionBeanRemote,carCategorySessionBeanRemote,carModelSessionBeanRemote,rentalRateSessionBeanRemote, carSessionBean);
        */
 
-    public MainApp(RentalRateSessionBeanRemote rentalRateSessionBeanRemote, EmployeeSessionBeanRemote employeeSessionBeanRemote, OutletSessionBeanRemote outletSessionBeanRemote, CarModelSessionBeanRemote carModelSessionBeanRemote, CarCategorySessionBeanRemote carCategorySessionBeanRemote, CarSessionBeanRemote carSessionBeanRemote, TransitDriverDispatchSessionBeanRemote transitDriverDispatchSessionBeanRemote) {
+    public MainApp(RentalRateSessionBeanRemote rentalRateSessionBeanRemote, EmployeeSessionBeanRemote employeeSessionBeanRemote, OutletSessionBeanRemote outletSessionBeanRemote, CarModelSessionBeanRemote carModelSessionBeanRemote, CarCategorySessionBeanRemote carCategorySessionBeanRemote, CarSessionBeanRemote carSessionBeanRemote, TransitDriverDispatchSessionBeanRemote transitDriverDispatchSessionBeanRemote, EjbTimerSessionBeanRemote ejbTimerSessionBeanRemote) {
         this.rentalRateSessionBeanRemote = rentalRateSessionBeanRemote;
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
         this.outletSessionBeanRemote = outletSessionBeanRemote;
@@ -67,6 +69,7 @@ public class MainApp {
         this.carCategorySessionBeanRemote = carCategorySessionBeanRemote;
         this.carSessionBeanRemote = carSessionBeanRemote;
         this.transitDriverDispatchSessionBeanRemote = transitDriverDispatchSessionBeanRemote;
+        this.ejbTimerSessionBeanRemote = ejbTimerSessionBeanRemote;
     }
     
     
@@ -95,6 +98,8 @@ public class MainApp {
                         System.out.println("Invalid Login: " + ex.getMessage());
                     } 
                 } else if (input == 2) {
+                    //Need to add in NoAllocatableCarException and RentalReservationNotFoundException
+                    manuallyAllocateCars();
                     break;//to be written
                 } else if (input == 3) {
                     break;
@@ -174,6 +179,24 @@ public class MainApp {
                 System.out.println("***Logout Successfully***");
                 break;
             }
+        }
+    }
+    
+    //Need to continue fixing this method
+    private void manuallyAllocateCars() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("*** Allocating Cars to Reservation of a certain date ***");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        System.out.print("Enter Date(DD/MM/YYYY)> ");
+        String inputDate = sc.nextLine().trim();
+        try {
+            Date date = sdf.parse(inputDate);
+            //Import the ejbTimerSessionBeanRemote
+            System.out.println(ejbTimerSessionBeanRemote);
+            ejbTimerSessionBeanRemote.allocateCarsToCurrentDayReservations(date);
+            System.out.println("*** Completed Allocation of Cars for reservations on " + inputDate + " ***\n");
+        } catch (ParseException ex) {
+            System.out.println("Invalid date input!\n");
         }
     }
 

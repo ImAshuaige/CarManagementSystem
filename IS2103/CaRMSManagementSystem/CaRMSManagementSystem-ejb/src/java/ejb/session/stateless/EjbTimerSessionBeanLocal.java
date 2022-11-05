@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import java.util.Date;
 import javax.ejb.Local;
 
 /**
@@ -13,5 +14,7 @@ import javax.ejb.Local;
  */
 @Local
 public interface EjbTimerSessionBeanLocal {
+    
+    public void allocateCarsToCurrentDayReservations(Date date);
     
 }

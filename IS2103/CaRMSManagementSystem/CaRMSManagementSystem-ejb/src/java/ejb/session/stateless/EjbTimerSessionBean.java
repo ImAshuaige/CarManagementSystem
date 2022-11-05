@@ -48,6 +48,7 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanRemote, EjbTimerS
         allocateCarsToCurrentDayReservations(date);
     }
 
+    @Override
     public void allocateCarsToCurrentDayReservations(Date date) {
         Date start = date;
         //minimum transit time of 2 hours
