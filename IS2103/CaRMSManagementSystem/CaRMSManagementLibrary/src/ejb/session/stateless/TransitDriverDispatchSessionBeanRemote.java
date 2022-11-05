@@ -5,6 +5,9 @@
  */
 package ejb.session.stateless;
 
+import entity.TransitDriverDispatch;
+import java.util.Date;
+import java.util.List;
 import javax.ejb.Remote;
 
 /**
@@ -13,5 +16,7 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface TransitDriverDispatchSessionBeanRemote {
+
+    public List<TransitDriverDispatch> retrieveTransitDriverDispatchByOutletId(Date date, Long outletId);
     
 }

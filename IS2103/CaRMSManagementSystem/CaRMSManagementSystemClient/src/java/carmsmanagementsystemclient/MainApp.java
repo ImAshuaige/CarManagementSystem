@@ -11,6 +11,7 @@ import ejb.session.stateless.CarSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.OutletSessionBeanRemote;
 import ejb.session.stateless.RentalRateSessionBeanRemote;
+import ejb.session.stateless.TransitDriverDispatchSessionBeanRemote;
 import entity.CarCategory;
 import entity.CarModel;
 import entity.Employee;
@@ -29,6 +30,7 @@ import util.exception.CarModelDeletionException;
 import util.exception.CarModelNotFoundException;
 import util.exception.EndDateBeforeStartDateException;
 import util.exception.InputDataValidationException;
+import util.exception.InvalidAccessRightException;
 import util.exception.InvalidLoginException;
 import util.exception.RentalDateDeletionException;
 import util.exception.RentalRateNotFoundException;
@@ -46,6 +48,7 @@ public class MainApp {
     private CarModelSessionBeanRemote carModelSessionBeanRemote;
     private CarCategorySessionBeanRemote carCategorySessionBeanRemote;
     private CarSessionBeanRemote carSessionBeanRemote;
+    private TransitDriverDispatchSessionBeanRemote transitDriverDispatchSessionBeanRemote;
     private Employee currEmployee;
     
     private SalesManagementModule salesManagementModule;
@@ -56,18 +59,19 @@ public class MainApp {
 /* MainApp mainApp = new MainApp(employeeSessionBeanRemote,outletSessionBeanRemote,carCategorySessionBeanRemote,carModelSessionBeanRemote,rentalRateSessionBeanRemote, carSessionBean);
        */
 
-    public MainApp(RentalRateSessionBeanRemote rentalRateSessionBeanRemote, EmployeeSessionBeanRemote employeeSessionBeanRemote, OutletSessionBeanRemote outletSessionBeanRemote, CarModelSessionBeanRemote carModelSessionBeanRemote, CarCategorySessionBeanRemote carCategorySessionBeanRemote, CarSessionBeanRemote carSessionBeanRemote) {
+    public MainApp(RentalRateSessionBeanRemote rentalRateSessionBeanRemote, EmployeeSessionBeanRemote employeeSessionBeanRemote, OutletSessionBeanRemote outletSessionBeanRemote, CarModelSessionBeanRemote carModelSessionBeanRemote, CarCategorySessionBeanRemote carCategorySessionBeanRemote, CarSessionBeanRemote carSessionBeanRemote, TransitDriverDispatchSessionBeanRemote transitDriverDispatchSessionBeanRemote) {
         this.rentalRateSessionBeanRemote = rentalRateSessionBeanRemote;
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
         this.outletSessionBeanRemote = outletSessionBeanRemote;
         this.carModelSessionBeanRemote = carModelSessionBeanRemote;
         this.carCategorySessionBeanRemote = carCategorySessionBeanRemote;
         this.carSessionBeanRemote = carSessionBeanRemote;
+        this.transitDriverDispatchSessionBeanRemote = transitDriverDispatchSessionBeanRemote;
     }
     
     
 
-    public void runApp() throws InvalidLoginException, InputDataValidationException {
+    public void runApp() throws InvalidLoginException, InputDataValidationException, InvalidAccessRightException {
         Scanner sc = new Scanner(System.in);
         Integer input = 0;
 
@@ -89,7 +93,7 @@ public class MainApp {
                         operationsMenu();
                     } catch (InvalidLoginException ex) {
                         System.out.println("Invalid Login: " + ex.getMessage());
-                    }
+                    } 
                 } else if (input == 2) {
                     break;//to be written
                 } else if (input == 3) {
@@ -125,7 +129,7 @@ public class MainApp {
 
     }
 
-    private void operationsMenu() {
+    private void operationsMenu() {//throws InvalidAccessRightException {
         Scanner sc = new Scanner(System.in);
         Integer input = 0;
 
@@ -145,9 +149,12 @@ public class MainApp {
 
                 //try {
                 if (input == 1) {
-                salesManagementModule = new SalesManagementModule(rentalRateSessionBeanRemote, employeeSessionBeanRemote, outletSessionBeanRemote, carModelSessionBeanRemote, carCategorySessionBeanRemote, carSessionBeanRemote, currEmployee); 
-        
-                salesManagementModule.salesManagementMenu();
+                salesManagementModule = new SalesManagementModule(rentalRateSessionBeanRemote, employeeSessionBeanRemote, outletSessionBeanRemote, carModelSessionBeanRemote, carCategorySessionBeanRemote, carSessionBeanRemote, transitDriverDispatchSessionBeanRemote, currEmployee); 
+                try {
+                salesManagementModule.menuSalesManagement();
+                } catch (InvalidAccessRightException ex) {
+                      System.out.println(ex.getMessage()); 
+                }
                     break;//to be written
                 } else if (input == 2) {
                     break;//to be writtem

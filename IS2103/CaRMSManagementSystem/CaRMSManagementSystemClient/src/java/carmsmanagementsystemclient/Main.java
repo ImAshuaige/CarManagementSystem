@@ -11,6 +11,7 @@ import ejb.session.stateless.CarSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.OutletSessionBeanRemote;
 import ejb.session.stateless.RentalRateSessionBeanRemote;
+import ejb.session.stateless.TransitDriverDispatchSessionBeanRemote;
 import entity.Employee;
 import entity.Outlet;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import util.exception.InputDataValidationException;
+import util.exception.InvalidAccessRightException;
 import util.exception.InvalidLoginException;
 
 /**
@@ -25,6 +27,9 @@ import util.exception.InvalidLoginException;
  * @author Mehak
  */
 public class Main {
+
+    @EJB
+    private static TransitDriverDispatchSessionBeanRemote transitDriverDispatchSessionBeanRemote;
 
     @EJB
     private static CarSessionBeanRemote carSessionBeanRemote;
@@ -49,8 +54,8 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws InvalidLoginException {
-        MainApp mainApp = new MainApp(rentalRateSessionBeanRemote, employeeSessionBeanRemote, outletSessionBeanRemote, carModelSessionBeanRemote, carCategorySessionBeanRemote, carSessionBeanRemote);
+    public static void main(String[] args) throws InvalidLoginException, InvalidAccessRightException {
+        MainApp mainApp = new MainApp(rentalRateSessionBeanRemote, employeeSessionBeanRemote, outletSessionBeanRemote, carModelSessionBeanRemote, carCategorySessionBeanRemote, carSessionBeanRemote, transitDriverDispatchSessionBeanRemote);
         try {
             mainApp.runApp();
             // TODO code application logic here

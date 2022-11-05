@@ -32,6 +32,7 @@ import util.exception.OutletNotFoundException;
 import util.exception.RentalRateNotFoundException;
 import util.exception.UnknownPersistenceException;
 
+
 /**
  *
  * @author 60540
@@ -59,7 +60,7 @@ public class CarSessionBean implements CarSessionBeanRemote, CarSessionBeanLocal
 
 
     @Override
-    public long createNewCar (long modelId, long outletId, Car newCar ) throws UnknownPersistenceException, LicensePlateExistException, ModelDisabledException, OutletNotFoundException, InputDataValidationException {
+    public long createNewCar (long modelId, long outletId, Car newCar ) throws /*CarModelNotFoundException,*/ UnknownPersistenceException, LicensePlateExistException, ModelDisabledException, OutletNotFoundException, InputDataValidationException {
             try {
             Set<ConstraintViolation<Car>> constraintViolations = validator.validate(newCar);
 
@@ -79,6 +80,9 @@ public class CarSessionBean implements CarSessionBeanRemote, CarSessionBeanLocal
                     } else {
                         throw new ModelDisabledException();
                     }
+                /*} catch (CarModelNotFoundException ex) {
+                    throw new CarModelNotFoundException("Model Not Found for ID " + modelId);
+                }*/
                 } catch (OutletNotFoundException ex) {
                     throw new OutletNotFoundException("Outlet Not Found for ID: " + outletId);
                 }

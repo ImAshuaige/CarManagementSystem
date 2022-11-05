@@ -5,6 +5,9 @@
  */
 package ejb.session.stateless;
 
+import entity.TransitDriverDispatch;
+import java.util.Date;
+import java.util.List;
 import javax.ejb.Local;
 
 /**
@@ -13,5 +16,5 @@ import javax.ejb.Local;
  */
 @Local
 public interface TransitDriverDispatchSessionBeanLocal {
-    
+    public List<TransitDriverDispatch> retrieveTransitDriverDispatchByOutletId(Date date, Long outletId);
 }
