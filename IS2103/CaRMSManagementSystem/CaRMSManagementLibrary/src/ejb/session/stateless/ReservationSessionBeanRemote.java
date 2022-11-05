@@ -5,7 +5,9 @@
  */
 package ejb.session.stateless;
 
+import entity.Reservation;
 import javax.ejb.Remote;
+import util.exception.ReservationNotFoundException;
 
 /**
  *
@@ -13,5 +15,7 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface ReservationSessionBeanRemote {
+
+    public Reservation retrieveReservationByReservationId(Long rentalReservationId) throws ReservationNotFoundException;
     
 }

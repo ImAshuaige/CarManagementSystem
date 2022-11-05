@@ -9,6 +9,8 @@ import entity.TransitDriverDispatch;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Remote;
+import util.exception.OutletNotFoundException;
+import util.exception.ReservationNotFoundException;
 
 /**
  *
@@ -18,5 +20,7 @@ import javax.ejb.Remote;
 public interface TransitDriverDispatchSessionBeanRemote {
 
     public List<TransitDriverDispatch> retrieveTransitDriverDispatchByOutletId(Date date, Long outletId);
+
+    public long createNewTranspatchDriverRecord(Long destinationOutletId, Long reservationId, Date transitStartDate) throws OutletNotFoundException, ReservationNotFoundException;
     
 }

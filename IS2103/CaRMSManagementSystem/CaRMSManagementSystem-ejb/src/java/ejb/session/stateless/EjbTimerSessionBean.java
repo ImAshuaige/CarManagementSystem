@@ -20,6 +20,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.enumeration.CarStatusEnum;
 import util.exception.NoAvailableCarException;
+import util.exception.OutletNotFoundException;
 import util.exception.ReservationNotFoundException;
 
 /**
@@ -234,11 +235,10 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanRemote, EjbTimerS
                         rentalReservation.getReservationStartDate().getSeconds());
                 transitCalendar.add(Calendar.HOUR, -2);
                 transitStartDate = transitCalendar.getTime();
-                 transitDriverDispatchSessionBeanLocal.
-                        createNewTranspatchDriverRecord(rentalReservation.getReservationPickUpOutlet().getOutletId(),
+                 transitDriverDispatchSessionBeanLocal.createNewTranspatchDriverRecord(rentalReservation.getReservationPickUpOutlet().getOutletId(),
                                 rentalReservation.getRentalReservationId(), transitStartDate);
             }
-        } catch (RentalReservationNotFoundException | OutletNotFoundException ex) {
+        } catch (ReservationNotFoundException | OutletNotFoundException ex) {
             System.out.println(ex.getMessage());
         }
     }

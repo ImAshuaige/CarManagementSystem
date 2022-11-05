@@ -59,12 +59,9 @@ public class TransitDriverDispatch implements Serializable {
         this.isCompleted = false;
     }
 
-    public TransitDriverDispatch(Date transitDate, Employee dispatchDriver, Outlet destinationOutlet, Reservation rentalReservation) {
+    public TransitDriverDispatch(Date transitDate) {
         this();
         this.transitDate = transitDate;
-        this.dispatchDriver = dispatchDriver;
-        this.destinationOutlet = destinationOutlet;
-        this.rentalReservation = rentalReservation;
     }
     
     
