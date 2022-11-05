@@ -25,12 +25,12 @@ import util.exception.UnknownPersistenceException;
 public interface CarSessionBeanLocal {
     public void deleteCar(Long carId) throws CarNotFoundException;
 
-    public long updateCar(Car c, long outletId, long modelId) throws InvalidModelException, OutletNotFoundException;
+    public long updateCar(Car c, long outletId, long modelId) throws InvalidModelException, CarModelNotFoundException, CarModelNotFoundException, OutletNotFoundException;
 
     public Car retrieveCarByCarId(Long carId) throws CarNotFoundException;
 
     public List<Car> retrieveCars();
 
-    public long createNewCar(long modelId, long outletId, Car newCar) throws /*CarModelNotFoundException,*/ UnknownPersistenceException, LicensePlateExistException, ModelDisabledException, OutletNotFoundException, InputDataValidationException;
+    public long createNewCar(long modelId, long outletId, Car newCar) throws CarModelNotFoundException, UnknownPersistenceException, LicensePlateExistException, ModelDisabledException, OutletNotFoundException, InputDataValidationException;
     
 }

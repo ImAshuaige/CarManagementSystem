@@ -55,7 +55,6 @@ public class SalesManagementModule {
     private CarSessionBeanRemote carSessionBeanRemote;
     private TransitDriverDispatchSessionBeanRemote transitDriverDispatchSessionBeanRemote;
     private Employee currEmployee;
-    
 
     public SalesManagementModule() {
     }
@@ -99,7 +98,7 @@ public class SalesManagementModule {
             System.out.println("[3] View Rental Rate Details");
             System.out.println("[4] Update Rental Rate");
             System.out.println("[5] Delete Rental Rate");
-            System.out.println("[6] Exit"); 
+            System.out.println("[6] Exit");
 
             input = 0;
 
@@ -228,7 +227,6 @@ public class SalesManagementModule {
                 System.out.print("An Persistence Error Occured While Creating a New Car Model.");
                 return;
             }
-
         } catch (CarCategoryNotFoundException ex) {
             System.out.println("Car Category Not Found! Please Enter an Valid Car Category Id.");
             return;
@@ -324,8 +322,10 @@ public class SalesManagementModule {
         try {
             Long carId = carSessionBeanRemote.createNewCar(modelId, outletId, car);
             System.out.println("New Car succesfully created with ID " + carId);
+        } catch (CarModelNotFoundException ex) {
+            System.out.println(ex.getMessage());
         } catch (OutletNotFoundException ex) {
-            System.out.println("Outlet ID: " + outletId + " not found!");
+            System.out.println(ex.getMessage());
         } catch (LicensePlateExistException ex) {
             System.out.println("License Plate : + " + car.getCarLicensePlateNum() + " already exists!");
         } catch (UnknownPersistenceException ex) {
@@ -689,12 +689,17 @@ public class SalesManagementModule {
                 System.out.println("Plate Number/Color too long!\n");
                 return;
             }
+        } catch (CarModelNotFoundException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("Update denied!\n");
+            return;
         } catch (InvalidModelException ex) {
             System.out.println("Model is invalid!");
             System.out.println("Update denied!\n");
             return;
         } catch (OutletNotFoundException ex) {
-            System.out.println("Outlet is invalid!");
+            System.out.println(ex.getMessage());
+            //System.out.println("Outlet is invalid!");
             System.out.println("Update denied\n");
             return;
         }
@@ -765,7 +770,7 @@ public class SalesManagementModule {
         System.out.print("Press any key to continue.");
         sc.nextLine();
     }
-    
+
     private void viewTransitDriverDispatchRecordsForCurrentDayReservations() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** View Transit Driver Dispatch Records for Current Day Reservations ***\n");
@@ -777,10 +782,9 @@ public class SalesManagementModule {
 
             System.out.println("Transit Driver Dispatch records for current Outlet:" + currEmployee.getOutlet().getOutletName() + " on " + inputDate + "\n");
             List<TransitDriverDispatch> transitDriverDispatchs = transitDriverDispatchSessionBeanRemote.retrieveTransitDriverDispatchByOutletId(date, currEmployee.getOutlet().getOutletId());
-            System.out.printf("%15s%30s%20s%20s%20s\n","Record ID", "Destination Outlet", "Driver", "Status", "Transit Time");
+            System.out.printf("%15s%30s%20s%20s%20s\n", "Record ID", "Destination Outlet", "Driver", "Status", "Transit Time");
             SimpleDateFormat sdf = new SimpleDateFormat("DD/MM/YYYY HH:MM");
-            
-            
+
             for (TransitDriverDispatch transitDriverDispatch : transitDriverDispatchs) {
                 String completionStatus = "Not Completed";
                 if (transitDriverDispatch.isIsCompleted()) {
@@ -788,8 +792,8 @@ public class SalesManagementModule {
                 }
                 String dispatchDriverName = "Unassigned";
                 if (transitDriverDispatch.getDispatchDriver() != null) {
-                    dispatchDriverName = transitDriverDispatch.getDispatchDriver().getEmployeeFirstName() + " " 
-                                        + transitDriverDispatch.getDispatchDriver().getEmployeeLastName();
+                    dispatchDriverName = transitDriverDispatch.getDispatchDriver().getEmployeeFirstName() + " "
+                            + transitDriverDispatch.getDispatchDriver().getEmployeeLastName();
                 }
                 String transitDate = sdf.format(transitDriverDispatch.getTransitDate());
                 System.out.printf("%15s%30s%20s%20s%20s\n",
@@ -803,11 +807,12 @@ public class SalesManagementModule {
         System.out.print("Press any key to continue. ");
         scanner.nextLine();
     }
-    
+
     private void assignTransitDriver() {
-        
+
     }
+
     private void updateTransitAsCompleted() {
-        
+
     }
 }

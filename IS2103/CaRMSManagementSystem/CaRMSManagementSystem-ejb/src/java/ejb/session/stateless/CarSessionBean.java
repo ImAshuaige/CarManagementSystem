@@ -60,14 +60,17 @@ public class CarSessionBean implements CarSessionBeanRemote, CarSessionBeanLocal
 
 
     @Override
-    public long createNewCar (long modelId, long outletId, Car newCar ) throws /*CarModelNotFoundException,*/ UnknownPersistenceException, LicensePlateExistException, ModelDisabledException, OutletNotFoundException, InputDataValidationException {
+    public long createNewCar (long modelId, long outletId, Car newCar ) throws CarModelNotFoundException, UnknownPersistenceException, LicensePlateExistException, ModelDisabledException, OutletNotFoundException, InputDataValidationException {
             try {
             Set<ConstraintViolation<Car>> constraintViolations = validator.validate(newCar);
 
             if (constraintViolations.isEmpty()) {
-                try {
+                //try {
                     Outlet outlet = outletSessionBean.retrieveOutletById(outletId);
                     CarModel model = carModelSessionBean.retrieveCarModelById(modelId);
+                    if (model == null) throw new CarModelNotFoundException ("Model Not Found for ID " + modelId);
+                    if (outlet == null) throw new OutletNotFoundException ("Outlet Not Found for ID: " + outletId);
+                            
                     if (model.getDisabled() == false) {
                         newCar.setCarModel(model);
                         newCar.setLatestOutlet(outlet);
@@ -83,9 +86,9 @@ public class CarSessionBean implements CarSessionBeanRemote, CarSessionBeanLocal
                 /*} catch (CarModelNotFoundException ex) {
                     throw new CarModelNotFoundException("Model Not Found for ID " + modelId);
                 }*/
-                } catch (OutletNotFoundException ex) {
+                /*} catch (OutletNotFoundException ex) {
                     throw new OutletNotFoundException("Outlet Not Found for ID: " + outletId);
-                }
+                }*/
             } else {
                 throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
             }
@@ -122,13 +125,12 @@ public class CarSessionBean implements CarSessionBeanRemote, CarSessionBeanLocal
     }
     
     @Override
-    public long updateCar(Car c, long outletId, long modelId) throws InvalidModelException, OutletNotFoundException {
+    public long updateCar(Car c, long outletId, long modelId) throws InvalidModelException, CarModelNotFoundException, CarModelNotFoundException, OutletNotFoundException {
             CarModel model = em.find(CarModel.class, modelId);
-            if(model == null) throw new InvalidModelException();
-            if(model.getDisabled() == true) 
-                throw new InvalidModelException();
+            if(model == null) throw new CarModelNotFoundException ("Model Not Found for ID " + modelId);;
+            if(model.getDisabled() == true) throw new InvalidModelException();
             Outlet newOutlet = em.find(Outlet.class,outletId);
-            if(newOutlet == null) throw new OutletNotFoundException();
+            if(newOutlet == null) throw new OutletNotFoundException("Outlet Not Found for ID: " + outletId);
             
             try 
             {
