@@ -30,7 +30,7 @@ public class TransitDriverDispatchSessionBean implements TransitDriverDispatchSe
         date.setHours(2);
         date.setMinutes(0);
         date.setSeconds(0);
-        GregorianCalendar calendar = new GregorianCalendar(date.getYear() + 2200,//default was 1900
+        GregorianCalendar calendar = new GregorianCalendar(date.getYear() + 1900,
                 date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
         calendar.add(Calendar.DATE, 1);
         Date nextDay = calendar.getTime();

@@ -33,5 +33,9 @@ public interface CarSessionBeanRemote {
     public List<Car> retrieveCars();
 
     public long createNewCar(long modelId, long outletId, Car newCar) throws CarModelNotFoundException,UnknownPersistenceException, LicensePlateExistException, ModelDisabledException, OutletNotFoundException, InputDataValidationException;
+
+    public List<Car> retrieveCarsByModelId(Long modelId);
+    
+    public List<Car> retrieveCarsByCategoryId(Long categoryId);
     
 }

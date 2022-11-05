@@ -32,7 +32,6 @@ import util.exception.OutletNotFoundException;
 import util.exception.RentalRateNotFoundException;
 import util.exception.UnknownPersistenceException;
 
-
 /**
  *
  * @author 60540
@@ -49,44 +48,46 @@ public class CarSessionBean implements CarSessionBeanRemote, CarSessionBeanLocal
     @PersistenceContext(unitName = "CaRMSManagementSystem-ejbPU")
     private EntityManager em;
 
-        
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
-    
+
     public CarSessionBean() {
         this.validatorFactory = Validation.buildDefaultValidatorFactory();
         this.validator = validatorFactory.getValidator();
     }
 
-
     @Override
-    public long createNewCar (long modelId, long outletId, Car newCar ) throws CarModelNotFoundException, UnknownPersistenceException, LicensePlateExistException, ModelDisabledException, OutletNotFoundException, InputDataValidationException {
-            try {
+    public long createNewCar(long modelId, long outletId, Car newCar) throws CarModelNotFoundException, UnknownPersistenceException, LicensePlateExistException, ModelDisabledException, OutletNotFoundException, InputDataValidationException {
+        try {
             Set<ConstraintViolation<Car>> constraintViolations = validator.validate(newCar);
 
             if (constraintViolations.isEmpty()) {
                 //try {
-                    Outlet outlet = outletSessionBean.retrieveOutletById(outletId);
-                    CarModel model = carModelSessionBean.retrieveCarModelById(modelId);
-                    if (model == null) throw new CarModelNotFoundException ("Model Not Found for ID " + modelId);
-                    if (outlet == null) throw new OutletNotFoundException ("Outlet Not Found for ID: " + outletId);
-                            
-                    if (model.getDisabled() == false) {
-                        newCar.setCarModel(model);
-                        newCar.setLatestOutlet(outlet);
-                        newCar.setCarStatus(CarStatusEnum.AVAILABLE);
-                        outlet.addCar(newCar);
-                        model.addCar(newCar);
-                        em.persist(newCar);
-                        em.flush();
-                        return newCar.getCarId();
-                    } else {
-                        throw new ModelDisabledException();
-                    }
+                Outlet outlet = outletSessionBean.retrieveOutletById(outletId);
+                CarModel model = carModelSessionBean.retrieveCarModelById(modelId);
+                if (model == null) {
+                    throw new CarModelNotFoundException("Model Not Found for ID " + modelId);
+                }
+                if (outlet == null) {
+                    throw new OutletNotFoundException("Outlet Not Found for ID: " + outletId);
+                }
+
+                if (model.getDisabled() == false) {
+                    newCar.setCarModel(model);
+                    newCar.setLatestOutlet(outlet);
+                    newCar.setCarStatus(CarStatusEnum.AVAILABLE);
+                    outlet.addCar(newCar);
+                    model.addCar(newCar);
+                    em.persist(newCar);
+                    em.flush();
+                    return newCar.getCarId();
+                } else {
+                    throw new ModelDisabledException();
+                }
                 /*} catch (CarModelNotFoundException ex) {
                     throw new CarModelNotFoundException("Model Not Found for ID " + modelId);
                 }*/
-                /*} catch (OutletNotFoundException ex) {
+ /*} catch (OutletNotFoundException ex) {
                     throw new OutletNotFoundException("Outlet Not Found for ID: " + outletId);
                 }*/
             } else {
@@ -104,15 +105,13 @@ public class CarSessionBean implements CarSessionBeanRemote, CarSessionBeanLocal
             }
         }
     }
-    
-  
+
     @Override
     public List<Car> retrieveCars() {
-        Query query = em.createQuery("SELECT c FROM Car c WHERE c.disabled = FALSE ORDER BY c.carModel.belongsCategory.categoryId ASC, c.carModel.make ASC, c.carLicensePlateNum ASC");  
+        Query query = em.createQuery("SELECT c FROM Car c WHERE c.disabled = FALSE ORDER BY c.carModel.belongsCategory.categoryId ASC, c.carModel.make ASC, c.carLicensePlateNum ASC");
         return query.getResultList();
     }
-    
-  
+
     @Override
     public Car retrieveCarByCarId(Long carId) throws CarNotFoundException {
         Car car = em.find(Car.class, carId);
@@ -123,46 +122,48 @@ public class CarSessionBean implements CarSessionBeanRemote, CarSessionBeanLocal
             throw new CarNotFoundException("Car ID " + carId + " does not exist!");
         }
     }
-    
+
     @Override
     public long updateCar(Car c, long outletId, long modelId) throws InvalidModelException, CarModelNotFoundException, CarModelNotFoundException, OutletNotFoundException {
-            CarModel model = em.find(CarModel.class, modelId);
-            if(model == null) throw new CarModelNotFoundException ("Model Not Found for ID " + modelId);;
-            if(model.getDisabled() == true) throw new InvalidModelException();
-            Outlet newOutlet = em.find(Outlet.class,outletId);
-            if(newOutlet == null) throw new OutletNotFoundException("Outlet Not Found for ID: " + outletId);
-            
-            try 
-            {
-                em.merge(c);
-                em.flush();
+        CarModel model = em.find(CarModel.class, modelId);
+        if (model == null) {
+            throw new CarModelNotFoundException("Model Not Found for ID " + modelId);
+        };
+        if (model.getDisabled() == true) {
+            throw new InvalidModelException();
+        }
+        Outlet newOutlet = em.find(Outlet.class, outletId);
+        if (newOutlet == null) {
+            throw new OutletNotFoundException("Outlet Not Found for ID: " + outletId);
+        }
 
-                long carId = c.getCarId();
-                Car car = em.find(Car.class, carId);
-                if(outletId != c.getLatestOutlet().getOutletId()){
-                    Outlet old = em.find(Outlet.class,c.getLatestOutlet().getOutletId());
-                    old.getCarsList().remove(c);
-                    newOutlet.getCarsList().add(c);
-                    car.setLatestOutlet(newOutlet);
-                }
+        try {
+            em.merge(c);
+            em.flush();
 
-                if(modelId!=c.getCarModel().getModelId()){
-                    CarModel oldModel = em.find(CarModel.class, c.getCarModel().getModelId());
-                    oldModel.getListOfCars().remove(c);
-                    model.getListOfCars().add(car);
-                    car.setCarModel(oldModel);
-                }
-                return c.getCarId();
+            long carId = c.getCarId();
+            Car car = em.find(Car.class, carId);
+            if (outletId != c.getLatestOutlet().getOutletId()) {
+                Outlet old = em.find(Outlet.class, c.getLatestOutlet().getOutletId());
+                old.getCarsList().remove(c);
+                newOutlet.getCarsList().add(c);
+                car.setLatestOutlet(newOutlet);
             }
-            catch (PersistenceException ex) 
-            {
-                return -1;
+
+            if (modelId != c.getCarModel().getModelId()) {
+                CarModel oldModel = em.find(CarModel.class, c.getCarModel().getModelId());
+                oldModel.getListOfCars().remove(c);
+                model.getListOfCars().add(car);
+                car.setCarModel(oldModel);
             }
+            return c.getCarId();
+        } catch (PersistenceException ex) {
+            return -1;
+        }
     }
-    
 
-        @Override
-        public void deleteCar(Long carId) throws CarNotFoundException {
+    @Override
+    public void deleteCar(Long carId) throws CarNotFoundException {
         try {
             Car carToRemove = retrieveCarByCarId(carId);
             if (carToRemove.getCurrentReservation() == null) {
@@ -174,10 +175,23 @@ public class CarSessionBean implements CarSessionBeanRemote, CarSessionBeanLocal
         } catch (CarNotFoundException ex) {
             throw new CarNotFoundException("Car of ID: " + carId + " not found!");
         }
-        
+
     }
-    
-    
+
+    @Override
+    public List<Car> retrieveCarsByModelId(Long modelId) {
+        Query query = em.createQuery("SELECT c FROM Car c WHERE c.carModel.modelId = :inModelId");
+        query.setParameter("inModelId", modelId);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Car> retrieveCarsByCategoryId(Long categoryId) {
+        Query query = em.createQuery("SELECT c FROM Car c WHERE c.carModel.belongsCategory.categoryId = :inCategoryId");
+        query.setParameter("inCategoryId", categoryId);
+        return query.getResultList();
+    }
+
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<Car>> constraintViolations) {
         String msg = "Input data validation error!:";
 
@@ -187,9 +201,8 @@ public class CarSessionBean implements CarSessionBeanRemote, CarSessionBeanLocal
 
         return msg;
     }
-    
-    }
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
-    
+
+}
+// Add business logic below. (Right-click in editor and choose
+// "Insert Code > Add Business Method")
 
