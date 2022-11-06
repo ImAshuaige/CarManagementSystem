@@ -80,9 +80,9 @@ public class MainApp {
 
         while (true) {
             System.out.println("***Welcome! CaRMS Management Client! ***");
-            System.out.println("Input 1 to Login");
-            System.out.println("Input 2 to Manually Allocate Cars");
-            System.out.println("Input 3 to Exit");
+            System.out.println("[1] Login");
+            System.out.println("[2] Manually Allocate Cars");
+            System.out.println("[3] Exit");
 
             input = 0;//set input/default input to 0
             while (input == 0) {//everytime want to do a new command
@@ -144,9 +144,9 @@ public class MainApp {
             System.out.println("*** Welcome to the Operations Menu ***");
             System.out.println("Hello! " + currEmployee.getEmployeeFirstName() + " " + currEmployee.getEmployeeLastName());
             System.out.println("Your role is: " + currEmployee.getEmployeeRole().toString());
-            System.out.println("Input 1 to the Sales Management Menu");
-            System.out.println("Input 2 to the Customer Service Menu");
-            System.out.println("Input 3 to log out");
+            System.out.println("[1] Sales Management Menu");
+            System.out.println("[2] Customer Service Menu");
+            System.out.println("[3] Logout");
 
             input = 0;
 
