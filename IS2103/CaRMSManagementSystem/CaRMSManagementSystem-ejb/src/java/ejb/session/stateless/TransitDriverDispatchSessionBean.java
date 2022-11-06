@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.Employee;
 import entity.Outlet;
 import entity.Reservation;
 import entity.TransitDriverDispatch;
@@ -17,9 +18,12 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.DriverNotWorkingInSameOutletException;
+import util.exception.EmployeeNotFoundException;
 import util.exception.OutletNotFoundException;
 import util.exception.ReservationNotFoundException;
 import util.exception.TransitDriverDispatchNotFoundException;
+import util.exception.TransitDriverDispatchRecordNotFoundException;
 
 /**
  *
@@ -27,6 +31,9 @@ import util.exception.TransitDriverDispatchNotFoundException;
  */
 @Stateless
 public class TransitDriverDispatchSessionBean implements TransitDriverDispatchSessionBeanRemote, TransitDriverDispatchSessionBeanLocal {
+
+    @EJB
+    private EmployeeSessionBeanLocal employeeSessionBean;
 
     @EJB
     private ReservationSessionBeanLocal reservationSessionBean;
@@ -96,6 +103,23 @@ public class TransitDriverDispatchSessionBean implements TransitDriverDispatchSe
             throw new TransitDriverDispatchNotFoundException("Transit Driver Dispatch with Id: " + transitDriverDispatchId + " does not exist!");
         } else {
             return transitDriverDispatch;
+        }
+    }
+        
+    @Override
+        public void assignDriver(Long dispatchDriverId, Long transitDriverDispatchRecordId) throws DriverNotWorkingInSameOutletException, TransitDriverDispatchRecordNotFoundException, EmployeeNotFoundException, TransitDriverDispatchNotFoundException {
+        try {
+            //Importing the employee sessionBean first
+            Employee dispatchDriver = employeeSessionBean.retrieveEmployeeByEmployeeId(dispatchDriverId);
+            TransitDriverDispatch transitDriverDispatch = retrieveTransitDriverDispatchByTransitDriverDispatchId(transitDriverDispatchRecordId);
+            if (dispatchDriver.getOutlet().getOutletName().equals(transitDriverDispatch.getDestinationOutlet().getOutletName())) {
+                transitDriverDispatch.setDispatchDriver(dispatchDriver);
+                dispatchDriver.addTransitDriverDispatchRecord(transitDriverDispatch);
+            } else {
+                throw new DriverNotWorkingInSameOutletException("Employee is not working in the current outlet");
+            }
+        } catch (EmployeeNotFoundException ex) {
+            throw new EmployeeNotFoundException("Employee ID: " + dispatchDriverId + " not found!");
         }
     }
 }

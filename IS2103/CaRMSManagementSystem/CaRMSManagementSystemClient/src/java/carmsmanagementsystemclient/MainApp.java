@@ -96,9 +96,9 @@ public class MainApp {
                         operationsMenu();
                     } catch (InvalidLoginException ex) {
                         System.out.println("Invalid Login: " + ex.getMessage());
-                    } catch (Exception ex) {
+                    } /*catch (Exception ex) {
                         System.out.println("The User Does Not Exist. Please Enter the Correct Username!");
-                    }
+                    }*/
                 } else if (input == 2) {
                     //Need to add in NoAllocatableCarException and RentalReservationNotFoundException
                     manuallyAllocateCars();

@@ -207,4 +207,11 @@ public class Employee implements Serializable {
         this.outlet = outlet;
     }
     
+    public void addTransitDriverDispatchRecord(TransitDriverDispatch transitDriverDispatch) {
+        if(!this.transitDriverDispatchRecord.contains(transitDriverDispatch)) {
+            this.transitDriverDispatchRecord.add(transitDriverDispatch);
+            
+        }
+    }
+    
 }

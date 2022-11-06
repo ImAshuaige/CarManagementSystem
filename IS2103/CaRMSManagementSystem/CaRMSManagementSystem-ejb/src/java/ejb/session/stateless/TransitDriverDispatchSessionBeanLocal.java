@@ -9,9 +9,12 @@ import entity.TransitDriverDispatch;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.DriverNotWorkingInSameOutletException;
+import util.exception.EmployeeNotFoundException;
 import util.exception.OutletNotFoundException;
 import util.exception.ReservationNotFoundException;
 import util.exception.TransitDriverDispatchNotFoundException;
+import util.exception.TransitDriverDispatchRecordNotFoundException;
 
 /**
  *
@@ -27,5 +30,7 @@ public interface TransitDriverDispatchSessionBeanLocal {
     public void updateTransitAsCompleted(Long transitDriverDispatchId) throws TransitDriverDispatchNotFoundException;
 
     public TransitDriverDispatch retrieveTransitDriverDispatchByTransitDriverDispatchId(Long transitDriverDispatchId) throws TransitDriverDispatchNotFoundException;
+    
+    public void assignDriver(Long dispatchDriverId, Long transitDriverDispatchRecordId) throws DriverNotWorkingInSameOutletException, TransitDriverDispatchRecordNotFoundException, EmployeeNotFoundException, TransitDriverDispatchNotFoundException;
     
 }

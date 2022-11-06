@@ -12,6 +12,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.EmployeeNotFoundException;
 import util.exception.InvalidLoginException;
 
 /**
@@ -54,7 +55,17 @@ public class EmployeeSessionBean implements EmployeeSessionBeanRemote, EmployeeS
         }
 
     }
+    
+    @Override
+    public Employee retrieveEmployeeByEmployeeId(Long employeeId) throws EmployeeNotFoundException {
+        Employee employee = em.find(Employee.class, employeeId);
 
+        if (employee != null) {
+            return employee;
+        } else {
+            throw new EmployeeNotFoundException("Employee ID " + employeeId + " does not exist!");
+        }
+    }
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
 }

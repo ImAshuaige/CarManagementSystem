@@ -167,15 +167,17 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
         }
     }
     
-    
+    //Changed the implementation so that it is deleted if the rental rate is not being applied and disabled other
     @Override
     public void deleteRentalRate(Long rentalRateId) throws RentalRateNotFoundException {
         try {
             RentalRate rentalRateToRemove = retrieveRentalRateByRentalRateId(rentalRateId);
-            if (rentalRateToRemove.isIsDisabled() == false) { //Hester, I think we need a list of rental days and another isRentalRateEnabled attribute. 
+            if (rentalRateToRemove.isIsApplied() == false) { //Hester, I think we need a list of rental days and another isRentalRateEnabled attribute. 
                 //It is different from IsApplied.
+                em.remove(rentalRateToRemove);
+            } else {
                 rentalRateToRemove.setIsDisabled(true);
-            } 
+            }
         } catch (RentalRateNotFoundException ex) {
             throw new RentalRateNotFoundException("Rental rate of ID: " + rentalRateId + " not found!");
         }
