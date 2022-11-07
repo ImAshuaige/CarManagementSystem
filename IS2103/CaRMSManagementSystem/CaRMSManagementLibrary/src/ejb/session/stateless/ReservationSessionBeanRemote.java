@@ -6,13 +6,17 @@
 package ejb.session.stateless;
 
 import entity.Reservation;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Remote;
 import util.exception.CarCategoryNotFoundException;
 import util.exception.CarModelNotFoundException;
+import util.exception.CustomerNotFoundException;
+import util.exception.InputDataValidationException;
 import util.exception.OutletNotFoundException;
 import util.exception.ReservationNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -34,6 +38,12 @@ public interface ReservationSessionBeanRemote {
     public Boolean searchCarByCategory(Date pickUpDateTime, Date returnDateTime, Long pickupOutletId, Long returnOutletId, Long carCategoryId) throws CarCategoryNotFoundException, OutletNotFoundException;
     
     public Boolean searchCarByModel(Date pickUpDateTime, Date returnDateTime, Long pickupOutletId, Long returnOutletId, Long modelId) throws CarCategoryNotFoundException, OutletNotFoundException, CarModelNotFoundException;
+
+    public Long createNewReservation(Long carCategoryId, Long modelId, Long customerId, Long pickupOutletId, Long returnOutletId, Reservation newReservation) throws InputDataValidationException, UnknownPersistenceException, OutletNotFoundException, CustomerNotFoundException, CarCategoryNotFoundException, CarModelNotFoundException;
+
+    public List<Reservation> retrieveCustomerReservations(Long customerId);
+
+    public BigDecimal cancelReservation(Long reservationId) throws ReservationNotFoundException;
     
     
 }

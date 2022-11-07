@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.Customer;
 import javax.ejb.Remote;
 import util.exception.CustomerEmailExistsException;
+import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginException;
 
 /**
@@ -19,5 +20,7 @@ public interface CustomerSessionBeanRemote {
 
     public Customer login(String email, String password) throws InvalidLoginException;
     public Long createNewCustomer(Customer customer) throws CustomerEmailExistsException;
+
+    public Customer retrieveCustomerByCustomerId(Long customerId) throws CustomerNotFoundException;
     
 }

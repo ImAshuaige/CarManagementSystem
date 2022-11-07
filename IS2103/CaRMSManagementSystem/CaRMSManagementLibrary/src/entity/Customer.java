@@ -151,6 +151,12 @@ public class Customer implements Serializable {
     public void setCustomerPassword(String customerPassword) {
         this.customerPassword = customerPassword;
     }
+    
+    public void addReservation(Reservation reservation) {
+        if (!this.customerReservation.contains(reservation)) {
+            this.customerReservation.add(reservation);
+        }
+    }
 
     
 }

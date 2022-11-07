@@ -21,9 +21,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import util.enumeration.ReservationStatusEnum;
 import util.exception.CarCategoryNotFoundException;
 import util.exception.CarModelNotFoundException;
 import util.exception.CustomerEmailExistsException;
+import util.exception.CustomerNotFoundException;
 import util.exception.DatePeriodInvalidException;
 import util.exception.InputDataValidationException;
 import util.exception.InvalidLoginException;
@@ -31,6 +33,7 @@ import util.exception.NoAvailableRentalRateException;
 import util.exception.OutletNotFoundException;
 import util.exception.OutsideOutletOperatingHourException;
 import util.exception.ReservationNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -396,15 +399,86 @@ public class MainApp {
     }
 
     private void viewAllMyReservations() {
-
+        Scanner sc = new Scanner(System.in);
+        System.out.println("*** View All Reservations ***\n");
+        List<Reservation> reservations = reservationSessionBeanRemote.retrieveCustomerReservations(currCustomer.getCustomerId());
+        System.out.printf("%4s%20s%20s\n", "ID", "Start Date", "End Date");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        for (Reservation reservation : reservations) {
+            System.out.printf("%4s%20s%20s\n", reservation.getRentalReservationId(),
+                    sdf.format(reservation.getReservationStartDate()),
+                    sdf.format(reservation.getReservationEndDate()));
+        }
+        System.out.print("Press any key to continue...> ");
+        sc.nextLine();
     }
 
     private void reserveCar(Integer input, Long carCategoryId, Long modelId, Date pickUpDateTime, Date returnDateTime, Long pickupOutletId, Long returnOutletId, BigDecimal totalRentalFee) {
 
+        Scanner sc = new Scanner(System.in);
+        System.out.println("*** Reserve Car ***\n");
+        Reservation reservation = new Reservation();
+        try {
+            reservation.setReservationStartDate(pickUpDateTime);
+            reservation.setReservationEndDate(returnDateTime);
+            reservation.setReservationPrice(totalRentalFee);
+            
+            System.out.print("Enter Credit Card Number> ");
+            String creditCardNumber = sc.nextLine().trim();
+            reservation.setCreditCardNumber(creditCardNumber);
+            
+            System.out.print("Would you like to pay now? (Enter 'Y' to enter payment details)> ");
+            String paymentInput = sc.nextLine().trim();
+            if(paymentInput.equals('Y')) {
+                reservation.setPaid(Boolean.TRUE);
+                reservation.setReservationStatus(ReservationStatusEnum.PAID);//WE can remove this line if we choose to delete the enum
+                System.out.println("Charged " + totalRentalFee.toString() + " to credit card: " + creditCardNumber);
+            } else {
+                reservation.setPaid(Boolean.FALSE);
+            }
+            Long reservationId = reservationSessionBeanRemote.createNewReservation(carCategoryId, modelId, currCustomer.getCustomerId(), pickupOutletId, returnOutletId, reservation);
+            System.out.println("Rental reservation created with ID: " + reservationId);
+        } catch (CarCategoryNotFoundException ex) {
+            System.out.println("Car Category not found for ID: " + carCategoryId + "\n");
+        } catch (CarModelNotFoundException ex) {
+            System.out.println("Model not found!\n");
+        } catch (OutletNotFoundException ex) {
+            System.out.println("Outlet not found!\n");
+        } catch (InputDataValidationException ex) {
+            System.out.println(ex.getMessage());
+        } catch (UnknownPersistenceException ex) {
+            System.out.println(ex.getMessage());
+        } catch (CustomerNotFoundException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
     
     
     private void cancelReservation(Long reservationId) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("*** Cancel Reservation ***\n");        
+        
+        Reservation reservation = new Reservation();
+        
+        try {
+            BigDecimal penalty = reservationSessionBeanRemote.cancelReservation(reservationId);
+            reservation = reservationSessionBeanRemote.retrieveReservationByReservationId(reservationId);
+            
+            System.out.println("Reservation has been successfully cancelled!");
+            
+            if(!reservation.getPaid()) {
+                System.out.println("You have been refunded SGD $"
+                        + reservation.getReservationPrice().subtract(penalty) + " to your card "
+                        + reservation.getCreditCardNumber()
+                        + " after deducting cancellation penalty of SGD" + penalty + ".");
+            } else {
+                System.out.println("Your card : " + reservation.getCreditCardNumber() + " has been charged SGD $" + penalty + " as a cancellation penalty.");
+            }
+        } catch (ReservationNotFoundException ex) {
+            System.out.println("Rental Reservation not found for ID " + reservationId);
+        }
+        System.out.print("Press any key to continue...> ");
+        sc.nextLine();
         
     }
 

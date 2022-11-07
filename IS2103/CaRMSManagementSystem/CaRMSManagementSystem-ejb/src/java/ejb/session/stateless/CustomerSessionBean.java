@@ -15,6 +15,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.validation.ConstraintViolation;
 import util.exception.CustomerEmailExistsException;
+import util.exception.CustomerNotFoundException;
 import util.exception.InvalidLoginException;
 
 /**
@@ -68,6 +69,18 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote, CustomerS
             throw new InvalidLoginException("Member Not Found!");
         }
 
+    }
+    
+    @Override
+    public Customer retrieveCustomerByCustomerId(Long customerId) throws CustomerNotFoundException {
+        Customer customer = em.find(Customer.class,
+                 customerId);
+
+        if (customer != null) {
+            return customer;
+        } else {
+            throw new CustomerNotFoundException("Customer ID " + customerId + " does not exist!");
+        }
     }
 
 }

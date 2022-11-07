@@ -8,25 +8,39 @@ package ejb.session.stateless;
 import entity.Car;
 import entity.CarCategory;
 import entity.CarModel;
+import entity.Customer;
 import entity.Outlet;
 import entity.Reservation;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import util.enumeration.CarStatusEnum;
 import util.enumeration.ReservationStatusEnum;
 import util.exception.CarCategoryNotFoundException;
 import util.exception.CarModelNotFoundException;
+import util.exception.CustomerNotFoundException;
+import util.exception.InputDataValidationException;
 import util.exception.NoAvailableRentalRateException;
 import util.exception.OutletNotFoundException;
 import util.exception.ReservationNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -36,17 +50,80 @@ import util.exception.ReservationNotFoundException;
 public class ReservationSessionBean implements ReservationSessionBeanRemote, ReservationSessionBeanLocal {
 
     @EJB
+    private OutletSessionBeanLocal outletSessionBeanLocal;
+
+    @EJB
+    private CustomerSessionBeanLocal customerSessionBeanLocal;
+
+    @EJB
     private CarModelSessionBeanLocal carModelSessionBeanLocal;
 
     @EJB
     private CarCategorySessionBeanLocal carCategorySessionBeanLocal;
-
-    
-    
     
     @PersistenceContext(unitName = "CaRMSManagementSystem-ejbPU")
     private EntityManager em;
+    
+    private final ValidatorFactory validatorFactory;
+    private final Validator validator;
 
+    public ReservationSessionBean() {
+        this.validatorFactory = Validation.buildDefaultValidatorFactory();
+        this.validator = validatorFactory.getValidator();
+    }
+    
+    
+    @Override
+    public Long createNewReservation(Long carCategoryId, Long modelId, Long customerId,
+            Long pickupOutletId, Long returnOutletId, Reservation newReservation) throws InputDataValidationException, UnknownPersistenceException, OutletNotFoundException, CustomerNotFoundException, CarCategoryNotFoundException, CarModelNotFoundException {
+        try {
+            Set<ConstraintViolation<Reservation>> constraintViolations = validator.validate(newReservation);
+
+            if (constraintViolations.isEmpty()) {
+                //RetrieveCustomerByCustomerId in the customersessionbean
+                Customer customer = customerSessionBeanLocal.retrieveCustomerByCustomerId(customerId);
+                Outlet pickUpOutlet = outletSessionBeanLocal.retrieveOutletById(pickupOutletId);
+                Outlet returnOutlet = outletSessionBeanLocal.retrieveOutletById(returnOutletId);
+                newReservation.setCustomer(customer);
+                newReservation.setReservationPickUpOutlet(pickUpOutlet);
+                newReservation.setReservationReturnOutlet(returnOutlet);
+                
+                customer.addReservation(newReservation);
+                CarCategory carCategory = null;
+                CarModel carModel = null;
+                
+                if (modelId > 0) {
+                    carModel = carModelSessionBeanLocal.retrieveCarModelById(modelId);
+                    carCategory = carModel.getBelongsCategory();
+                    newReservation.setReservedCarModel(carModel);
+                    newReservation.setReservedCarCategory(carCategory);
+                } else {
+                    carCategory = carCategorySessionBeanLocal.retrieveCarCategoryByCarCategoryId(carCategoryId);
+                    newReservation.setReservedCarCategory(carCategory);
+                }
+                em.persist(newReservation);
+                em.flush();
+                return newReservation.getRentalReservationId();
+            } else {
+                throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
+            }
+        } catch (PersistenceException ex) {
+            if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
+                throw new UnknownPersistenceException(ex.getMessage());
+            } else {
+                throw new UnknownPersistenceException(ex.getMessage());
+            }
+        } catch (OutletNotFoundException ex) {
+            throw new OutletNotFoundException("Outlet IDs: " + pickupOutletId + " and " + returnOutletId + " either or both does not exist!");
+        } catch (CustomerNotFoundException ex) {
+            throw new CustomerNotFoundException("Customer ID: " + customerId + " does not exist!");
+        } catch (CarCategoryNotFoundException ex) {
+            throw new CarCategoryNotFoundException("Car Category ID: " + carCategoryId + " does not exist!");
+        } catch (CarModelNotFoundException ex) {
+            throw new CarModelNotFoundException("Model ID: " + modelId + " does not exist!");
+        }
+        
+    }
     //Expose it in the local and remote interfaces
     @Override
     public Reservation retrieveReservationByReservationId(Long rentalReservationId) throws ReservationNotFoundException {
@@ -247,6 +324,52 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         } else {
             return false;
         }
+    }
+    
+    @Override
+    public List<Reservation> retrieveCustomerReservations(Long customerId) {
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.customer.customerId = :inCustomerId");
+        query.setParameter("inCustomerId", customerId);
+        return query.getResultList();
+    }
+    
+    //Expose it to the local and remote interfaces
+    @Override
+        public BigDecimal cancelReservation(Long reservationId) throws ReservationNotFoundException {
+        try {
+            Reservation reservation = retrieveReservationByReservationId(reservationId);
+            reservation.setIsCancelled(Boolean.TRUE);
+            LocalDateTime startDateTemporal = reservation.getReservationStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            LocalDateTime today = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            Long numofDaysToStartTheReservation = ChronoUnit.DAYS.between(today, startDateTemporal);
+            BigDecimal reservationPrice = reservation.getReservationPrice();
+            BigDecimal penalty = null;
+
+            if (numofDaysToStartTheReservation >= 14) {
+                penalty = new BigDecimal(0);
+            } else if (numofDaysToStartTheReservation < 14 && numofDaysToStartTheReservation >= 7) {
+                penalty = reservationPrice.multiply(new BigDecimal(0.2));
+            } else if (numofDaysToStartTheReservation < 7 && numofDaysToStartTheReservation >= 3) {
+                penalty = reservationPrice.multiply(new BigDecimal(0.5));
+            } else if (numofDaysToStartTheReservation < 3) {
+                penalty = reservationPrice.multiply(new BigDecimal(0.7));
+            }
+
+            return penalty;
+
+        } catch (ReservationNotFoundException ex) {
+            throw new ReservationNotFoundException("Rental Reservation of ID: " + reservationId + " not found!");
+        }
+
+    }
+    
+    private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<Reservation>> constraintViolations) {
+        String msg = "Input data validation error!:";
+
+        for (ConstraintViolation constraintViolation : constraintViolations) {
+            msg += "\n\t" + constraintViolation.getPropertyPath() + " - " + constraintViolation.getInvalidValue() + "; " + constraintViolation.getMessage();
+        }
+        return msg;
     }
 
 }
