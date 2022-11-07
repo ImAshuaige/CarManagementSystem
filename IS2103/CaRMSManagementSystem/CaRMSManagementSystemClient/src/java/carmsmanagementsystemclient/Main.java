@@ -12,6 +12,7 @@ import ejb.session.stateless.EjbTimerSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.OutletSessionBeanRemote;
 import ejb.session.stateless.RentalRateSessionBeanRemote;
+import ejb.session.stateless.ReservationSessionBeanRemote;
 import ejb.session.stateless.TransitDriverDispatchSessionBeanRemote;
 import entity.Employee;
 import entity.Outlet;
@@ -28,6 +29,9 @@ import util.exception.InvalidLoginException;
  * @author Mehak
  */
 public class Main {
+
+    @EJB
+    private static ReservationSessionBeanRemote reservationSessionBeanRemote;
 
     @EJB
     private static EjbTimerSessionBeanRemote ejbTimerSessionBeanRemote;
@@ -59,7 +63,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws InvalidLoginException, InvalidAccessRightException {
-        MainApp mainApp = new MainApp(rentalRateSessionBeanRemote, employeeSessionBeanRemote, outletSessionBeanRemote, carModelSessionBeanRemote, carCategorySessionBeanRemote, carSessionBeanRemote, transitDriverDispatchSessionBeanRemote, ejbTimerSessionBeanRemote);
+        MainApp mainApp = new MainApp(rentalRateSessionBeanRemote, employeeSessionBeanRemote, outletSessionBeanRemote, carModelSessionBeanRemote, carCategorySessionBeanRemote, carSessionBeanRemote, transitDriverDispatchSessionBeanRemote, ejbTimerSessionBeanRemote, reservationSessionBeanRemote);
         try {
             mainApp.runApp();
             // TODO code application logic here

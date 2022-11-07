@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 
 import entity.Reservation;
+import java.util.List;
 import javax.ejb.Local;
 import util.exception.ReservationNotFoundException;
 
@@ -18,6 +19,14 @@ import util.exception.ReservationNotFoundException;
 public interface ReservationSessionBeanLocal {
     
      public Reservation retrieveReservationByReservationId(Long rentalReservationId) throws ReservationNotFoundException;
+     
+     public List<Reservation> retrieveCustomerRentalReservationsByPickupOutletId(long outletId);
+     
+    public List<Reservation> retrieveCustomerRentalReservationsByReturnOutletId(Long outletId);
+     
+    public void pickupCar(Long rentalReservationId) throws ReservationNotFoundException;
+    
+    public void returnCar(Long rentalReservationId) throws ReservationNotFoundException;
     
     
 }

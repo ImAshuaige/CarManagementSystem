@@ -13,5 +13,7 @@ public enum ReservationStatusEnum {
     CANCELLED,
     PAID,
     UPCOMING,
-    ONGOING
+    ONGOING,
+    COMPLETED,
+    NOT_PICKED
 }

@@ -49,6 +49,21 @@ public class Reservation implements Serializable {
     @DecimalMin("0.00")
     //Digits Constraint?
     private BigDecimal reservationPrice;
+   
+    @Column(nullable = false, length = 32)
+    private String creditCardNumber;
+    
+    @Column(nullable = false)
+    private Boolean paid;
+    
+    @Column(nullable = false)
+    private Boolean isCancelled;
+    
+    @Column(nullable = false)
+    private Boolean isCompleted;
+    
+    @Column(nullable = false)
+    private Boolean isPicked;
     
     //Relationships
     //Not sure about CarCategory and CarModel relationship. There is conflict between the reference codes
@@ -86,11 +101,17 @@ public class Reservation implements Serializable {
     @OneToOne(optional = false)
     @JoinColumn(nullable = false)
     private Outlet reservationReturnOutlet;
+    
+    
 
     public Reservation() {
+        this.isCancelled = false;
+        this.isCompleted = false;
+        this.isPicked = false;
     }
 
     public Reservation(Date reservationStartDate, Date reservationEndDate, ReservationStatusEnum reservationStatus, BigDecimal reservationPrice, TransitDriverDispatch reservationDispatchDriver, Partner reservationPartner, Car car, CarCategory reservedCarCategory, CarModel reservedCarModel, Customer customer, Outlet reservationPickUpOutlet, Outlet reservationReturnOutlet) {
+        this();
         this.reservationStartDate = reservationStartDate;
         this.reservationEndDate = reservationEndDate;
         this.reservationStatus = reservationStatus;
@@ -307,5 +328,21 @@ public class Reservation implements Serializable {
     public void setReservationReturnOutlet(Outlet reservationReturnOutlet) {
         this.reservationReturnOutlet = reservationReturnOutlet;
     }
+
+    /**
+     * @return the creditCardNumber
+     */
+    public String getCreditCardNumber() {
+        return creditCardNumber;
+    }
+
+    /**
+     * @param creditCardNumber the creditCardNumber to set
+     */
+    public void setCreditCardNumber(String creditCardNumber) {
+        this.creditCardNumber = creditCardNumber;
+    }
+
+
     
 }

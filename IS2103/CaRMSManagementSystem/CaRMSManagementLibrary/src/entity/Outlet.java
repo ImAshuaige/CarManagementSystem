@@ -213,4 +213,11 @@ public class Outlet implements Serializable {
         }
     }
     
+    
+    public void removeCar(Car car) {
+        if (this.carsList.contains(car)) {
+            this.carsList.remove(car);
+        }
+    }
+    
 }

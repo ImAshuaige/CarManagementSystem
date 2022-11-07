@@ -12,6 +12,7 @@ import ejb.session.stateless.EjbTimerSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.OutletSessionBeanRemote;
 import ejb.session.stateless.RentalRateSessionBeanRemote;
+import ejb.session.stateless.ReservationSessionBeanRemote;
 import ejb.session.stateless.TransitDriverDispatchSessionBeanRemote;
 import entity.CarCategory;
 import entity.CarModel;
@@ -43,6 +44,7 @@ import util.exception.UnknownPersistenceException;
  */
 public class MainApp {
 
+ 
     private RentalRateSessionBeanRemote rentalRateSessionBeanRemote;
     private EmployeeSessionBeanRemote employeeSessionBeanRemote;
     private OutletSessionBeanRemote outletSessionBeanRemote;
@@ -50,18 +52,18 @@ public class MainApp {
     private CarCategorySessionBeanRemote carCategorySessionBeanRemote;
     private CarSessionBeanRemote carSessionBeanRemote;
     private TransitDriverDispatchSessionBeanRemote transitDriverDispatchSessionBeanRemote;
+    private ReservationSessionBeanRemote reservationSessionBeanRemote;
     private EjbTimerSessionBeanRemote ejbTimerSessionBeanRemote;
     private Employee currEmployee;
     
     private SalesManagementModule salesManagementModule;
+    private CustomerServiceModule customerServiceModule;
 
     public MainApp() {
 
     }
-/* MainApp mainApp = new MainApp(employeeSessionBeanRemote,outletSessionBeanRemote,carCategorySessionBeanRemote,carModelSessionBeanRemote,rentalRateSessionBeanRemote, carSessionBean);
-       */
 
-    public MainApp(RentalRateSessionBeanRemote rentalRateSessionBeanRemote, EmployeeSessionBeanRemote employeeSessionBeanRemote, OutletSessionBeanRemote outletSessionBeanRemote, CarModelSessionBeanRemote carModelSessionBeanRemote, CarCategorySessionBeanRemote carCategorySessionBeanRemote, CarSessionBeanRemote carSessionBeanRemote, TransitDriverDispatchSessionBeanRemote transitDriverDispatchSessionBeanRemote, EjbTimerSessionBeanRemote ejbTimerSessionBeanRemote) {
+    public MainApp(RentalRateSessionBeanRemote rentalRateSessionBeanRemote, EmployeeSessionBeanRemote employeeSessionBeanRemote, OutletSessionBeanRemote outletSessionBeanRemote, CarModelSessionBeanRemote carModelSessionBeanRemote, CarCategorySessionBeanRemote carCategorySessionBeanRemote, CarSessionBeanRemote carSessionBeanRemote, TransitDriverDispatchSessionBeanRemote transitDriverDispatchSessionBeanRemote, EjbTimerSessionBeanRemote ejbTimerSessionBeanRemote, ReservationSessionBeanRemote reservationSessionBeanRemote) {
         this.rentalRateSessionBeanRemote = rentalRateSessionBeanRemote;
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
         this.outletSessionBeanRemote = outletSessionBeanRemote;
@@ -70,6 +72,7 @@ public class MainApp {
         this.carSessionBeanRemote = carSessionBeanRemote;
         this.transitDriverDispatchSessionBeanRemote = transitDriverDispatchSessionBeanRemote;
         this.ejbTimerSessionBeanRemote = ejbTimerSessionBeanRemote;
+        this.reservationSessionBeanRemote = reservationSessionBeanRemote;
     }
     
     
@@ -136,7 +139,7 @@ public class MainApp {
 
     }
 
-    private void operationsMenu() {//throws InvalidAccessRightException {
+    private void operationsMenu()  {//throws InvalidAccessRightException {
         Scanner sc = new Scanner(System.in);
         Integer input = 0;
 
@@ -164,6 +167,18 @@ public class MainApp {
                 }
                     break;//to be written
                 } else if (input == 2) {
+                   
+                    customerServiceModule = new CustomerServiceModule(currEmployee, reservationSessionBeanRemote);
+                    
+                    try {
+                        //Make the main menu method in the customer service module
+                        customerServiceModule.menuCustomerService();
+                    } catch (InvalidAccessRightException ex) {
+                        Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    {
+                    
+                } 
                     break;//to be writtem
                 } else if (input == 3) {
                     break;
