@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.CarCategory;
 import entity.RentalRate;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.EJB;
@@ -23,6 +24,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.exception.CarCategoryNotFoundException;
 import util.exception.InputDataValidationException;
+import util.exception.NoAvailableRentalRateException;
 import util.exception.RentalDateDeletionException;
 import util.exception.RentalRateNotFoundException;
 import util.exception.UnknownPersistenceException;
@@ -39,7 +41,7 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
 
     @PersistenceContext(unitName = "CaRMSManagementSystem-ejbPU")
     private EntityManager em;
-    
+
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     /*
@@ -55,33 +57,31 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
         validator = validatorFactory.getValidator();
     }
     
-    */
-
+     */
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
-    
+
     public RentalRateSessionBean() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
     }
-    
-    
+
     //Expose new method to the beans
-     //Need to handle potential errors
+    //Need to handle potential errors
     @Override
-    public Long createNewRentalRate (Long carCategoryId, RentalRate rentalRate) throws CarCategoryNotFoundException, UnknownPersistenceException, InputDataValidationException {
-        
-         try {
+    public Long createNewRentalRate(Long carCategoryId, RentalRate rentalRate) throws CarCategoryNotFoundException, UnknownPersistenceException, InputDataValidationException {
+
+        try {
             Set<ConstraintViolation<RentalRate>> constraintViolations = validator.validate(rentalRate);
 
             if (constraintViolations.isEmpty()) {
-                try { 
+                try {
                     CarCategory carCategory = carCategorySessionBean.retrieveCarCategoryByCarCategoryId(carCategoryId);
-                        carCategory.addRentalRate(rentalRate);
-                        rentalRate.setCarCategory(carCategory);
-                        em.persist(rentalRate);
-                        em.flush();
-                        return rentalRate.getRentalRateId();
+                    carCategory.addRentalRate(rentalRate);
+                    rentalRate.setCarCategory(carCategory);
+                    em.persist(rentalRate);
+                    em.flush();
+                    return rentalRate.getRentalRateId();
                 } catch (CarCategoryNotFoundException ex) {
                     throw new CarCategoryNotFoundException("Car Category ID: " + carCategoryId + " not found!");
                 }
@@ -95,78 +95,64 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
                 throw new UnknownPersistenceException(ex.getMessage());
             }
         }
-         
-       
+
     }
-    
-    
+
     /**
      *
      * @return
      */
     @Override
     public List<RentalRate> retrieveAllRentalRates() {
-       Query query = em.createQuery("SELECT r FROM RentalRate r ORDER BY r.carCategory.carCategoryName ASC, r.rateStartDate ASC, r.rateEndDate ASC");
-       return query.getResultList();
-       
-       /*  this.rentalName = rentalName;
+        Query query = em.createQuery("SELECT r FROM RentalRate r ORDER BY r.carCategory.carCategoryName ASC, r.rateStartDate ASC, r.rateEndDate ASC");
+        return query.getResultList();
+
+        /*  this.rentalName = rentalName;
         this.dailyRate = dailyRate;
         this.rateStartDate = rateStartDate;
         this.rateEndDate = rateEndDate;
         this.carCategory = carCategory;
-       */
+         */
     }
-    
-        
-   
+
     @Override
-    public RentalRate retrieveRentalRateByRentalRateId(Long rentalRateId) throws RentalRateNotFoundException
-    {
+    public RentalRate retrieveRentalRateByRentalRateId(Long rentalRateId) throws RentalRateNotFoundException {
         RentalRate rentalRate = em.find(RentalRate.class, rentalRateId);
-        
+
         if (rentalRate != null) {
             return rentalRate;
         } else {
             throw new RentalRateNotFoundException("Rental Rate ID " + rentalRateId + " does not exist!");
         }
     }
-        
-   
+
     @Override
-    public void updateRentalRate(RentalRate rentalRate) throws RentalRateNotFoundException, InputDataValidationException, RentalDateDeletionException
-    {
-        if(rentalRate != null && rentalRate.getRentalRateId()!= null)
-        {
-            Set<ConstraintViolation<RentalRate>>constraintViolations = validator.validate(rentalRate);
-        
-            if(constraintViolations.isEmpty())
-            {
-                if(rentalRate.isIsDisabled() == true) {
-                     throw new RentalDateDeletionException();
-                 }
-                
-                 if (rentalRate.isIsDisabled() == false) {
+    public void updateRentalRate(RentalRate rentalRate) throws RentalRateNotFoundException, InputDataValidationException, RentalDateDeletionException {
+        if (rentalRate != null && rentalRate.getRentalRateId() != null) {
+            Set<ConstraintViolation<RentalRate>> constraintViolations = validator.validate(rentalRate);
+
+            if (constraintViolations.isEmpty()) {
+                if (rentalRate.isIsDisabled() == true) {
+                    throw new RentalDateDeletionException();
+                }
+
+                if (rentalRate.isIsDisabled() == false) {
                     RentalRate rentalRateToUpdate = retrieveRentalRateByRentalRateId(rentalRate.getRentalRateId());
                     rentalRateToUpdate.setRentalName(rentalRate.getRentalName());
                     rentalRateToUpdate.setCarCategory(rentalRate.getCarCategory());
                     rentalRateToUpdate.setDailyRate(rentalRate.getDailyRate());
                     rentalRateToUpdate.setRateStartDate(rentalRate.getRateStartDate());
                     rentalRateToUpdate.setRateEndDate(rentalRate.getRateEndDate());
-                 } 
-                      
-               
-            }
-            else
-            {
+                }
+
+            } else {
                 throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
             }
-        }
-        else
-        {
+        } else {
             throw new RentalRateNotFoundException("Rental Rate Id not found for the rental rate that needs to be update");
         }
     }
-    
+
     //Changed the implementation so that it is deleted if the rental rate is not being applied and disabled other
     @Override
     public void deleteRentalRate(Long rentalRateId) throws RentalRateNotFoundException {
@@ -182,19 +168,29 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
             throw new RentalRateNotFoundException("Rental rate of ID: " + rentalRateId + " not found!");
         }
     }
-    
-        private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<RentalRate>>constraintViolations)
-    {
+
+    private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<RentalRate>> constraintViolations) {
         String msg = "Input data validation error!:";
-            
-        for(ConstraintViolation constraintViolation:constraintViolations)
-        {
+
+        for (ConstraintViolation constraintViolation : constraintViolations) {
             msg += "\n\t" + constraintViolation.getPropertyPath() + " - " + constraintViolation.getInvalidValue() + "; " + constraintViolation.getMessage();
         }
-        
+
         return msg;
     }
-    
-        
-    
+
+    @Override
+    public RentalRate retrieveLowestRentalRate(Long carCategoryId, Date currDate) throws NoAvailableRentalRateException {
+        Query query = em.createQuery("SELECT r FROM RentalRate r WHERE (r.carCategory.categoryId = :inCarCategoryId)"
+                + " AND (r.rateStartDate <= :inCurrDate AND r.rateEndDate >= :inCurrDate)"
+                + " OR (r.rateStartDate IS NULL AND r.rateEndDat IS NULL) ORDER BY r.dailyRate ASC");
+        query.setParameter("inCurrDate", currDate);
+        query.setParameter("inCarCategoryId", carCategoryId);
+        List<RentalRate> rentalRates = query.getResultList();
+        if (rentalRates.isEmpty()) {
+            throw new NoAvailableRentalRateException();
+        }
+        return rentalRates.get(0);
+    }
+
 }

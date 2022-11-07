@@ -7,9 +7,12 @@ package ejb.session.stateless;
 
 import entity.CarCategory;
 import entity.RentalRate;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.CarCategoryNotFoundException;
+import util.exception.NoAvailableRentalRateException;
 
 /**
  *
@@ -24,6 +27,6 @@ public interface CarCategorySessionBeanLocal {
 
     public CarCategory retrieveCarCategoryByCarCategoryId(Long CarCategoryId) throws CarCategoryNotFoundException;
 
-    
+    public BigDecimal calculateRentalFee(Long carCategoryId, Date pickUpDateTime, Date returnDateTime) throws NoAvailableRentalRateException;
     
 }

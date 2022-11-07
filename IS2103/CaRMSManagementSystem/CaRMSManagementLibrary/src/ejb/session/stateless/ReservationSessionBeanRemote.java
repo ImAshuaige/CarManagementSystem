@@ -6,8 +6,12 @@
 package ejb.session.stateless;
 
 import entity.Reservation;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Remote;
+import util.exception.CarCategoryNotFoundException;
+import util.exception.CarModelNotFoundException;
+import util.exception.OutletNotFoundException;
 import util.exception.ReservationNotFoundException;
 
 /**
@@ -26,5 +30,10 @@ public interface ReservationSessionBeanRemote {
     public List<Reservation> retrieveCustomerRentalReservationsByReturnOutletId(Long outletId);
 
     public void returnCar(Long rentalReservationId) throws ReservationNotFoundException;
+
+    public Boolean searchCarByCategory(Date pickUpDateTime, Date returnDateTime, Long pickupOutletId, Long returnOutletId, Long carCategoryId) throws CarCategoryNotFoundException, OutletNotFoundException;
+    
+    public Boolean searchCarByModel(Date pickUpDateTime, Date returnDateTime, Long pickupOutletId, Long returnOutletId, Long modelId) throws CarCategoryNotFoundException, OutletNotFoundException, CarModelNotFoundException;
+    
     
 }
