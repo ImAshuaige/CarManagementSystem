@@ -57,6 +57,7 @@ public class Car implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private CarModel carModel;
+    
     @ManyToOne
     private Outlet outlet;
 

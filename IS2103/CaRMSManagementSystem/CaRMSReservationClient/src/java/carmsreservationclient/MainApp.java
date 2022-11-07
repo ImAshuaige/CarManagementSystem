@@ -14,6 +14,7 @@ import entity.CarCategory;
 import entity.CarModel;
 import entity.Customer;
 import entity.Outlet;
+import entity.Reservation;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,6 +30,7 @@ import util.exception.InvalidLoginException;
 import util.exception.NoAvailableRentalRateException;
 import util.exception.OutletNotFoundException;
 import util.exception.OutsideOutletOperatingHourException;
+import util.exception.ReservationNotFoundException;
 
 /**
  *
@@ -169,9 +171,9 @@ public class MainApp {
         Scanner scanner = new Scanner(System.in);
         Integer input = 0;
         SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        Long carCategoryId = new Long(-1); 
-        Long modelId = new Long(-1); 
-        
+        Long carCategoryId = new Long(-1);
+        Long modelId = new Long(-1);
+
         Date pickUpDateTime;
         Date returnDateTime;
         Long pickUpOutletId;
@@ -217,7 +219,8 @@ public class MainApp {
                         || (pickUpDateTime.getHours() == pickupOutlet.getOutletOpeningTime().getHours()
                         && pickUpDateTime.getMinutes() < pickupOutlet.getOutletOpeningTime().getMinutes())) {
                     throw new OutsideOutletOperatingHourException("The Pickup Time You Chose is Outside of the Outlet's Operating Hours.");
-                } /*else if ((pickUpDateTime.getHours() > pickupOutlet.getOutletClosingTime().getHours())
+                }
+                /*else if ((pickUpDateTime.getHours() > pickupOutlet.getOutletClosingTime().getHours())
                         || (pickUpDateTime.getHours() == pickupOutlet.getOutletClosingTime().getHours()
                         && pickUpDateTime.getMinutes() > pickupOutlet.getOutletClosingTime().getMinutes())) {
                     throw new OutsideOutletOperatingHourException("The Pickup Time You Chose is Outside of the Outlet's Operating Hours.");
@@ -229,13 +232,14 @@ public class MainApp {
                         || (returnDateTime.getHours() == returnOutlet.getOutletClosingTime().getHours()
                         && returnDateTime.getMinutes() > returnOutlet.getOutletClosingTime().getMinutes())) {
                     throw new OutsideOutletOperatingHourException("The Return Time You Chose is Outside of the Outlet's Operating Hours.");
-                } /*else if ((returnDateTime.getHours() < returnOutlet.getOutletClosingTime().getHours())
+                }
+                /*else if ((returnDateTime.getHours() < returnOutlet.getOutletClosingTime().getHours())
                         || (returnDateTime.getHours() == returnOutlet.getOutletClosingTime().getHours()
                         && returnDateTime.getMinutes() < returnOutlet.getOutletClosingTime().getMinutes())) {
                     throw new OutsideOutletOperatingHourException("The Return Time You Chose is Outside of the Outlet's Operating Hours.");
                 }*/
             }
-            
+
             while (true) {
                 System.out.println("*** Search by Car Category / Car Model ***\n");
                 System.out.println("[1] Search by Car Category");
@@ -260,9 +264,9 @@ public class MainApp {
                         break;
                     } else if (input == 2) {
                         List<CarModel> models = modelSessionBeanRemote.retrieveAllCarModels();
-                        System.out.printf("%5s%60s%30s%30s\n", "ID", "Car Category", "Make", "Model");
+                        System.out.printf("%5s%30s%30s%30s\n", "ID", "Car Category", "Make", "Model");
                         for (CarModel model : models) {
-                            System.out.printf("%5s%60s%30s%30s\n",
+                            System.out.printf("%5s%30s%30s%30s\n",
                                     model.getModelId(), model.getBelongsCategory().getCarCategoryName(),
                                     model.getMake(), model.getModel());
                         }
@@ -284,9 +288,9 @@ public class MainApp {
                 System.out.println("There is No Available Car Under the Provided Criteria");
             } else {
                 BigDecimal totalRentalFee = carCategorySessionBeanRemote.calculateRentalFee(carCategoryId, pickUpDateTime, returnDateTime);
-                System.out.println("There are cars available! Total rental fee is SGD" + totalRentalFee + ". ");
+                System.out.println("There are cars available! Total rental fee is SGD " + totalRentalFee + ". ");
                 if (currCustomer != null) {
-                    System.out.print("Reserve a car? (Enter 'YES' to reserve a car)> ");
+                    System.out.print("Reserve a car? (Enter 'YES' to reserve a car): ");
                     String response = scanner.nextLine().trim();
                     if (response.equals("YES")) {
                         reserveCar(input, carCategoryId, modelId, pickUpDateTime, returnDateTime, pickUpOutletId, returnOutletId, totalRentalFee);
@@ -296,22 +300,21 @@ public class MainApp {
                 }
             }
         } catch (ParseException ex) {
-             System.out.println("Invalid Input.");
-        } 
-        catch (NoAvailableRentalRateException ex) {
+            System.out.println("Invalid Input.");
+        } catch (NoAvailableRentalRateException ex) {
             System.out.println("There are no available rental rates for the period!\n");
         } catch (CarCategoryNotFoundException ex) {
             System.out.println("Car Category not found for ID: " + carCategoryId + "\n");
         } catch (CarModelNotFoundException ex) {
-            System.out.println("Model not found!\n");
+            System.out.println("Car Model Not Found\n");
         } catch (OutletNotFoundException ex) {
-            System.out.println("Outlet not found!\n");
+            System.out.println("Outlet Not Found \n");
         } catch (OutsideOutletOperatingHourException ex) {
             System.out.println(ex.getMessage());
         } catch (DatePeriodInvalidException ex) {
-            System.out.println("ReturnDateBeforePickupDateException");
+            System.out.println("Return Date Before Pickup Date. Please Enter Valid Dates!");
         }
-        System.out.print("Press any key to continue. ");
+        System.out.print("Press any key to continue.\n ");
         scanner.nextLine();
     }
 
@@ -352,15 +355,56 @@ public class MainApp {
 
     private void viewReservationDetails() {
 
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("*** View Reservation Details ***\n");
+        System.out.print("Enter Reservation ID: ");
+        Long reservationId = scanner.nextLong();
+        scanner.nextLine();
+
+        try {
+           Reservation reservation = reservationSessionBeanRemote.retrieveReservationByReservationId(reservationId);
+            System.out.printf("%4s%20s%20s%20s%12s%12s%25s%25s\n",
+                    "ID", "Start Date",
+                    "End Date", "Rental Fee",
+                    "Paid", "Cancelled",
+                    "Car Category", "Model");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            String modelName = "null";
+            if (reservation.getReservedCarModel() != null) {
+                modelName = reservation.getReservedCarModel().getMake() + " " + reservation.getReservedCarModel().getModel();
+            }
+            System.out.printf("%4s%20s%20s%20s%12s%12s%25s%25s\n",
+                    reservation.getRentalReservationId(), sdf.format(reservation.getReservationStartDate()),
+                    sdf.format(reservation.getReservationEndDate()), reservation.getReservationPrice().toString(),
+                    reservation.getPaid().toString(), reservation.getIsCancelled().toString(),
+                    reservation.getReservedCarCategory().getCarCategoryName(), modelName);
+            System.out.print("Do You Want to Cancel the Reservation? (Enter 'YES' to cancel): ");
+            String input = scanner.nextLine().trim();
+            if (input.equals("YES")) {
+                cancelReservation(reservationId);
+            } else {
+                System.out.print("Press any key to continue. ");
+            }
+        } catch (ReservationNotFoundException ex) {
+            System.out.println("Rental Reservation Not Found for ID " + reservationId);
+        }
+        
+        System.out.print("Press any key to continue.\n ");
+        scanner.nextLine();
+
+
     }
 
     private void viewAllMyReservations() {
 
     }
-    
-    
-    
+
     private void reserveCar(Integer input, Long carCategoryId, Long modelId, Date pickUpDateTime, Date returnDateTime, Long pickupOutletId, Long returnOutletId, BigDecimal totalRentalFee) {
+
+    }
+    
+    
+    private void cancelReservation(Long reservationId) {
         
     }
 

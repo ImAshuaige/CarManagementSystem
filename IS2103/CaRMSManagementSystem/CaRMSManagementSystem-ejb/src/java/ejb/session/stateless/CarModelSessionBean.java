@@ -79,6 +79,8 @@ public class CarModelSessionBean implements CarModelSessionBeanRemote, CarModelS
             return updatedModel.getModelId();
         } catch (PersistenceException ex) {
             return (long) -1;
+        } catch (CarModelNotFoundException ex1) {
+            return (long) -1;
         }
     }
 
@@ -95,9 +97,9 @@ public class CarModelSessionBean implements CarModelSessionBeanRemote, CarModelS
     }
     
     @Override
-    public CarModel retrieveCarModelById(long modelId) {
+    public CarModel retrieveCarModelById(long modelId) throws CarModelNotFoundException {
         CarModel m = em.find(CarModel.class, modelId);
-
+        if (m == null) throw new CarModelNotFoundException("The Car Model is Not Found for ID " + modelId);
         return m;
     }
 

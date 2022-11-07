@@ -343,6 +343,62 @@ public class Reservation implements Serializable {
         this.creditCardNumber = creditCardNumber;
     }
 
+    /**
+     * @return the paid
+     */
+    public Boolean getPaid() {
+        return paid;
+    }
+
+    /**
+     * @param paid the paid to set
+     */
+    public void setPaid(Boolean paid) {
+        this.paid = paid;
+    }
+
+    /**
+     * @return the isCancelled
+     */
+    public Boolean getIsCancelled() {
+        return isCancelled;
+    }
+
+    /**
+     * @param isCancelled the isCancelled to set
+     */
+    public void setIsCancelled(Boolean isCancelled) {
+        this.isCancelled = isCancelled;
+    }
+
+    /**
+     * @return the isCompleted
+     */
+    public Boolean getIsCompleted() {
+        return isCompleted;
+    }
+
+    /**
+     * @param isCompleted the isCompleted to set
+     */
+    public void setIsCompleted(Boolean isCompleted) {
+        this.isCompleted = isCompleted;
+    }
+
+    /**
+     * @return the isPicked
+     */
+    public Boolean getIsPicked() {
+        return isPicked;
+    }
+
+    /**
+     * @param isPicked the isPicked to set
+     */
+    public void setIsPicked(Boolean isPicked) {
+        this.isPicked = isPicked;
+    }
+
 
     
 }

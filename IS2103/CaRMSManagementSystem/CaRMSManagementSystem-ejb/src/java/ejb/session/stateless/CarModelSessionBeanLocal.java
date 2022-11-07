@@ -22,6 +22,6 @@ public interface CarModelSessionBeanLocal {
         public Long createNewCarModel(Long carCategoryId, CarModel model) throws CarCategoryNotFoundException;
         public List<CarModel> retrieveAllCarModels();
         public long updateModel(CarModel m, Long categoryId) throws CarCategoryNotFoundException, CarModelDeletionException;
-        public CarModel retrieveCarModelById(long modelId);
+        public CarModel retrieveCarModelById(long modelId) throws CarModelNotFoundException;
         public void deleteModel(Long modelId) throws CarModelNotFoundException;
 }

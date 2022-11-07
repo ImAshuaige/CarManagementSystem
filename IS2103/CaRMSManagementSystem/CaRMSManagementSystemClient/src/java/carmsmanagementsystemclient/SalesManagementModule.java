@@ -472,6 +472,7 @@ public class SalesManagementModule {
         System.out.print("Enter the model id: ");
         long modelId = sc.nextLong();
         sc.nextLine();
+        try {
         CarModel model = carModelSessionBeanRemote.retrieveCarModelById(modelId);
 
         if (model == null) {
@@ -519,6 +520,9 @@ public class SalesManagementModule {
         } catch (CarModelDeletionException ex) {
             System.out.println("This model is deleted! Please Enter an Valid Car Category Id.");
             return;
+        }
+        } catch (CarModelNotFoundException ex) {
+            System.out.println("CarModelNotFO");
         }
 
         System.out.println("*** The car model is successfully updated ***");
