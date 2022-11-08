@@ -86,18 +86,19 @@ public class CarModelSessionBean implements CarModelSessionBeanRemote, CarModelS
 
     @Override
     public void deleteModel(Long modelId) throws CarModelNotFoundException {
-        CarModel model = em.find(CarModel.class, modelId);
-        
-        if(model == null) throw new CarModelNotFoundException();
-        
-        if(!model.getDisabled()) {
-            model.setDisabled(true);
-        }
-        
-        model.getBelongsCategory().getModelList().remove(model);
-        em.remove(model); //by now if a model is removed, it should not appear in the database
+         //by now if a model is removed, it should not appear in the database
         //cannot just delete, can only delete when it is not used, otherwise set it to disable, does that mean we need a new attribute is applied?
-
+        try {
+            CarModel modelToRemove = retrieveCarModelById(modelId);
+            if (modelToRemove.getListOfCars().isEmpty()) {
+                em.remove(modelToRemove);
+            } else {
+                modelToRemove.setDisabled(true);
+            }
+        } catch (CarModelNotFoundException ex) {
+            throw new CarModelNotFoundException("Model of ID: " + modelId + " not found!");
+        }
+    
     }
     
     @Override
