@@ -31,6 +31,7 @@ import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import util.enumeration.EmployeeRoleEnum;
+import util.enumeration.RentalRateType;
 import util.exception.CarCategoryNotFoundException;
 import util.exception.CarModelNotFoundException;
 import util.exception.InputDataValidationException;
@@ -166,32 +167,46 @@ public class DataInitSessionBean {
             Car carC3 = new Car("SS00C3NS","DEFAULT");
             carSessionBean.createNewCar(nissan.getModelId(), o3.getOutletId(), carC3);
             
-            RentalRate standardSedanDefault = new RentalRate("Standard Sedan - Default", BigDecimal.valueOf(100.0), null, null, standardSedan);
+            RentalRate standardSedanDefault = new RentalRate("Standard Sedan - Default", BigDecimal.valueOf(100.0), null, null, standardSedan, RentalRateType.DEFAULT);
             rentalRateSessionBean.createNewRentalRate(standardSedan.getCategoryId(), standardSedanDefault);
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             Date startDateTime = dateFormat.parse("09/12/2022 12:00");
             Date endDateTime = dateFormat.parse("11/12/2022 00:00");
-            RentalRate standardSedanWeekendPromo = new RentalRate("Standard Sedan - Weekend Promo", BigDecimal.valueOf(80.0), startDateTime, endDateTime, standardSedan);
+            RentalRate standardSedanWeekendPromo = new RentalRate("Standard Sedan - Weekend Promo", BigDecimal.valueOf(80.0), startDateTime, endDateTime, standardSedan, RentalRateType.PROMOTION);
             rentalRateSessionBean.createNewRentalRate(standardSedan.getCategoryId(), standardSedanWeekendPromo);
             
-            
-            RentalRate familySedanDefault = new RentalRate("Family Sedan - Default", BigDecimal.valueOf(200.0), null, null, familySedan);
+            RentalRate familySedanDefault = new RentalRate("Family Sedan - Default", BigDecimal.valueOf(200.0), null, null, familySedan, RentalRateType.DEFAULT);
             rentalRateSessionBean.createNewRentalRate(familySedan.getCategoryId(), familySedanDefault);
             
-            RentalRate luxurySedanDefault = new RentalRate("Luxury Sedan - Default", BigDecimal.valueOf(300.0), null, null, luxurySedan);
+            RentalRate luxurySedanDefault = new RentalRate("Luxury Sedan - Default", BigDecimal.valueOf(300.0), null, null, luxurySedan, RentalRateType.DEFAULT);
             rentalRateSessionBean.createNewRentalRate(luxurySedan.getCategoryId(), luxurySedanDefault);
 
             startDateTime = dateFormat.parse("05/12/2022 00:00");
             endDateTime = dateFormat.parse("05/12/2022 23:59");
-            RentalRate luxurySedanMonday = new RentalRate("Luxury Sedan - Monday", BigDecimal.valueOf(310.0), startDateTime, endDateTime, luxurySedan);
+            RentalRate luxurySedanMonday = new RentalRate("Luxury Sedan - Monday", BigDecimal.valueOf(310.0), startDateTime, endDateTime, luxurySedan, RentalRateType.PEAK);
             rentalRateSessionBean.createNewRentalRate(luxurySedan.getCategoryId(), luxurySedanMonday);
 
             startDateTime = dateFormat.parse("06/12/2022 00:00");
             endDateTime = dateFormat.parse("06/12/2022 23:59");
-            RentalRate luxurySedanTuesday = new RentalRate("Luxury Sedan - Tuesday", BigDecimal.valueOf(320.0), startDateTime, endDateTime, luxurySedan);
+            RentalRate luxurySedanTuesday = new RentalRate("Luxury Sedan - Tuesday", BigDecimal.valueOf(320.0), startDateTime, endDateTime, luxurySedan, RentalRateType.PEAK);
             rentalRateSessionBean.createNewRentalRate(luxurySedan.getCategoryId(), luxurySedanTuesday);
               
+            startDateTime = dateFormat.parse("07/12/2022 00:00");
+            endDateTime = dateFormat.parse("07/12/2022 23:59");
+            RentalRate luxurySedanWednesday = new RentalRate("Luxury Sedan - Wednesday", BigDecimal.valueOf(330.0), startDateTime, endDateTime, luxurySedan, RentalRateType.PEAK);
+            rentalRateSessionBean.createNewRentalRate(luxurySedan.getCategoryId(), luxurySedanWednesday);
+            
+            startDateTime = dateFormat.parse("07/12/2022 12:00");
+            endDateTime = dateFormat.parse("08/12/2022 12:00");
+            RentalRate luxurySedanWeekdayPromo = new RentalRate("Luxury Sedan - Weekday Promo", BigDecimal.valueOf(250.0), startDateTime, endDateTime, luxurySedan, RentalRateType.PROMOTION);
+            rentalRateSessionBean.createNewRentalRate(luxurySedan.getCategoryId(), luxurySedanWeekdayPromo);
+            
+            startDateTime = dateFormat.parse(null);
+            endDateTime = dateFormat.parse(null);
+            RentalRate suvAndMiniDefault = new RentalRate("SUV and Minivan - Default", BigDecimal.valueOf(400.0), startDateTime, endDateTime, suvAndMini, RentalRateType.DEFAULT);
+            rentalRateSessionBean.createNewRentalRate(luxurySedan.getCategoryId(), luxurySedanWeekdayPromo);
+            
             //Partner Backend data initialisation
             Partner holidayReservation = new Partner("Holiday.com", "123");
             partnerSessionBean.createNewPartner(holidayReservation);

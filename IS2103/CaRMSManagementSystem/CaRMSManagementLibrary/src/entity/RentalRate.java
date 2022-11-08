@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.validation.constraints.DecimalMin;
+import util.enumeration.RentalRateType;
 
 /**
  *
@@ -29,6 +30,8 @@ public class RentalRate implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rentalRateId;
+    
+    private RentalRateType rateType;
 
     @Column(nullable = false, length = 40) //Length constraint?
     private String rentalName;
@@ -61,7 +64,7 @@ public class RentalRate implements Serializable {
         this.isDisabled = false;
     }
 
-    public RentalRate(String rentalName, BigDecimal dailyRate, Date rateStartDate, Date rateEndDate, CarCategory carCategory) {
+    public RentalRate(String rentalName, BigDecimal dailyRate, Date rateStartDate, Date rateEndDate, CarCategory carCategory, RentalRateType rateType) {
         this.isApplied = false;
         this.isDisabled = false;
         this.rentalName = rentalName;
@@ -69,6 +72,7 @@ public class RentalRate implements Serializable {
         this.rateStartDate = rateStartDate;
         this.rateEndDate = rateEndDate;
         this.carCategory = carCategory;
+        this.rateType = rateType;
     }
 
     public Long getRentalRateId() {
@@ -200,6 +204,20 @@ public class RentalRate implements Serializable {
      */
     public void setIsDisabled(boolean isDisabled) {
         this.isDisabled = isDisabled;
+    }
+
+    /**
+     * @return the rateType
+     */
+    public RentalRateType getRateType() {
+        return rateType;
+    }
+
+    /**
+     * @param rateType the rateType to set
+     */
+    public void setRateType(RentalRateType rateType) {
+        this.rateType = rateType;
     }
 
 }
