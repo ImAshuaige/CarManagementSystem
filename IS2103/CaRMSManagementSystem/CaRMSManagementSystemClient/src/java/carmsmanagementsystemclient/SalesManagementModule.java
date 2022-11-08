@@ -217,6 +217,8 @@ public class SalesManagementModule {
         System.out.print("Enter the make of the model: ");
         String make = sc.nextLine().trim();
         m.setMake(make);
+        
+        
 
         System.out.print("Enter the belonged car category Id: ");
         long categoryId = sc.nextLong();
@@ -272,7 +274,6 @@ public class SalesManagementModule {
                 System.out.println("1: DEFUALT Rate Type");
                 System.out.println("2: PEAK Rate Type");
                 System.out.println("3: PROMOTION Rate Type");
-                System.out.print("Enter the new rate: ");
                 
                 int type = sc.nextInt();
                 if (type == 1) {
@@ -337,7 +338,24 @@ public class SalesManagementModule {
         Long modelId = sc.nextLong();
         System.out.print("Enter outlet ID> ");
         Long outletId = sc.nextLong();
-        sc.nextLine();
+        
+        
+        System.out.println("Choose the Car's current status ");
+                System.out.println("1: AVAILABLE");
+                System.out.println("2: IN RENT");
+                System.out.println("3: REPAIR SERVICE");
+                int carStatus = sc.nextInt();
+                if (carStatus == 1) {
+                    sc.nextLine();
+                    car.setCarStatus(CarStatusEnum.AVAILABLE);
+                } else if (carStatus == 2) {
+                    sc.nextLine();
+                    car.setCarStatus(CarStatusEnum.IN_RENT);
+                } else if (carStatus == 3) {
+                    sc.nextLine();
+                    car.setCarStatus(CarStatusEnum.REPAIR_SERVICE);
+                }
+                
         try {
             Long carId = carSessionBeanRemote.createNewCar(modelId, outletId, car);
             System.out.println("New Car succesfully created with ID " + carId);
@@ -440,9 +458,9 @@ public class SalesManagementModule {
         Scanner sc = new Scanner(System.in);
         System.out.println("*** View All Cars ***");
         List<Car> cars = carSessionBeanRemote.retrieveCars();
-        System.out.printf("%4s%32s%16s%16s%22s\n", "ID", "Car Category", "Make", "Model", "License Plate Number");
+        System.out.printf("%4s%32s%32s%32s%16s%16s%22s\n", "ID", "Car Status", "Car Colour","Car Category", "Make", "Model", "License Plate Number");
         for (Car car : cars) {
-            System.out.printf("%4s%32s%16s%16s%22s\n", car.getCarId(),
+            System.out.printf("%4s%32s%32s%32s%16s%16s%22s\n", car.getCarId(), car.getCarStatus(), car.getColour(),
                     car.getCarModel().getBelongsCategory().getCarCategoryName(),
                     car.getCarModel().getMake(), car.getCarModel().getModel(),
                     car.getCarLicensePlateNum());
@@ -459,8 +477,8 @@ public class SalesManagementModule {
         scanner.nextLine();
         try {
             Car car = carSessionBeanRemote.retrieveCarByCarId(carId);
-            System.out.printf("%4s%32s%16s%16s%22s\n", "ID", "Car Category", "Make", "Model", "License Plate Number");
-            System.out.printf("%4s%32s%16s%16s%22s\n", car.getCarId(), car.getCarModel().getBelongsCategory().getCarCategoryName(),
+            System.out.printf("%4s%32s%32s%32s%16s%16s%22s\n", "ID", "Car Status", "Car Colour", "Car Category", "Make", "Model", "License Plate Number");
+            System.out.printf("%4s%32s%32s%32s%16s%16s%22s\n", car.getCarId(), car.getCarStatus(), car.getColour(), car.getCarModel().getBelongsCategory().getCarCategoryName(),
                     car.getCarModel().getMake(), car.getCarModel().getModel(),
                     car.getCarLicensePlateNum());
 
@@ -671,112 +689,107 @@ public class SalesManagementModule {
     //Change the updateCar method so that it accounts for when the user does not want to make any changes
     private void updateCar(Car car) {
         Scanner sc = new Scanner(System.in);
+        Car newCar = new Car();
+        long carId = car.getCarId();
+        newCar.setCarId(carId);
         System.out.println("");
         System.out.println("*** Update Car ***");
 
         System.out.print("Do you want to update the plate number? [1]YES/[2]NO : ");
         int plateNumberInput = sc.nextInt();
-        if (plateNumberInput == 1) {
-            sc.nextLine();
-            System.out.print("Enter the plate number: ");
-            String newPlateNumber = sc.nextLine().trim();
-            car.setCarLicensePlateNum(newPlateNumber);
-        } 
+            if (plateNumberInput == 1) {
+                sc.nextLine();
+                System.out.print("Enter the plate number: ");
+                String newPlateNumber = sc.nextLine().trim();
+                newCar.setCarLicensePlateNum(newPlateNumber);
+            } else {
+                newCar.setCarLicensePlateNum(car.getCarLicensePlateNum());
+            }
 
         System.out.print("Do you want to update the colour? [1]YES/[2]NO : ");
-        int colorInput = sc.nextInt();
-        if (colorInput == 1) {
-            sc.nextLine();
-            System.out.print("Enter the new colour: ");
-            String newColor = sc.nextLine().trim();
-            car.setColour(newColor);
-        }
+            int colorInput = sc.nextInt();
+            if (colorInput == 1) {
+                sc.nextLine();
+                System.out.print("Enter the new colour: ");
+                String newColor = sc.nextLine().trim();
+                newCar.setColour(newColor);
+            } else {
+                newCar.setColour(car.getColour());
+            }
 
-        CarStatusEnum carStatus;
+        CarStatusEnum carStatus = CarStatusEnum.AVAILABLE;
 
         System.out.println("");
-        System.out.println("[1] OUTLET");
-        System.out.println("[2] ON RENTAL");
-        System.out.println("[3] REPAIR");
+        System.out.println("[1] AVAILABLE");
+        System.out.println("[2] IN_RENT");
+        System.out.println("[3] REPAIR_SERVICE");
 
-        int statusNum = 0;
-
-        while (true) {
+        
             System.out.print("Choose the new status: ");
-            statusNum = sc.nextInt();
+            int statusNum = sc.nextInt();
             sc.nextLine();
             if (statusNum == 1) {
                 carStatus = CarStatusEnum.AVAILABLE;
-                car.setDisabled(false);
-                break;
+                newCar.setDisabled(false);
             } else if (statusNum == 2) {
                 carStatus = CarStatusEnum.IN_RENT;
-                car.setDisabled(false);
-                break;
+                newCar.setDisabled(false);
             } else if (statusNum == 3) {
                 carStatus = CarStatusEnum.REPAIR_SERVICE;
-                car.setDisabled(true);
-                break;
+                newCar.setDisabled(true);
             } else {
                 System.out.println("Invalid input! Please input again!");
             }
-        }
-
-        long modelId = car.getCarModel().getModelId();
-        long outletId = car.getLatestOutlet().getOutletId();
-
-        while (true) {
-            System.out.println("Do you want to update the Model? [1]YES/[2]NO : ");
+        
+        
+        newCar.setCarStatus(carStatus);
+            System.out.print("Do you want to update the Model? [1]YES/[2]NO : ");
             int updateModelInput = sc.nextInt();
             if (updateModelInput == 1) {
                 sc.nextLine();
                 System.out.print("Enter the new model id > ");
-                modelId = sc.nextLong();
+                long modelId = sc.nextLong();
                 sc.nextLine();
-                break;
+                try {
+                    newCar.setCarModel(carModelSessionBeanRemote.retrieveCarModelById(modelId));
+                } catch (CarModelNotFoundException ex) {
+                    Logger.getLogger(SalesManagementModule.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                newCar.setCarModel(car.getCarModel());
             }
 
-            System.out.println("Do you want to update the Outlet? [1]YES/[2]NO : ");
+            System.out.print("Do you want to update the Outlet? [1]YES/[2]NO : ");
             int updateOutletInput = sc.nextInt();
             if (updateOutletInput == 1) {
                 sc.nextLine();
                 System.out.print("Enter the new Outlet ID > ");
-                outletId = sc.nextLong();
+                long outletId = sc.nextLong();
                 sc.nextLine();
-                break;
+                try {
+                    newCar.setLatestOutlet(outletSessionBeanRemote.retrieveOutletById(outletId));
+                } catch (OutletNotFoundException ex) {
+                    Logger.getLogger(SalesManagementModule.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                newCar.setLatestOutlet(car.getLatestOutlet());
             }
-        }
-
-        car.setCarStatus(carStatus);
-        long newId;
-
+        
+        
+        
         try {
-            newId = carSessionBeanRemote.updateCar(car, outletId, modelId);
-            if (newId == -1) {
-                System.out.println("An error occurred while updating car!");
-                System.out.println("Plate Number/Color too long!\n");
-                return;
-            }
-        } catch (CarModelNotFoundException ex) {
-            System.out.println(ex.getMessage());
-            System.out.println("Update denied!\n");
-            return;
-        } catch (InvalidModelException ex) {
-            System.out.println("Model is invalid!");
-            System.out.println("Update denied!\n");
-            return;
-        } catch (OutletNotFoundException ex) {
+            carSessionBeanRemote.updateCar(newCar);
+            System.out.println("Car ID: " + carId + " updated!");
+        } catch (CarNotFoundException ex) {
             System.out.println(ex.getMessage());
             //System.out.println("Outlet is invalid!");
             System.out.println("Update denied\n");
             return;
-        }
-
-        System.out.println("");
-        System.out.println("Update is successful!");
-        System.out.println("Press enter to continue!");
-        sc.nextLine();
-    }
+        } catch (InputDataValidationException ex) {
+            System.out.print("License plate: " + newCar.getCarLicensePlateNum()+ " already exists in the database!");
+        } 
+       }
+    
 
     private void deleteModel() {
         Scanner sc = new Scanner(System.in);

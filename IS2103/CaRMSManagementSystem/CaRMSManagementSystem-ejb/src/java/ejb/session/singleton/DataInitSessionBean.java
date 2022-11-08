@@ -217,7 +217,7 @@ public class DataInitSessionBean {
             startDateTime = null;//dateFormat.parse(null);
             endDateTime = null;//dateFormat.parse(null);
             RentalRate suvAndMiniDefault = new RentalRate("SUV and Minivan - Default", BigDecimal.valueOf(400.0), startDateTime, endDateTime, suvAndMini, RentalRateType.DEFAULT);
-            rentalRateSessionBean.createNewRentalRate(luxurySedan.getCategoryId(), luxurySedanWeekdayPromo);
+            rentalRateSessionBean.createNewRentalRate(luxurySedan.getCategoryId(), suvAndMiniDefault);
             
             //Partner Backend data initialisation
             Partner holidayReservation = new Partner("Holiday.com", "123");

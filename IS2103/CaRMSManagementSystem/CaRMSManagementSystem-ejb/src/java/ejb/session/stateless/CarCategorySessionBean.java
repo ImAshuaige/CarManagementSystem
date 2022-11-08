@@ -77,7 +77,7 @@ public class CarCategorySessionBean implements CarCategorySessionBeanRemote, Car
     @Override
     public BigDecimal calculateRentalFee(Long carCategoryId, Date pickUpDateTime, Date returnDateTime) throws NoAvailableRentalRateException {
         BigDecimal totalRentalFee = new BigDecimal(0);//change to 5 see if it changes 
-         System.out.println("CAN I SEE THIS ONE CAR CATE");
+         System.out.println("CAN I SEE THIS ONE CAR RATE");
         returnDateTime.setHours(pickUpDateTime.getHours());
         returnDateTime.setMinutes(pickUpDateTime.getMinutes());
 

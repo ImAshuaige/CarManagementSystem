@@ -25,9 +25,7 @@ import util.exception.UnknownPersistenceException;
 public interface CarSessionBeanRemote {
 
     public void deleteCar(Long carId) throws CarNotFoundException;
-
-    public long updateCar(Car c, long outletId, long modelId) throws InvalidModelException, CarModelNotFoundException, CarModelNotFoundException, OutletNotFoundException;
-
+    
     public Car retrieveCarByCarId(Long carId) throws CarNotFoundException;
 
     public List<Car> retrieveCars();
@@ -37,5 +35,7 @@ public interface CarSessionBeanRemote {
     public List<Car> retrieveCarsByModelId(Long modelId);
     
     public List<Car> retrieveCarsByCategoryId(Long categoryId);
+
+    public void updateCar(Car c) throws CarNotFoundException, InputDataValidationException;
     
 }

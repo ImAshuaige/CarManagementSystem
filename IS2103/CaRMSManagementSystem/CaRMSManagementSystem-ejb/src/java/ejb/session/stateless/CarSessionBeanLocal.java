@@ -25,8 +25,8 @@ import util.exception.UnknownPersistenceException;
 public interface CarSessionBeanLocal {
     public void deleteCar(Long carId) throws CarNotFoundException;
 
-    public long updateCar(Car c, long outletId, long modelId) throws InvalidModelException, CarModelNotFoundException, CarModelNotFoundException, OutletNotFoundException;
-
+    public void updateCar(Car c) throws CarNotFoundException, InputDataValidationException;
+    
     public Car retrieveCarByCarId(Long carId) throws CarNotFoundException;
 
     public List<Car> retrieveCars();

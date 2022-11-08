@@ -21,7 +21,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import util.enumeration.CarStatusEnum;
 import util.exception.CarModelNotFoundException;
 import util.exception.CarNotFoundException;
 import util.exception.InputDataValidationException;
@@ -75,7 +74,7 @@ public class CarSessionBean implements CarSessionBeanRemote, CarSessionBeanLocal
                 if (model.getDisabled() == false) {
                     newCar.setCarModel(model);
                     newCar.setLatestOutlet(outlet);
-                    newCar.setCarStatus(CarStatusEnum.AVAILABLE);
+                    newCar.setCarStatus(newCar.getCarStatus());
                     outlet.addCar(newCar);
                     model.addCar(newCar);
                     em.persist(newCar);
@@ -124,41 +123,20 @@ public class CarSessionBean implements CarSessionBeanRemote, CarSessionBeanLocal
     }
 
     @Override
-    public long updateCar(Car c, long outletId, long modelId) throws InvalidModelException, CarModelNotFoundException, CarModelNotFoundException, OutletNotFoundException {
-        CarModel model = em.find(CarModel.class, modelId);
-        if (model == null) {
-            throw new CarModelNotFoundException("Model Not Found for ID " + modelId);
-        };
-        if (model.getDisabled() == true) {
-            throw new InvalidModelException();
-        }
-        Outlet newOutlet = em.find(Outlet.class, outletId);
-        if (newOutlet == null) {
-            throw new OutletNotFoundException("Outlet Not Found for ID: " + outletId);
-        }
+    public void updateCar(Car c) throws CarNotFoundException, InputDataValidationException  {
+    if (c != null && c.getCarId() != null) {
+            Set<ConstraintViolation<Car>> constraintViolations = validator.validate(c);
 
-        try {
-            em.merge(c);
-            em.flush();
-
-            long carId = c.getCarId();
-            Car car = em.find(Car.class, carId);
-            if (outletId != c.getLatestOutlet().getOutletId()) {
-                Outlet old = em.find(Outlet.class, c.getLatestOutlet().getOutletId());
-                old.getCarsList().remove(c);
-                newOutlet.getCarsList().add(c);
-                car.setLatestOutlet(newOutlet);
+            if (constraintViolations.isEmpty()) {
+                Car carToUpdate = retrieveCarByCarId(c.getCarId());
+                carToUpdate.setCarLicensePlateNum(c.getCarLicensePlateNum());
+                carToUpdate.setCarStatus(c.getCarStatus());
+                carToUpdate.setColour(c.getColour());
+            } else {
+                throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
             }
-
-            if (modelId != c.getCarModel().getModelId()) {
-                CarModel oldModel = em.find(CarModel.class, c.getCarModel().getModelId());
-                oldModel.getListOfCars().remove(c);
-                model.getListOfCars().add(car);
-                car.setCarModel(oldModel);
-            }
-            return c.getCarId();
-        } catch (PersistenceException ex) {
-            return -1;
+        } else {
+            throw new CarNotFoundException("Model Id not provided for rental rate to be updated");
         }
     }
 
