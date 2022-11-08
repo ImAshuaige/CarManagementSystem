@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import javax.persistence.PersistenceException;
 import util.enumeration.CarStatusEnum;
 import util.enumeration.EmployeeRoleEnum;
+import util.enumeration.RentalRateType;
 import util.exception.CarCategoryNotFoundException;
 import util.exception.CarModelDeletionException;
 import util.exception.CarModelNotFoundException;
@@ -267,6 +268,24 @@ public class SalesManagementModule {
             r.setDailyRate(dailyRate);
             sc.nextLine();
 
+            System.out.println("Choose the rental rate type from the following: ");
+                System.out.println("1: DEFUALT Rate Type");
+                System.out.println("2: PEAK Rate Type");
+                System.out.println("3: PROMOTION Rate Type");
+                System.out.print("Enter the new rate: ");
+                
+                int type = sc.nextInt();
+                if (type == 1) {
+                    sc.nextLine();
+                    r.setRateType(RentalRateType.DEFAULT);
+                } else if (type == 2) {
+                    sc.nextLine();
+                    r.setRateType(RentalRateType.PEAK);
+                } else if (type == 3) {
+                    sc.nextLine();
+                    r.setRateType(RentalRateType.PROMOTION);
+                }
+            
             System.out.print("Enter validity period? (Enter 'Y' to set validity period) > ");
             String validity = sc.nextLine().trim();
 
@@ -356,7 +375,7 @@ public class SalesManagementModule {
 
         List<RentalRate> rentalRates = rentalRateSessionBeanRemote.retrieveAllRentalRates();
 
-        System.out.printf("%4s%32s%32s%16s%16s%20s%20s\n", "ID", "Rental Rate Name", "Car Category", "Rate Per Day", "Is Applied?", "Start Period", "End Period");
+        System.out.printf("%4s%32%32s%32s%16s%16s%20s%20s\n", "ID", "Rental Rate Name", "Rental Rate Type", "Car Category", "Rate Per Day", "Is Applied?", "Start Period", "End Period");
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         for (RentalRate rentalRate : rentalRates) {
             String startDate = "null";
@@ -368,7 +387,7 @@ public class SalesManagementModule {
                 endDate = sdf.format(rentalRate.getRateEndDate());
             }
             System.out.printf("%4s%32s%32s%16s%16s%20s%20s\n", rentalRate.getRentalRateId(),
-                    rentalRate.getRentalName(), rentalRate.getCarCategory().getCarCategoryName(),
+                    rentalRate.getRentalName(), rentalRate.getRateType(), rentalRate.getCarCategory().getCarCategoryName(),
                     rentalRate.getDailyRate(), true, startDate, endDate); //Change true to the isApplied attribute, although it should be the isEnabled attribute
         }
         System.out.println();
@@ -394,9 +413,9 @@ public class SalesManagementModule {
             if (r.getRateEndDate() != null) {
                 endDate = sdf.format(r.getRateEndDate());
             }
-            System.out.printf("%4s%32s%32s%16s%16s%20s%20s\n", "ID", "Rental Rate Name", "Car Category", "Rate Per Day", "Is Enabled?", "Start Period", "End Period");
+            System.out.printf("%4s%32s%32s%32s%16s%16s%20s%20s\n", "ID", "Rental Rate Name", "Rental Rate Type", "Car Category", "Rate Per Day", "Is Enabled?", "Start Period", "End Period");
             System.out.printf("%4s%32s%32s%16s%16s%20s%20s\n", r.getRentalRateId(),
-                    r.getRentalName(), r.getCarCategory().getCarCategoryName(),
+                    r.getRentalName(), r.getRateType(), r.getCarCategory().getCarCategoryName(),
                     r.getDailyRate(), true, startDate, endDate);
             System.out.println("------------------------");
             System.out.println("1: Update Rental Rate");
@@ -563,7 +582,31 @@ public class SalesManagementModule {
             } else {
                 newRentalRate.setCarCategory(rentalRate.getCarCategory());
             }
-
+            System.out.println("");
+            System.out.print("Do you want to update the rate type? [1]YES/[2]NO : ");
+            int typeInput = sc.nextInt();
+            if (typeInput == 1) {
+                sc.nextLine();
+                
+                System.out.println("1: DEFUALT Rate Type");
+                System.out.println("2: PEAK Rate Type");
+                System.out.println("3: PROMOTION Rate Type");
+                
+                int type = sc.nextInt();
+                if (type == 1) {
+                    sc.nextLine();
+                    newRentalRate.setRateType(RentalRateType.DEFAULT);
+                } else if (type == 2) {
+                    sc.nextLine();
+                    newRentalRate.setRateType(RentalRateType.PEAK);
+                } else if (type == 3) {
+                    sc.nextLine();
+                    newRentalRate.setRateType(RentalRateType.PROMOTION);
+                }
+            } else {
+                newRentalRate.setRateType(rentalRate.getRateType());
+            }
+            
             System.out.println("");
             System.out.print("Do you want to update the rate per day? [1]YES/[2]NO : ");
             int rateInput = sc.nextInt();

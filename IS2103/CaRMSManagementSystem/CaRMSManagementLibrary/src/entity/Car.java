@@ -63,14 +63,14 @@ public class Car implements Serializable {
 
     public Car() {
         this.disabled = false;
-        this.carStatus = CarStatusEnum.AVAILABLE;
     }
 
     //ID is defined by defualt and the reservation is null by default
-    public Car(String carLicensePlateNum, String colour) {
+    public Car(String carLicensePlateNum, String colour, CarStatusEnum carStatus) {
         this();
         this.carLicensePlateNum = carLicensePlateNum;
         this.colour = colour;
+        this.carStatus = carStatus;
     }
     
     public Long getCarId() {

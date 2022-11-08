@@ -30,6 +30,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import util.enumeration.CarStatusEnum;
 import util.enumeration.EmployeeRoleEnum;
 import util.enumeration.RentalRateType;
 import util.exception.CarCategoryNotFoundException;
@@ -145,29 +146,38 @@ public class DataInitSessionBean {
             carModelSessionBean.createNewCarModel(standardSedan.getCategoryId(),nissan);
             CarModel mercedes = new CarModel("Mercedes","E Class",luxurySedan);
             carModelSessionBean.createNewCarModel(luxurySedan.getCategoryId(),mercedes);
+            CarModel bmw = new CarModel("BMW","5 Series",luxurySedan);
+            carModelSessionBean.createNewCarModel(luxurySedan.getCategoryId(),bmw);
+            CarModel audi = new CarModel("Audi","A6",luxurySedan);
+            carModelSessionBean.createNewCarModel(luxurySedan.getCategoryId(),audi);
             
-            Car carA1 = new Car("SS00A1TC","DEFAULT");
+            Car carA1 = new Car("SS00A1TC","DEFAULT", CarStatusEnum.AVAILABLE);
             carSessionBean.createNewCar(toyota.getModelId(), o1.getOutletId(), carA1);
-            Car carA2 = new Car("SS00A2TC","DEFAULT");
+            Car carA2 = new Car("SS00A2TC","DEFAULT", CarStatusEnum.AVAILABLE);
             carSessionBean.createNewCar(toyota.getModelId(), o1.getOutletId(), carA2);
-            Car carA3 = new Car("SS00A3TC","DEFAULT");
+            Car carA3 = new Car("SS00A3TC","DEFAULT", CarStatusEnum.AVAILABLE);
             carSessionBean.createNewCar(toyota.getModelId(), o1.getOutletId(), carA3);
-            Car carA4 = new Car("LS00A4ME","DEFAULT");
+            Car carA4 = new Car("LS00A4ME","DEFAULT", CarStatusEnum.AVAILABLE);
             carSessionBean.createNewCar(mercedes.getModelId(), o1.getOutletId(), carA4);
             
-            Car carB1 = new Car("SS00B1HC","DEFAULT");
+            //Need to add status to the constructor of all the cars
+            Car carB1 = new Car("SS00B1HC","DEFAULT", CarStatusEnum.AVAILABLE);
             carSessionBean.createNewCar(honda.getModelId(), o2.getOutletId(), carB1);
-            Car carB2 = new Car("SS00B2HC","DEFAULT");
+            Car carB2 = new Car("SS00B2HC","DEFAULT", CarStatusEnum.AVAILABLE);
             carSessionBean.createNewCar(honda.getModelId(), o2.getOutletId(), carB2);
-            Car carB3 = new Car("SS00B3HC","DEFAULT");
+            Car carB3 = new Car("SS00B3HC","DEFAULT", CarStatusEnum.AVAILABLE);
             carSessionBean.createNewCar(honda.getModelId(), o2.getOutletId(), carB3);
+            Car carB4 = new Car("LS00B4B5","DEFAULT", CarStatusEnum.AVAILABLE);
+            carSessionBean.createNewCar(bmw.getModelId(), o2.getOutletId(), carB4);
             
-            Car carC1 = new Car("SS00C1NS","DEFAULT");
+            Car carC1 = new Car("SS00C1NS","DEFAULT", CarStatusEnum.AVAILABLE);
             carSessionBean.createNewCar(nissan.getModelId(), o3.getOutletId(), carC1);
-            Car carC2 = new Car("SS00C2NS","DEFAULT");
+            Car carC2 = new Car("SS00C2NS","DEFAULT", CarStatusEnum.AVAILABLE);
             carSessionBean.createNewCar(nissan.getModelId(), o3.getOutletId(), carC2);
-            Car carC3 = new Car("SS00C3NS","DEFAULT");
+            Car carC3 = new Car("SS00C3NS","DEFAULT", CarStatusEnum.REPAIR_SERVICE);
             carSessionBean.createNewCar(nissan.getModelId(), o3.getOutletId(), carC3);
+            Car carc4 = new Car("LS00C4A6","DEFAULT", CarStatusEnum.AVAILABLE);
+            carSessionBean.createNewCar(audi.getModelId(), o3.getOutletId(), carc4);
             
             RentalRate standardSedanDefault = new RentalRate("Standard Sedan - Default", BigDecimal.valueOf(100.0), null, null, standardSedan, RentalRateType.DEFAULT);
             rentalRateSessionBean.createNewRentalRate(standardSedan.getCategoryId(), standardSedanDefault);

@@ -145,6 +145,7 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
                     rentalRateToUpdate.setDailyRate(rentalRate.getDailyRate());
                     rentalRateToUpdate.setRateStartDate(rentalRate.getRateStartDate());
                     rentalRateToUpdate.setRateEndDate(rentalRate.getRateEndDate());
+                    rentalRateToUpdate.setRateType(rentalRate.getRateType());
                 }
 
             } else {
