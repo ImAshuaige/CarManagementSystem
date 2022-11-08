@@ -76,15 +76,21 @@ public class CarCategorySessionBean implements CarCategorySessionBeanRemote, Car
     
     @Override
     public BigDecimal calculateRentalFee(Long carCategoryId, Date pickUpDateTime, Date returnDateTime) throws NoAvailableRentalRateException {
-        BigDecimal totalRentalFee = new BigDecimal(0);
+        BigDecimal totalRentalFee = new BigDecimal(0);//change to 5 see if it changes 
+         System.out.println("CAN I SEE THIS ONE CAR CATE");
         returnDateTime.setHours(pickUpDateTime.getHours());
         returnDateTime.setMinutes(pickUpDateTime.getMinutes());
 
         try {
             LocalDateTime pickUpTemporal = pickUpDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            System.out.println("pickUp" + pickUpTemporal.toString());
             LocalDateTime returnTemporal = returnDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            System.out.println("return" + pickUpTemporal.toString());
             Long rentingDays = ChronoUnit.DAYS.between(pickUpTemporal, returnTemporal);
-
+            if (rentingDays == 0) {
+                rentingDays = (long)1;//at least 1 day
+            }
+            System.out.println("rentingDays " + rentingDays);
             GregorianCalendar transitCalendar = new GregorianCalendar(
                     pickUpDateTime.getYear() + 1900,
                     pickUpDateTime.getMonth(),
@@ -92,13 +98,13 @@ public class CarCategorySessionBean implements CarCategorySessionBeanRemote, Car
                     pickUpDateTime.getHours(),
                     pickUpDateTime.getMinutes(),
                     pickUpDateTime.getSeconds());
-
-            for (int i = 0; i < rentingDays; i++) {
+            //FOR each day of the reservation, we calculate the rental rate for it 
+            for (long i = 0; i < rentingDays; i++) {
                 RentalRate lowestRentalRate = rentalRateSessionBeanLocal.retrieveLowestRentalRate(carCategoryId, transitCalendar.getTime());
                 transitCalendar.add(Calendar.DATE, 1);
                 BigDecimal dailyLowestRentalRate = lowestRentalRate.getDailyRate();
                 totalRentalFee = totalRentalFee.add(dailyLowestRentalRate);
-                //System.out.println("Rental Fee IS " + dailyLowestRentalRate + " " + transitCalendar.toString());
+                System.out.println("Rental Fee is " + dailyLowestRentalRate + " " + transitCalendar.toString());
             }
             return totalRentalFee;
         } catch (NoAvailableRentalRateException ex) {

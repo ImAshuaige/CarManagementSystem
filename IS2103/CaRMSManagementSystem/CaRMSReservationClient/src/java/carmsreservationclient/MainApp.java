@@ -296,6 +296,7 @@ public class MainApp {
                     System.out.print("Reserve a car? (Enter 'YES' to reserve a car): ");
                     String response = scanner.nextLine().trim();
                     if (response.equals("YES")) {
+                        //System.out.println("CHECK HERE FIRST: "+ input + " " + carCategoryId+ " " + modelId+ " " + pickUpDateTime + " " + returnDateTime + " " +  pickUpOutletId + " " + returnOutletId + " " + totalRentalFee );
                         reserveCar(input, carCategoryId, modelId, pickUpDateTime, returnDateTime, pickUpOutletId, returnOutletId, totalRentalFee);
                     }
                 } else {
@@ -372,7 +373,7 @@ public class MainApp {
                     "Paid", "Cancelled",
                     "Car Category", "Model");
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-            String modelName = "null";
+            String modelName = "ANY";
             if (reservation.getReservedCarModel() != null) {
                 modelName = reservation.getReservedCarModel().getMake() + " " + reservation.getReservedCarModel().getModel();
             }
@@ -385,9 +386,7 @@ public class MainApp {
             String input = scanner.nextLine().trim();
             if (input.equals("YES")) {
                 cancelReservation(reservationId);
-            } else {
-                System.out.print("Press any key to continue. ");
-            }
+            } 
         } catch (ReservationNotFoundException ex) {
             System.out.println("Rental Reservation Not Found for ID " + reservationId);
         }
@@ -427,9 +426,9 @@ public class MainApp {
             String creditCardNumber = sc.nextLine().trim();
             reservation.setCreditCardNumber(creditCardNumber);
             
-            System.out.print("Would you like to pay now? (Enter 'Y' to enter payment details)> ");
+            System.out.print("Would you like to pay now? (Enter 'YES' to enter payment details)> ");
             String paymentInput = sc.nextLine().trim();
-            if(paymentInput.equals('Y')) {
+            if(paymentInput.equals("YES")) {
                 reservation.setPaid(Boolean.TRUE);
                 reservation.setReservationStatus(ReservationStatusEnum.PAID);//WE can remove this line if we choose to delete the enum
                 System.out.println("Charged " + totalRentalFee.toString() + " to credit card: " + creditCardNumber);

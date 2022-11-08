@@ -78,16 +78,16 @@ public class Reservation implements Serializable {
     private Partner reservationPartner;
     
     //@OneToOne(mappedBy = "currentReservation")
-    @OneToOne
-    @JoinColumn(nullable = false)
+    @OneToOne(optional = true)
+    //@JoinColumn(optional = true/*nullable = false*/)
     private Car car;
     
-    @ManyToOne
-    @JoinColumn(nullable = false)
+    @ManyToOne(optional = true)
+    //@JoinColumn(nullable = false)
     private CarCategory reservedCarCategory;
     
-    @ManyToOne
-    @JoinColumn(nullable = false)
+    @ManyToOne(optional = true)
+    //@JoinColumn(nullable = false)
     private CarModel reservedCarModel;
     
     @ManyToOne

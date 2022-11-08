@@ -152,6 +152,8 @@ public class DataInitSessionBean {
             carSessionBean.createNewCar(toyota.getModelId(), o1.getOutletId(), carA2);
             Car carA3 = new Car("SS00A3TC","DEFAULT");
             carSessionBean.createNewCar(toyota.getModelId(), o1.getOutletId(), carA3);
+            Car carA4 = new Car("LS00A4ME","DEFAULT");
+            carSessionBean.createNewCar(mercedes.getModelId(), o1.getOutletId(), carA4);
             
             Car carB1 = new Car("SS00B1HC","DEFAULT");
             carSessionBean.createNewCar(honda.getModelId(), o2.getOutletId(), carB1);
@@ -202,8 +204,8 @@ public class DataInitSessionBean {
             RentalRate luxurySedanWeekdayPromo = new RentalRate("Luxury Sedan - Weekday Promo", BigDecimal.valueOf(250.0), startDateTime, endDateTime, luxurySedan, RentalRateType.PROMOTION);
             rentalRateSessionBean.createNewRentalRate(luxurySedan.getCategoryId(), luxurySedanWeekdayPromo);
             
-            startDateTime = dateFormat.parse(null);
-            endDateTime = dateFormat.parse(null);
+            startDateTime = null;//dateFormat.parse(null);
+            endDateTime = null;//dateFormat.parse(null);
             RentalRate suvAndMiniDefault = new RentalRate("SUV and Minivan - Default", BigDecimal.valueOf(400.0), startDateTime, endDateTime, suvAndMini, RentalRateType.DEFAULT);
             rentalRateSessionBean.createNewRentalRate(luxurySedan.getCategoryId(), luxurySedanWeekdayPromo);
             

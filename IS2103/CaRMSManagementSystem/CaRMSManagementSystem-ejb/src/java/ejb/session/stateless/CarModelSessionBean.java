@@ -93,7 +93,11 @@ public class CarModelSessionBean implements CarModelSessionBeanRemote, CarModelS
         if(!model.getDisabled()) {
             model.setDisabled(true);
         }
+        
         model.getBelongsCategory().getModelList().remove(model);
+        em.remove(model); //by now if a model is removed, it should not appear in the database
+        //cannot just delete, can only delete when it is not used, otherwise set it to disable, does that mean we need a new attribute is applied?
+
     }
     
     @Override

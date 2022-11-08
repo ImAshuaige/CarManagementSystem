@@ -7,6 +7,7 @@ package ejb.session.stateless;
 
 import entity.CarCategory;
 import entity.RentalRate;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import util.enumeration.RentalRateType;
 import util.exception.CarCategoryNotFoundException;
 import util.exception.InputDataValidationException;
 import util.exception.NoAvailableRentalRateException;
@@ -181,9 +183,80 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
 
     @Override
     public RentalRate retrieveLowestRentalRate(Long carCategoryId, Date currDate) throws NoAvailableRentalRateException {
+        //promotion -> peak -> default
+
+        //retrieve the promotion list first
         Query query = em.createQuery("SELECT r FROM RentalRate r WHERE (r.carCategory.categoryId = :inCarCategoryId)"
                 + " AND (r.rateStartDate <= :inCurrDate AND r.rateEndDate >= :inCurrDate)"
-                + " OR (r.rateStartDate IS NULL AND r.rateEndDat IS NULL) ORDER BY r.dailyRate ASC");
+                + " OR (r.rateStartDate IS NULL AND r.rateEndDate IS NULL) ORDER BY r.dailyRate ASC");
+        query.setParameter("inCurrDate", currDate);
+        query.setParameter("inCarCategoryId", carCategoryId);
+        //retrieve the list of available rental rate in the current day
+        List<RentalRate> rentalRates = query.getResultList();
+        //first consider if there's any promotion rate
+        
+        
+        //actually we have already sort it in asc order, we do not need to do the extra steps,just to be safe
+        BigDecimal lowestDailyPrice = new BigDecimal(0);//set default price 
+        RentalRate currRate = null;
+        for (RentalRate rentalRate : rentalRates) {
+            if (rentalRate.getRateType() == RentalRateType.PROMOTION) {
+                System.out.println("HAVE PROMOTION");
+                if (lowestDailyPrice.compareTo(new BigDecimal(0)) == 0) {
+                    lowestDailyPrice = rentalRate.getDailyRate();
+                    currRate = rentalRate;
+                } else if (rentalRate.getDailyRate().compareTo(lowestDailyPrice) < 0) {
+                    lowestDailyPrice = rentalRate.getDailyRate();
+                    currRate = rentalRate;
+                }
+            }
+        }
+        if (currRate != null) {
+            return currRate;
+        }
+
+        //if there is no promo, then try if there is rental Rates 
+        for (RentalRate rentalRate : rentalRates) {
+            
+            if (rentalRate.getRateType() == RentalRateType.PEAK) {
+                System.out.println("HAVE PEAK");
+                if (lowestDailyPrice.compareTo(new BigDecimal(0)) == 0) {
+                    lowestDailyPrice = rentalRate.getDailyRate();
+                    currRate = rentalRate;
+                } else if (rentalRate.getDailyRate().compareTo(lowestDailyPrice) < 0) {
+                    lowestDailyPrice = rentalRate.getDailyRate();
+                    currRate = rentalRate;
+                }
+            }
+        }
+        
+        
+
+        if (currRate != null) {
+            return currRate;
+        }
+
+        //lastly, apply the lowest default rate
+        for (RentalRate rentalRate : rentalRates) {
+            if (rentalRate.getRateType() == RentalRateType.DEFAULT) {
+                System.out.println("HAVE default");
+                if (lowestDailyPrice.compareTo(new BigDecimal(0)) == 0) {
+                    lowestDailyPrice = rentalRate.getDailyRate();
+                    currRate = rentalRate;
+                } else if (rentalRate.getDailyRate().compareTo(lowestDailyPrice) < 0) {
+                    lowestDailyPrice = rentalRate.getDailyRate();
+                    currRate = rentalRate;
+                }
+            }
+        }
+        return currRate;
+
+    }
+}
+
+    /*    Query query = em.createQuery("SELECT r FROM RentalRate r WHERE (r.carCategory.categoryId = :inCarCategoryId)"
+                + " AND (r.rateStartDate <= :inCurrDate AND r.rateEndDate >= :inCurrDate)"
+                + " OR (r.rateStartDate IS NULL AND r.rateEndDate IS NULL) ORDER BY r.dailyRate ASC");
         query.setParameter("inCurrDate", currDate);
         query.setParameter("inCarCategoryId", carCategoryId);
         List<RentalRate> rentalRates = query.getResultList();
@@ -191,6 +264,5 @@ public class RentalRateSessionBean implements RentalRateSessionBeanRemote, Renta
             throw new NoAvailableRentalRateException();
         }
         return rentalRates.get(0);
-    }
-
-}
+    }*/
+//}
