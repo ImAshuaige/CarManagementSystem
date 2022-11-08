@@ -38,11 +38,11 @@ public class RentalRate implements Serializable {
     //Digits constraint?
     private BigDecimal dailyRate;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date rateStartDate;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date rateEndDate;
 

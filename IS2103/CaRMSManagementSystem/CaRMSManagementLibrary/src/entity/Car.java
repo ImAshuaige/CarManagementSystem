@@ -58,8 +58,8 @@ public class Car implements Serializable {
     @JoinColumn(nullable = false)
     private CarModel carModel;
     
-    @ManyToOne
-    private Outlet outlet;
+    /*@ManyToOne
+    private Outlet outlet;*/
 
     public Car() {
         this.disabled = false;

@@ -58,6 +58,7 @@ public class CarCategorySessionBean implements CarCategorySessionBeanRemote, Car
     
         
 
+    @Override
     public CarCategory retrieveCarCategoryByCarCategoryId(Long CarCategoryId) throws CarCategoryNotFoundException
     {
         CarCategory carCategory = em.find(CarCategory.class, CarCategoryId);

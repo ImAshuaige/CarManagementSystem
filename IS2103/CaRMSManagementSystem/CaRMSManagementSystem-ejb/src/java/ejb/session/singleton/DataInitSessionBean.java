@@ -83,83 +83,119 @@ public class DataInitSessionBean {
 
     private void initializeData() {
         try {
-            //Outlet Backend data initialisation
-            Outlet o1 = new Outlet("Outlet A", "Ang Mo Kio", new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 1, 1, 23, 59, 0));
+
+            Outlet o1 = new Outlet("Outlet A", "Bedok", null, null);
             outletSessionBean.createNewOutlet(o1);
-            Outlet o2 = new Outlet("Outlet B", "Orchard", new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 1, 1, 23, 59, 0));
+            Outlet o2 = new Outlet("Outlet B", "Changi", null, null);
             outletSessionBean.createNewOutlet(o2);
-            Outlet o3 = new Outlet("Outlet C", "Bugis", new Date(2000, 1, 1, 10, 0, 0), new Date(2000, 1, 1, 22, 0, 0));
+            Outlet o3 = new Outlet("Outlet C", "Simei", new Date(2000, 1, 1, 10, 0, 0), new Date(2000, 1, 1, 22, 0, 0));
             outletSessionBean.createNewOutlet(o3);
-
-            //Employee Backend data initialisation
-            Employee a1 = new Employee("Employee", "A1", "socsales", "123", EmployeeRoleEnum.SALES_MANAGER);//Always use object id. In the employee session bean, we inser tthe outletsession bean
+            
+            
+            Employee a1 = new Employee("Employee", "A1", "salesA1", "123", EmployeeRoleEnum.SALES_MANAGER);//Always use object id. In the employee session bean, we inser tthe outletsession bean
             employeeSessionBean.createNewEmployee(a1, o1.getOutletId());
-            //o1.getEmployeesList().add(a1);
-            Employee a2 = new Employee("Employee", "A2", "socops", "123", EmployeeRoleEnum.OPERATIONS_MANAGER);
-            employeeSessionBean.createNewEmployee(a2, o2.getOutletId());
-            //o2.getEmployeesList().add(a2);
-            Employee a3 = new Employee("Employee", "A3", "soccust", "123", EmployeeRoleEnum.CUSTOMER_SERVICE_EXCUTIVE);
-            employeeSessionBean.createNewEmployee(a3, o3.getOutletId());
-            //o3.getEmployeesList().add(a3);
-            Employee a4 = new Employee("Employee", "A4", "socemployee4", "123", EmployeeRoleEnum.EMPLOYEE);
+            
+            Employee a2 = new Employee("Employee", "A2", "opsA2", "123", EmployeeRoleEnum.OPERATIONS_MANAGER);
+            employeeSessionBean.createNewEmployee(a2, o1.getOutletId());
+            
+            Employee a3 = new Employee("Employee", "A3", "custA3", "123", EmployeeRoleEnum.CUSTOMER_SERVICE_EXCUTIVE);
+            employeeSessionBean.createNewEmployee(a3, o1.getOutletId());
+            Employee a4 = new Employee("Employee", "A4", "employeeA4", "123", EmployeeRoleEnum.EMPLOYEE);
             employeeSessionBean.createNewEmployee(a4, o1.getOutletId());
-            //o1.getEmployeesList().add(a4);
-            Employee a5 = new Employee("Employee", "A4", "socemployee5", "123", EmployeeRoleEnum.ADMINISTRATOR);
-            employeeSessionBean.createNewEmployee(a5, o2.getOutletId());
+            Employee a5 = new Employee("Employee", "A5", "employeeA5", "123", EmployeeRoleEnum.EMPLOYEE);
+            employeeSessionBean.createNewEmployee(a5, o1.getOutletId());
+            
+            Employee b1 = new Employee("Employee", "B1", "salesB1", "123", EmployeeRoleEnum.SALES_MANAGER);//Always use object id. In the employee session bean, we inser tthe outletsession bean
+            employeeSessionBean.createNewEmployee(b1, o2.getOutletId());
+            
+            Employee b2 = new Employee("Employee", "B2", "opsB2", "123", EmployeeRoleEnum.OPERATIONS_MANAGER);
+            employeeSessionBean.createNewEmployee(b2, o2.getOutletId());
+            
+            Employee b3 = new Employee("Employee", "B3", "custB3", "123", EmployeeRoleEnum.CUSTOMER_SERVICE_EXCUTIVE);
+            employeeSessionBean.createNewEmployee(b3, o2.getOutletId());
+           
+            
+            Employee c1 = new Employee("Employee", "C1", "salesC1", "123", EmployeeRoleEnum.SALES_MANAGER);//Always use object id. In the employee session bean, we inser tthe outletsession bean
+            employeeSessionBean.createNewEmployee(c1, o3.getOutletId());
+            
+            Employee c2 = new Employee("Employee", "C2", "opsC2", "123", EmployeeRoleEnum.OPERATIONS_MANAGER);
+            employeeSessionBean.createNewEmployee(c2, o3.getOutletId());
+            
+            Employee c3 = new Employee("Employee", "C3", "custC3", "123", EmployeeRoleEnum.CUSTOMER_SERVICE_EXCUTIVE);
+            employeeSessionBean.createNewEmployee(c3, o3.getOutletId());
+            
+         
 
-            //Partner Backend data initialisation
-            Partner holidayReservation = new Partner("HolidayReservation", "123");
-            partnerSessionBean.createNewPartner(holidayReservation);
+            
+            CarCategory standardSedan = new CarCategory("Standard Sedan");
+            carCategorySessionBean.createNewCarCategory(standardSedan);
+            CarCategory familySedan = new CarCategory("Family Sedan");
+            carCategorySessionBean.createNewCarCategory(familySedan);
+            CarCategory luxurySedan = new CarCategory("Luxury Sedan");
+            carCategorySessionBean.createNewCarCategory(luxurySedan);
+            CarCategory suvAndMini = new CarCategory("SUV and Minivan");
+            carCategorySessionBean.createNewCarCategory(suvAndMini);
 
-            CarCategory hondaCivic = new CarCategory("Honda Civic");
-            carCategorySessionBean.createNewCarCategory(hondaCivic);
-            CarCategory bmw = new CarCategory("BMW");
-            carCategorySessionBean.createNewCarCategory(bmw);
-            CarCategory mercedes = new CarCategory("Mercedes Benz");
-            carCategorySessionBean.createNewCarCategory(mercedes);
-            CarCategory mitsubishi = new CarCategory("Mitsubishi");
-            carCategorySessionBean.createNewCarCategory(mitsubishi);
+            CarModel toyota = new CarModel("Toyota", "Corolla",standardSedan);
+            carModelSessionBean.createNewCarModel(standardSedan.getCategoryId(),toyota);
+            CarModel honda = new CarModel("Honda","Civic",standardSedan);
+            carModelSessionBean.createNewCarModel(standardSedan.getCategoryId(),honda);
+            CarModel nissan = new CarModel("Nissan","Sunny",standardSedan);
+            carModelSessionBean.createNewCarModel(standardSedan.getCategoryId(),nissan);
+            CarModel mercedes = new CarModel("Mercedes","E Class",luxurySedan);
+            carModelSessionBean.createNewCarModel(luxurySedan.getCategoryId(),mercedes);
+            
+            Car carA1 = new Car("SS00A1TC","DEFAULT");
+            carSessionBean.createNewCar(toyota.getModelId(), o1.getOutletId(), carA1);
+            Car carA2 = new Car("SS00A2TC","DEFAULT");
+            carSessionBean.createNewCar(toyota.getModelId(), o1.getOutletId(), carA2);
+            Car carA3 = new Car("SS00A3TC","DEFAULT");
+            carSessionBean.createNewCar(toyota.getModelId(), o1.getOutletId(), carA3);
+            
+            Car carB1 = new Car("SS00B1HC","DEFAULT");
+            carSessionBean.createNewCar(honda.getModelId(), o2.getOutletId(), carB1);
+            Car carB2 = new Car("SS00B2HC","DEFAULT");
+            carSessionBean.createNewCar(honda.getModelId(), o2.getOutletId(), carB2);
+            Car carB3 = new Car("SS00B3HC","DEFAULT");
+            carSessionBean.createNewCar(honda.getModelId(), o2.getOutletId(), carB3);
+            
+            Car carC1 = new Car("SS00C1NS","DEFAULT");
+            carSessionBean.createNewCar(nissan.getModelId(), o3.getOutletId(), carC1);
+            Car carC2 = new Car("SS00C2NS","DEFAULT");
+            carSessionBean.createNewCar(nissan.getModelId(), o3.getOutletId(), carC2);
+            Car carC3 = new Car("SS00C3NS","DEFAULT");
+            carSessionBean.createNewCar(nissan.getModelId(), o3.getOutletId(), carC3);
+            
+            RentalRate standardSedanDefault = new RentalRate("Standard Sedan - Default", BigDecimal.valueOf(100.0), null, null, standardSedan);
+            rentalRateSessionBean.createNewRentalRate(standardSedan.getCategoryId(), standardSedanDefault);
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-            Date startDateTime = dateFormat.parse("06/12/2019 12:00");
-            Date endDateTime = dateFormat.parse("08/12/2019 00:00");
-            RentalRate hondaCivicDefault = new RentalRate("Honda Civic: Default", BigDecimal.valueOf(70.0), startDateTime, endDateTime, hondaCivic);
-            rentalRateSessionBean.createNewRentalRate(hondaCivic.getCategoryId(), hondaCivicDefault);
-
-            startDateTime = dateFormat.parse("02/12/2019 00:00");
-            endDateTime = dateFormat.parse("02/12/2019 23:59");
-            RentalRate bmwDefault = new RentalRate("BMW: Default", BigDecimal.valueOf(200.0), startDateTime, endDateTime, hondaCivic);
-            rentalRateSessionBean.createNewRentalRate(bmw.getCategoryId(), bmwDefault);
-
-            startDateTime = dateFormat.parse("03/12/2019 00:00");
-            endDateTime = dateFormat.parse("03/12/2019 23:59");
-            RentalRate mercedesDefault = new RentalRate("Mercedes: Default", BigDecimal.valueOf(100.0), startDateTime, endDateTime, hondaCivic);
-            rentalRateSessionBean.createNewRentalRate(mercedes.getCategoryId(), mercedesDefault);
-
-            startDateTime = dateFormat.parse("04/12/2019 00:00");
-            endDateTime = dateFormat.parse("04/12/2019 23:59");
-            RentalRate mitsubishiDefault = new RentalRate("Mitsubishi: Default", BigDecimal.valueOf(80.0), startDateTime, endDateTime, hondaCivic);
-            rentalRateSessionBean.createNewRentalRate(mitsubishi.getCategoryId(), mitsubishiDefault);
-            //standardSedan.getRentalRates().add(rentalRateEntity); Add this later when we create a car to establish the relationship
-
+            Date startDateTime = dateFormat.parse("09/12/2022 12:00");
+            Date endDateTime = dateFormat.parse("11/12/2022 00:00");
+            RentalRate standardSedanWeekendPromo = new RentalRate("Standard Sedan - Weekend Promo", BigDecimal.valueOf(80.0), startDateTime, endDateTime, standardSedan);
+            rentalRateSessionBean.createNewRentalRate(standardSedan.getCategoryId(), standardSedanWeekendPromo);
             
             
-            //Initialise Car and Model to make testing easier, not part of requriement!
+            RentalRate familySedanDefault = new RentalRate("Family Sedan - Default", BigDecimal.valueOf(200.0), null, null, familySedan);
+            rentalRateSessionBean.createNewRentalRate(familySedan.getCategoryId(), familySedanDefault);
+            
+            RentalRate luxurySedanDefault = new RentalRate("Luxury Sedan - Default", BigDecimal.valueOf(300.0), null, null, luxurySedan);
+            rentalRateSessionBean.createNewRentalRate(luxurySedan.getCategoryId(), luxurySedanDefault);
 
-            CarModel modelA = new CarModel("makeA", "modelA",bmw);
-            CarModel modelB = new CarModel("makeB","modelB",mercedes);
-            
-            carModelSessionBean.createNewCarModel(bmw.getCategoryId(),modelA);
-            carModelSessionBean.createNewCarModel(mercedes.getCategoryId(),modelB);
-            
-            //public long createNewCar(long modelId, long outletId, Car newCar)
-            //public Car(String carLicensePlateNum, String colour) 
-            
-            Car car1 = new Car("888A","DEFAULT");
-            Car car2 = new Car("999A","DEFAULT");
-   
-            carSessionBean.createNewCar(modelA.getModelId(), o1.getOutletId(), car1);
-            carSessionBean.createNewCar(modelB.getModelId(), o2.getOutletId(), car2);
+            startDateTime = dateFormat.parse("05/12/2022 00:00");
+            endDateTime = dateFormat.parse("05/12/2022 23:59");
+            RentalRate luxurySedanMonday = new RentalRate("Luxury Sedan - Monday", BigDecimal.valueOf(310.0), startDateTime, endDateTime, luxurySedan);
+            rentalRateSessionBean.createNewRentalRate(luxurySedan.getCategoryId(), luxurySedanMonday);
+
+            startDateTime = dateFormat.parse("06/12/2022 00:00");
+            endDateTime = dateFormat.parse("06/12/2022 23:59");
+            RentalRate luxurySedanTuesday = new RentalRate("Luxury Sedan - Tuesday", BigDecimal.valueOf(320.0), startDateTime, endDateTime, luxurySedan);
+            rentalRateSessionBean.createNewRentalRate(luxurySedan.getCategoryId(), luxurySedanTuesday);
+              
+            //Partner Backend data initialisation
+            Partner holidayReservation = new Partner("Holiday.com", "123");
+            partnerSessionBean.createNewPartner(holidayReservation);
+
             
         } catch (ParseException | CarCategoryNotFoundException | UnknownPersistenceException | 
                 InputDataValidationException | CarModelNotFoundException

@@ -34,11 +34,11 @@ public class Outlet implements Serializable {
     @Column(nullable = false, length = 500, unique = false)
     private String outletAddress;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date outletOpeningTime; 
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date outletClosingTime;
     
@@ -51,8 +51,8 @@ public class Outlet implements Serializable {
     @OneToMany(mappedBy = "destinationOutlet")
     private List<TransitDriverDispatch> transitDriverDispatchList;
     
-    @OneToMany(mappedBy = "outlet")
-    private List<Car> listOfCars;
+    /*@OneToMany(mappedBy = "outlet")
+    private List<Car> listOfCars;*/
     
     /* Since outlet has a relationship with reservation, should we include these codes as well
     @OneToMany(mappedBy = "pickupLocation")
