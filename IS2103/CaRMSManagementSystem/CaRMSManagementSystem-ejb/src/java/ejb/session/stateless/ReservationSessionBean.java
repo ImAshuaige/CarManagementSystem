@@ -10,6 +10,7 @@ import entity.CarCategory;
 import entity.CarModel;
 import entity.Customer;
 import entity.Outlet;
+import entity.Partner;
 import entity.Reservation;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -39,6 +40,7 @@ import util.exception.CustomerNotFoundException;
 import util.exception.InputDataValidationException;
 import util.exception.NoAvailableRentalRateException;
 import util.exception.OutletNotFoundException;
+import util.exception.PartnerNotFoundException;
 import util.exception.ReservationNotFoundException;
 import util.exception.UnknownPersistenceException;
 
@@ -48,6 +50,9 @@ import util.exception.UnknownPersistenceException;
  */
 @Stateless
 public class ReservationSessionBean implements ReservationSessionBeanRemote, ReservationSessionBeanLocal {
+
+    @EJB
+    private PartnerSessionBeanLocal partnerSessionBeanLocal;
 
     @EJB
     private OutletSessionBeanLocal outletSessionBeanLocal;
@@ -60,10 +65,10 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
 
     @EJB
     private CarCategorySessionBeanLocal carCategorySessionBeanLocal;
-    
+
     @PersistenceContext(unitName = "CaRMSManagementSystem-ejbPU")
     private EntityManager em;
-    
+
     private final ValidatorFactory validatorFactory;
     private final Validator validator;
 
@@ -71,8 +76,7 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         this.validatorFactory = Validation.buildDefaultValidatorFactory();
         this.validator = validatorFactory.getValidator();
     }
-    
-    
+
     @Override
     public Long createNewReservation(Long carCategoryId, Long modelId, Long customerId,
             Long pickupOutletId, Long returnOutletId, Reservation newReservation) throws InputDataValidationException, UnknownPersistenceException, OutletNotFoundException, CustomerNotFoundException, CarCategoryNotFoundException, CarModelNotFoundException {
@@ -87,11 +91,11 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
                 newReservation.setCustomer(customer);
                 newReservation.setReservationPickUpOutlet(pickUpOutlet);
                 newReservation.setReservationReturnOutlet(returnOutlet);
-                
+
                 customer.addReservation(newReservation);
                 CarCategory carCategory = null;
                 CarModel carModel = null;
-                
+
                 if (modelId > 0) {
                     carModel = carModelSessionBeanLocal.retrieveCarModelById(modelId);
                     carCategory = carModel.getBelongsCategory();
@@ -122,8 +126,9 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         } catch (CarModelNotFoundException ex) {
             throw new CarModelNotFoundException("Model ID: " + modelId + " does not exist!");
         }
-        
+
     }
+
     //Expose it in the local and remote interfaces
     @Override
     public Reservation retrieveReservationByReservationId(Long rentalReservationId) throws ReservationNotFoundException {
@@ -263,9 +268,7 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
             return false;
         }
     }
-    
-    
-    
+
     @Override
     public Boolean searchCarByModel(Date pickUpDateTime, Date returnDateTime, Long pickupOutletId, Long returnOutletId, Long modelId) throws /*NoAvailableRentalRateException,*/ CarCategoryNotFoundException, OutletNotFoundException, CarModelNotFoundException {
         List<Reservation> reservations = new ArrayList<>();
@@ -325,17 +328,17 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
             return false;
         }
     }
-    
+
     @Override
     public List<Reservation> retrieveCustomerReservations(Long customerId) {
         Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.customer.customerId = :inCustomerId");
         query.setParameter("inCustomerId", customerId);
         return query.getResultList();
     }
-    
+
     //Expose it to the local and remote interfaces
     @Override
-        public BigDecimal cancelReservation(Long reservationId) throws ReservationNotFoundException {
+    public BigDecimal cancelReservation(Long reservationId) throws ReservationNotFoundException {
         try {
             Reservation reservation = retrieveReservationByReservationId(reservationId);
             reservation.setIsCancelled(Boolean.TRUE);
@@ -362,7 +365,60 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         }
 
     }
+
     
+    @Override
+    public Long createNewPartnerRentalReservation(Long carCategoryId, Long partnerId, Long modelId, Long customerId,
+            Long pickupOutletId, Long returnOutletId, Reservation newReservation) throws InputDataValidationException, UnknownPersistenceException, OutletNotFoundException, CustomerNotFoundException, CarCategoryNotFoundException, CarModelNotFoundException, PartnerNotFoundException {
+        try {
+            Set<ConstraintViolation<Reservation>> constraintViolations = validator.validate(newReservation);
+
+            if (constraintViolations.isEmpty()) {
+                Customer customer = customerSessionBeanLocal.retrieveCustomerByCustomerId(customerId);
+                Partner partner = partnerSessionBeanLocal.retrievePartnerByPartnerId(partnerId);
+                Outlet pickupOutlet = outletSessionBeanLocal.retrieveOutletById(pickupOutletId);
+                Outlet returnOutlet = outletSessionBeanLocal.retrieveOutletById(returnOutletId);
+                newReservation.setCustomer(customer);
+                newReservation.setReservationPartner(partner);
+                newReservation.setReservationPickUpOutlet(pickupOutlet);
+                newReservation.setReservationReturnOutlet(returnOutlet);
+                customer.addReservation(newReservation);
+                
+                CarCategory carCategory = null;
+                CarModel model = null;
+                if (carCategoryId > -1) {
+                    carCategory = carCategorySessionBeanLocal.retrieveCarCategoryByCarCategoryId(carCategoryId);
+                    newReservation.setReservedCarCategory(carCategory);
+                } else {
+                    model = carModelSessionBeanLocal.retrieveCarModelById(modelId);
+                    newReservation.setReservedCarModel(model);
+                }
+                em.persist(newReservation);
+                em.flush();
+                return newReservation.getRentalReservationId();
+            } else {
+                throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
+            }
+        } catch (PersistenceException ex) {
+            if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
+                throw new UnknownPersistenceException(ex.getMessage());
+            } else {
+                throw new UnknownPersistenceException(ex.getMessage());
+            }
+        } catch (OutletNotFoundException ex) {
+            throw new OutletNotFoundException("Outlet IDs: " + pickupOutletId + " and " + returnOutletId + " either or both does not exist!");
+        } catch (CustomerNotFoundException ex) {
+            throw new CustomerNotFoundException("Customer ID: " + customerId + " does not exist!");
+        } catch (CarCategoryNotFoundException ex) {
+            throw new CarCategoryNotFoundException("Car Category ID: " + carCategoryId + " does not exist!");
+        } catch (CarModelNotFoundException ex) {
+            throw new CarModelNotFoundException("Model ID: " + modelId + " does not exist!");
+        } catch (PartnerNotFoundException ex) {
+            throw new PartnerNotFoundException("Partner ID: " + partnerId + " does not exist!");
+        }
+
+    }
+
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<Reservation>> constraintViolations) {
         String msg = "Input data validation error!:";
 

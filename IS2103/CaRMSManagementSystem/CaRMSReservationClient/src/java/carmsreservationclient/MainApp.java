@@ -21,6 +21,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import util.enumeration.ReservationStatusEnum;
 import util.exception.CarCategoryNotFoundException;
 import util.exception.CarModelNotFoundException;
@@ -350,7 +352,11 @@ public class MainApp {
             System.out.println("You have successfully registered! Your Customer ID is " + newCustId + "\n");
         } catch (CustomerEmailExistsException ex) {
             System.out.println("An error occured while creating member: " + ex.getMessage() + "\n");
-        }
+        } catch (UnknownPersistenceException ex) {
+            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InputDataValidationException ex) {
+            Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
+        } 
         /*} else {
             throw new IncompleteRegistrationDetailsException("An error occured while creating member: Incomplete registration details!\n");
         }*/

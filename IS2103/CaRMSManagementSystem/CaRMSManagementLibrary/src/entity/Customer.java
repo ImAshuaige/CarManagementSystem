@@ -24,6 +24,34 @@ import javax.persistence.OneToMany;
 @Entity
 public class Customer implements Serializable {
 
+    /**
+     * @return the customerReservation
+     */
+    public List<Reservation> getCustomerReservation() {
+        return customerReservation;
+    }
+
+    /**
+     * @param customerReservation the customerReservation to set
+     */
+    public void setCustomerReservation(List<Reservation> customerReservation) {
+        this.customerReservation = customerReservation;
+    }
+
+    /**
+     * @return the partner
+     */
+    public Partner getPartner() {
+        return partner;
+    }
+
+    /**
+     * @param partner the partner to set
+     */
+    public void setPartner(Partner partner) {
+        this.partner = partner;
+    }
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +71,7 @@ public class Customer implements Serializable {
 
     
     @OneToMany(mappedBy = "customer")
-    List<Reservation> customerReservation;
+    private List<Reservation> customerReservation;
     @ManyToOne
     private Partner partner;
     /*
@@ -154,7 +182,7 @@ public class Customer implements Serializable {
     
     public void addReservation(Reservation reservation) {
         if (!this.customerReservation.contains(reservation)) {
-            this.customerReservation.add(reservation);
+            this.getCustomerReservation().add(reservation);
         }
     }
 

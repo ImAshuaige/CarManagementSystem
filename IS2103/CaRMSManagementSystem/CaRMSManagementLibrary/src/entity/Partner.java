@@ -140,4 +140,9 @@ public class Partner implements Serializable {
         this.partnerCustomerList = partnerCustomerList;
     }
     
+    public void addCustomer(Customer customer) {
+        if (!this.partnerCustomerList.contains(customer)) {
+            this.partnerCustomerList.add(customer);
+        }
+    }
 }

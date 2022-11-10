@@ -15,6 +15,7 @@ import util.exception.CarModelNotFoundException;
 import util.exception.CustomerNotFoundException;
 import util.exception.InputDataValidationException;
 import util.exception.OutletNotFoundException;
+import util.exception.PartnerNotFoundException;
 import util.exception.ReservationNotFoundException;
 import util.exception.UnknownPersistenceException;
 
@@ -44,6 +45,9 @@ public interface ReservationSessionBeanLocal {
     public List<Reservation> retrieveCustomerReservations(Long customerId);
     
     public BigDecimal cancelReservation(Long reservationId) throws ReservationNotFoundException;
+    
+    public Long createNewPartnerRentalReservation(Long carCategoryId, Long partnerId, Long modelId, Long customerId, Long pickupOutletId, Long returnOutletId, Reservation newReservation) throws InputDataValidationException, UnknownPersistenceException, OutletNotFoundException, CustomerNotFoundException, CarCategoryNotFoundException, CarModelNotFoundException, PartnerNotFoundException;
+    
     
     
     
