@@ -223,11 +223,11 @@ public class MainApp {
                         && pickUpDateTime.getMinutes() < pickupOutlet.getOutletOpeningTime().getMinutes())) {
                     throw new OutsideOutletOperatingHourException("The Pickup Time You Chose is Outside of the Outlet's Operating Hours.");
                 }
-                /*else if ((pickUpDateTime.getHours() > pickupOutlet.getOutletClosingTime().getHours())
+                else if ((pickUpDateTime.getHours() > pickupOutlet.getOutletClosingTime().getHours())
                         || (pickUpDateTime.getHours() == pickupOutlet.getOutletClosingTime().getHours()
                         && pickUpDateTime.getMinutes() > pickupOutlet.getOutletClosingTime().getMinutes())) {
                     throw new OutsideOutletOperatingHourException("The Pickup Time You Chose is Outside of the Outlet's Operating Hours.");
-                }*/
+                }
             }
             Outlet returnOutlet = outletSessionBeanRemote.retrieveOutletById(returnOutletId);
             if (returnOutlet.getOutletClosingTime() != null) {
@@ -236,11 +236,11 @@ public class MainApp {
                         && returnDateTime.getMinutes() > returnOutlet.getOutletClosingTime().getMinutes())) {
                     throw new OutsideOutletOperatingHourException("The Return Time You Chose is Outside of the Outlet's Operating Hours.");
                 }
-                /*else if ((returnDateTime.getHours() < returnOutlet.getOutletClosingTime().getHours())
-                        || (returnDateTime.getHours() == returnOutlet.getOutletClosingTime().getHours()
-                        && returnDateTime.getMinutes() < returnOutlet.getOutletClosingTime().getMinutes())) {
+                else if ((returnDateTime.getHours() < returnOutlet.getOutletOpeningTime().getHours())
+                        || (returnDateTime.getHours() == returnOutlet.getOutletOpeningTime().getHours()
+                        && returnDateTime.getMinutes() < returnOutlet.getOutletOpeningTime().getMinutes())) {
                     throw new OutsideOutletOperatingHourException("The Return Time You Chose is Outside of the Outlet's Operating Hours.");
-                }*/
+                }
             }
 
             while (true) {

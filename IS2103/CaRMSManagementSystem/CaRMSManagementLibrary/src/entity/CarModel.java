@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -133,6 +134,7 @@ public class CarModel implements Serializable {
     /**
      * @return the belongsCategory
      */
+    @XmlTransient
     public CarCategory getBelongsCategory() {
         return belongsCategory;
     }
@@ -153,6 +155,7 @@ public class CarModel implements Serializable {
     /**
      * @return the listOfCars
      */
+    @XmlTransient
     public List<Car> getListOfCars() {
         return listOfCars;
     }

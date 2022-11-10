@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.validation.constraints.DecimalMin;
+import javax.xml.bind.annotation.XmlTransient;
 import util.enumeration.RentalRateType;
 
 /**
@@ -167,6 +168,7 @@ public class RentalRate implements Serializable {
     /**
      * @return the carCategory
      */
+    @XmlTransient
     public CarCategory getCarCategory() {
         return carCategory;
     }

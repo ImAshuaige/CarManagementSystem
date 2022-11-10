@@ -39,6 +39,7 @@ import util.exception.InputDataValidationException;
 import util.exception.LicensePlateExistException;
 import util.exception.ModelDisabledException;
 import util.exception.OutletNotFoundException;
+import util.exception.PartnerNameExistException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -225,7 +226,7 @@ public class DataInitSessionBean {
 
             
         } catch (ParseException | CarCategoryNotFoundException | UnknownPersistenceException | 
-                InputDataValidationException | CarModelNotFoundException
+                InputDataValidationException | CarModelNotFoundException | PartnerNameExistException
                 | LicensePlateExistException | ModelDisabledException | OutletNotFoundException ex) {
             ex.printStackTrace();
 

@@ -19,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.validation.constraints.DecimalMin;
+import javax.xml.bind.annotation.XmlTransient;
 import util.enumeration.ReservationStatusEnum;
 
 /**
@@ -220,6 +221,7 @@ public class Reservation implements Serializable {
     /**
      * @return the reservationDispatchDriver
      */
+    @XmlTransient
     public TransitDriverDispatch getReservationDispatchDriver() {
         return reservationDispatchDriver;
     }
@@ -234,6 +236,7 @@ public class Reservation implements Serializable {
     /**
      * @return the reservationPartner
      */
+    @XmlTransient
     public Partner getReservationPartner() {
         return reservationPartner;
     }
@@ -248,6 +251,7 @@ public class Reservation implements Serializable {
     /**
      * @return the car
      */
+    @XmlTransient
     public Car getCar() {
         return car;
     }
@@ -262,6 +266,7 @@ public class Reservation implements Serializable {
     /**
      * @return the reservedCarCategory
      */
+    @XmlTransient
     public CarCategory getReservedCarCategory() {
         return reservedCarCategory;
     }
@@ -276,6 +281,7 @@ public class Reservation implements Serializable {
     /**
      * @return the reservedCarModel
      */
+    @XmlTransient
     public CarModel getReservedCarModel() {
         return reservedCarModel;
     }
@@ -290,6 +296,7 @@ public class Reservation implements Serializable {
     /**
      * @return the customer
      */
+    @XmlTransient
     public Customer getCustomer() {
         return customer;
     }
@@ -304,6 +311,7 @@ public class Reservation implements Serializable {
     /**
      * @return the reservationPickUpOutlet
      */
+    @XmlTransient
     public Outlet getReservationPickUpOutlet() {
         return reservationPickUpOutlet;
     }
@@ -318,6 +326,7 @@ public class Reservation implements Serializable {
     /**
      * @return the reservationReturnOutlet
      */
+    @XmlTransient
     public Outlet getReservationReturnOutlet() {
         return reservationReturnOutlet;
     }

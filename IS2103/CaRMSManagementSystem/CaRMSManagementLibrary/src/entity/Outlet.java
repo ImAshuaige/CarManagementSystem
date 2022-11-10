@@ -16,6 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -168,6 +169,7 @@ public class Outlet implements Serializable {
     /**
      * @return the carsList
      */
+    @XmlTransient
     public List<Car> getCarsList() {
         return carsList;
     }
@@ -182,6 +184,7 @@ public class Outlet implements Serializable {
     /**
      * @return the employeesList
      */
+    @XmlTransient
     public List<Employee> getEmployeesList() {
         return employeesList;
     }
@@ -196,6 +199,7 @@ public class Outlet implements Serializable {
     /**
      * @return the transitDriverDispatchList
      */
+    @XmlTransient
     public List<TransitDriverDispatch> getTransitDriverDispatchList() {
         return transitDriverDispatchList;
     }

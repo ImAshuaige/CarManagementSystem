@@ -7,6 +7,11 @@ package ejb.session.stateless;
 
 import entity.Partner;
 import javax.ejb.Local;
+import util.exception.InputDataValidationException;
+import util.exception.InvalidLoginException;
+import util.exception.PartnerNameExistException;
+import util.exception.PartnerNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -14,5 +19,9 @@ import javax.ejb.Local;
  */
 @Local
 public interface PartnerSessionBeanLocal {
-    public Long createNewPartner(Partner partner);
+    public Long createNewPartner(Partner newPartner) throws PartnerNameExistException, UnknownPersistenceException, InputDataValidationException;
+    
+    public Long partnerLogin(String partnerName, String password) throws InvalidLoginException, PartnerNotFoundException;
+
+    public Partner retrievePartnerByPartnerId(Long partnerId) throws PartnerNotFoundException;
 }

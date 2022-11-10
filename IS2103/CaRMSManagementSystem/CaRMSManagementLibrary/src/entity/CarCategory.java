@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -94,6 +95,7 @@ public class CarCategory implements Serializable {
     /**
      * @return the modelList
      */
+    @XmlTransient
     public List<CarModel> getModelList() {
         return modelList;
     }
@@ -101,6 +103,7 @@ public class CarCategory implements Serializable {
     /**
      * @param modelList the modelList to set
      */
+    
     public void setModelList(List<CarModel> modelList) {
         this.modelList = modelList;
     }
@@ -108,6 +111,7 @@ public class CarCategory implements Serializable {
     /**
      * @return the rateList
      */
+    @XmlTransient
     public List<RentalRate> getRateList() {
         return rateList;
     }

@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.xml.bind.annotation.XmlTransient;
 import util.enumeration.CarStatusEnum;
 
 /**
@@ -151,6 +152,7 @@ public class Car implements Serializable {
     /**
      * @return the latestOutlet
      */
+    @XmlTransient
     public Outlet getLatestOutlet() {
         return latestOutlet;
     }
@@ -179,6 +181,7 @@ public class Car implements Serializable {
     /**
      * @return the currentReservation
      */
+    @XmlTransient
     public Reservation getCurrentReservation() {
         return currentReservation;
     }
@@ -193,6 +196,7 @@ public class Car implements Serializable {
     /**
      * @return the carModel
      */
+    @XmlTransient
     public CarModel getCarModel() {
         return carModel;
     }
