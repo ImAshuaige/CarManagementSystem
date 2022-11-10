@@ -62,17 +62,14 @@ public class PartnerWebService {
     @EJB
     private PartnerSessionBeanLocal partnerSessionBeanLocal;
 
-        //Checking the customerSessionBean to see if this method exists
     @WebMethod(operationName = "createNewPartnerCustomer")
     public Long createNewPartnerCustomer(@WebParam(name = "partnerId") Long partnerId, @WebParam(name = "newCustomer") Customer newCustomer) throws PartnerNotFoundException, UnknownPersistenceException, InputDataValidationException {
         return customerSessionBeanLocal.createNewPartnerCustomer(partnerId, newCustomer);
     }
     
     @WebMethod(operationName = "createNewPartnerRentalReservation")
-    public Long createNewPartnerRentalReservation(@WebParam Long carCategoryId, @WebParam Long partnerId, @WebParam Long modelId, @WebParam Long customerId,
-            @WebParam Long pickupOutletId, @WebParam Long returnOutletId, @WebParam Reservation newReservation)
-            throws OutletNotFoundException, CustomerNotFoundException, InputDataValidationException, UnknownPersistenceException,
-            CarCategoryNotFoundException, CarModelNotFoundException, PartnerNotFoundException {
+    public Long createNewPartnerRentalReservation(@WebParam(name = "carCategoryId") Long carCategoryId, @WebParam(name = "partnerId") Long partnerId, @WebParam(name = "modelId") Long modelId, @WebParam(name = "customerId") Long customerId,
+            @WebParam(name = "pickupOutletId") Long pickupOutletId, @WebParam(name = "returnOutletId") Long returnOutletId, @WebParam(name = "newReservation") Reservation newReservation) throws InputDataValidationException, UnknownPersistenceException, OutletNotFoundException, CustomerNotFoundException, CarCategoryNotFoundException, CarModelNotFoundException, PartnerNotFoundException {
         return reservationSessionBeanLocal.createNewPartnerRentalReservation(carCategoryId, partnerId, modelId, customerId, pickupOutletId, returnOutletId, newReservation);
     }
     

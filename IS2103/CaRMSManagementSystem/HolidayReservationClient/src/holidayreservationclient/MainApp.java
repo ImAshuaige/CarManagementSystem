@@ -287,7 +287,7 @@ public class MainApp {
                     System.out.print("Reserve a car? (Enter 'YES' to reserve a car): ");
                     String response = scanner.nextLine().trim();
                     if (response.equals("YES")) {
-                        reserveCar(input, carCategoryId, modelId, pickUpDateTime, returnDateTime, pickUpOutletId, returnOutletId, totalRentalFee);
+                        //reserveCar(input, carCategoryId, modelId, pickUpDateTime, returnDateTime, pickUpOutletId, returnOutletId, totalRentalFee);
                     }
                 } else {
                     System.out.println("Please Login or Register to Reserve the Car!");
@@ -313,7 +313,7 @@ public class MainApp {
         System.out.print("Press any key to continue.\n ");
         scanner.nextLine();
     }
-    
+    /*
     private void reserveCar(Integer input, Long carCategoryId, Long modelId, Date pickUpDateTime, Date returnDateTime, Long pickUpOutletId, Long returnOutletId, BigDecimal totalRentalFee) {
         Scanner sc = new Scanner(System.in);
         System.out.println("*** Reserve Car ***\n");
@@ -374,6 +374,7 @@ public class MainApp {
             System.out.println(ex.getMessage());
         }
     }
+    */
         
                     
 
@@ -428,7 +429,7 @@ public class MainApp {
         return port.calculateRentalFee(carCategoryId, pickUpTime, returnTime);
     }
 
-        private static Boolean searchCarByCategory(XMLGregorianCalendar pickupTime, XMLGregorianCalendar returnTime, Long poutletId, Long routletId, Long categoryId) throws OutletNotFoundException_Exception, CarCategoryNotFoundException_Exception, NoAvailableRentalRateException_Exception {
+    private static Boolean searchCarByCategory(XMLGregorianCalendar pickupTime, XMLGregorianCalendar returnTime, Long poutletId, Long routletId, Long categoryId) throws OutletNotFoundException_Exception, CarCategoryNotFoundException_Exception, NoAvailableRentalRateException_Exception {
         ws.holidaySystemClient.PartnerWebService_Service service = new ws.holidaySystemClient.PartnerWebService_Service();
         ws.holidaySystemClient.PartnerWebService port = service.getPartnerWebServicePort();
         return port.searchCarByCategory(pickupTime, returnTime, poutletId, routletId, categoryId);
@@ -440,19 +441,11 @@ public class MainApp {
         return port.searchCarByModel(pickupTime, returnTime, poutletId, routletId, modelId);
     }
     
-    //Change arg0 to actual names to differnetiate our style.
-
-    private static Long createNewPartnerCustomer(java.lang.Long arg0, ws.holidaySystemClient.Customer arg1) throws PartnerNotFoundException_Exception {
+    /*private static Long createNewPartnerCustomer(Long currPartnerId, Customer newCustomer) {
         ws.holidaySystemClient.PartnerWebService_Service service = new ws.holidaySystemClient.PartnerWebService_Service();
         ws.holidaySystemClient.PartnerWebService port = service.getPartnerWebServicePort();
-        //Call the method from the PartnerWebService class. 
-        return port.createNewPartnerCustomer(arg0, arg1);
-    }
-
-    private static Long createNewPartnerRentalReservation(java.lang.Long arg0, java.lang.Long arg1, java.lang.Long arg2, java.lang.Long arg3, java.lang.Long arg4, java.lang.Long arg5, ws.holidaySystemClient.Reservation arg6)  {
-        ws.holidaySystemClient.PartnerWebService_Service service = new ws.holidaySystemClient.PartnerWebService_Service();
-        ws.holidaySystemClient.PartnerWebService port = service.getPartnerWebServicePort();
-        return port.createNewPartnerRentalReservation(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
-    }
+        //return port.c
+    }*/
+    
 
 }
