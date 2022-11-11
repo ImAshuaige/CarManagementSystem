@@ -201,7 +201,8 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
     @Override
     public Boolean searchCarByCategory(Date pickUpDateTime, Date returnDateTime, Long pickupOutletId, Long returnOutletId, Long carCategoryId) throws /*NoAvailableRentalRateException,*/ CarCategoryNotFoundException, OutletNotFoundException {
         List<Reservation> reservations = new ArrayList<>();
-
+        
+        //select all reservations that ends earlier/then the current one 
         Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.reservedCarCategory.categoryId = :inCategoryId"
                 + " AND r.reservationStartDate < :inPickupDate AND r.reservationEndDate <= :inReturnDate"
                 + " AND r.isCancelled = FALSE");
@@ -219,6 +220,7 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         reservations.addAll(query.getResultList());
         //System.out.println("1 - query.getResultList() : " + query.getResultList());
 
+        
         query = em.createQuery("SELECT r FROM Reservation r WHERE r.reservedCarCategory.categoryId = :inCategoryId"
                 + " AND r.reservationStartDate >= :inPickupDate AND r.reservationEndDate > :inReturnDate"
                 + " AND r.isCancelled = FALSE");
