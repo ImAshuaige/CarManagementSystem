@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -129,6 +130,7 @@ public class Partner implements Serializable {
     /**
      * @return the partnerCustomerList
      */
+    @XmlTransient
     public List<Customer> getPartnerCustomerList() {
         return partnerCustomerList;
     }
@@ -140,6 +142,7 @@ public class Partner implements Serializable {
         this.partnerCustomerList = partnerCustomerList;
     }
     
+    //@XmlTransient
     public void addCustomer(Customer customer) {
         if (!this.partnerCustomerList.contains(customer)) {
             this.partnerCustomerList.add(customer);

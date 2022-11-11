@@ -366,7 +366,6 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
 
     }
 
-    
     @Override
     public Long createNewPartnerRentalReservation(Long carCategoryId, Long partnerId, Long modelId, Long customerId,
             Long pickupOutletId, Long returnOutletId, Reservation newReservation) throws InputDataValidationException, UnknownPersistenceException, OutletNotFoundException, CustomerNotFoundException, CarCategoryNotFoundException, CarModelNotFoundException, PartnerNotFoundException {
@@ -383,7 +382,7 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
                 newReservation.setReservationPickUpOutlet(pickupOutlet);
                 newReservation.setReservationReturnOutlet(returnOutlet);
                 customer.addReservation(newReservation);
-                
+
                 CarCategory carCategory = null;
                 CarModel model = null;
                 if (carCategoryId > -1) {
@@ -418,7 +417,7 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         }
 
     }
-
+    
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<Reservation>> constraintViolations) {
         String msg = "Input data validation error!:";
 
@@ -426,6 +425,13 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
             msg += "\n\t" + constraintViolation.getPropertyPath() + " - " + constraintViolation.getInvalidValue() + "; " + constraintViolation.getMessage();
         }
         return msg;
+    }
+    
+    @Override
+    public List<Reservation> retrievePartnerReservations(Long partnerId) {
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.reservationPartner.partnerId = :inPartnerId");
+        query.setParameter("inPartnerId", partnerId);
+        return query.getResultList();
     }
 
 }

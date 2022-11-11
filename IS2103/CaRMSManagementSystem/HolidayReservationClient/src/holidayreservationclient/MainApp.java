@@ -15,25 +15,19 @@ import java.util.Scanner;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import util.exception.CustomerNotFoundException;
 import util.exception.DatePeriodInvalidException;
-import util.exception.InputDataValidationException;
 import util.exception.OutsideOutletOperatingHourException;
-import util.exception.PartnerNotFoundException;
-import util.exception.UnknownPersistenceException;
 import ws.holidaySystemClient.CarCategory;
 import ws.holidaySystemClient.CarCategoryNotFoundException;
 import ws.holidaySystemClient.CarCategoryNotFoundException_Exception;
 import ws.holidaySystemClient.CarModel;
 import ws.holidaySystemClient.CarModelNotFoundException_Exception;
-import ws.holidaySystemClient.Customer;
 import ws.holidaySystemClient.InvalidLoginException_Exception;
 import ws.holidaySystemClient.NoAvailableRentalRateException;
 import ws.holidaySystemClient.NoAvailableRentalRateException_Exception;
 import ws.holidaySystemClient.Outlet;
 import ws.holidaySystemClient.OutletNotFoundException_Exception;
 import ws.holidaySystemClient.PartnerNotFoundException_Exception;
-import ws.holidaySystemClient.Reservation;
 
 //import ws.holidaySystemClient.PartnerWebService;
 /**
@@ -313,70 +307,6 @@ public class MainApp {
         System.out.print("Press any key to continue.\n ");
         scanner.nextLine();
     }
-    /*
-    private void reserveCar(Integer input, Long carCategoryId, Long modelId, Date pickUpDateTime, Date returnDateTime, Long pickUpOutletId, Long returnOutletId, BigDecimal totalRentalFee) {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("*** Reserve Car ***\n");
-        Reservation reservation = new Reservation();
-        Long customerId =  new Long(0);
-        String customerFirstName;
-        String customerLastName;
-        String customerEmail;
-        XMLGregorianCalendar pickUpDateGregorianCalendar = null;
-        XMLGregorianCalendar returnDateGregorianCalendar = null;
-        GregorianCalendar calender = new GregorianCalendar();
-        
-         try {
-            calender.setTime(pickUpDateTime);
-            pickUpDateGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(calender);
-            reservation.setReservationStartDate(pickUpDateGregorianCalendar);
-            calender.setTime(returnDateTime);
-            
-            returnDateGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(calender);
-            reservation.setReservationEndDate(returnDateGregorianCalendar);
-            reservation.setReservationPrice(totalRentalFee);
-            
-            Customer newCustomer = new Customer();
-            System.out.print("Enter customer first name: ");
-            customerFirstName = sc.nextLine().trim();
-            System.out.print("Enter customer last name: ");
-            customerLastName = sc.nextLine().trim();
-            System.out.print("Enter email: ");
-            customerEmail = sc.nextLine().trim();
-            
-            newCustomer.setCustomerFirstName(customerFirstName);
-            newCustomer.setCustomerLastName(customerLastName);
-            newCustomer.setCustomerEmail(customerEmail);
-            
-            System.out.print("Enter credit card number: ");
-            String customerCreditCardNumber = sc.nextLine().trim();
-            reservation.setCreditCardNumber(customerCreditCardNumber);
-            
-            System.out.print("Would you like to pay now? (Enter 'YES' to enter payment details): ");
-            String response = sc.nextLine().trim();
-            
-            if (input.equals("YES")) {
-                reservation.setPaid(true);
-                System.out.println(" You have been charged " + totalRentalFee.toString() + " to the credit card: " + customerCreditCardNumber);
-            } else {
-                reservation.setPaid(false);
-            }
-            
-            
-            //Reference
-            customerId = createNewPartnerCustomer(currPartnerId, newCustomer);
-            Long reservationId = createNewPartnerRentalReservation(carCategoryId, currPartnerId, modelId, customerId, pickUpOutletId, returnOutletId, reservation);
-            System.out.println("Rental reservation created with ID: " + reservationId);
-
-        } catch (PartnerNotFoundException_Exception ex) {
-            System.out.println("Partner not found!\n");
-        } catch (DatatypeConfigurationException ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
-    */
-        
-                    
 
     private static Long partnerLogin(java.lang.String partnerName, java.lang.String password) throws InvalidLoginException_Exception, PartnerNotFoundException_Exception {
 
@@ -429,7 +359,7 @@ public class MainApp {
         return port.calculateRentalFee(carCategoryId, pickUpTime, returnTime);
     }
 
-    private static Boolean searchCarByCategory(XMLGregorianCalendar pickupTime, XMLGregorianCalendar returnTime, Long poutletId, Long routletId, Long categoryId) throws OutletNotFoundException_Exception, CarCategoryNotFoundException_Exception, NoAvailableRentalRateException_Exception {
+        private static Boolean searchCarByCategory(XMLGregorianCalendar pickupTime, XMLGregorianCalendar returnTime, Long poutletId, Long routletId, Long categoryId) throws OutletNotFoundException_Exception, CarCategoryNotFoundException_Exception, NoAvailableRentalRateException_Exception {
         ws.holidaySystemClient.PartnerWebService_Service service = new ws.holidaySystemClient.PartnerWebService_Service();
         ws.holidaySystemClient.PartnerWebService port = service.getPartnerWebServicePort();
         return port.searchCarByCategory(pickupTime, returnTime, poutletId, routletId, categoryId);
@@ -440,12 +370,6 @@ public class MainApp {
         ws.holidaySystemClient.PartnerWebService port = service.getPartnerWebServicePort();
         return port.searchCarByModel(pickupTime, returnTime, poutletId, routletId, modelId);
     }
-    
-    /*private static Long createNewPartnerCustomer(Long currPartnerId, Customer newCustomer) {
-        ws.holidaySystemClient.PartnerWebService_Service service = new ws.holidaySystemClient.PartnerWebService_Service();
-        ws.holidaySystemClient.PartnerWebService port = service.getPartnerWebServicePort();
-        //return port.c
-    }*/
-    
+
 
 }

@@ -17,7 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.xml.bind.annotation.XmlTransient;
+//import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -132,7 +132,7 @@ public class TransitDriverDispatch implements Serializable {
     /**
      * @return the dispatchDriver
      */
-    @XmlTransient
+    //@XmlTransient
     public Employee getDispatchDriver() {
         return dispatchDriver;
     }
@@ -147,7 +147,7 @@ public class TransitDriverDispatch implements Serializable {
     /**
      * @return the destinationOutlet
      */
-    @XmlTransient
+    //@XmlTransient
     public Outlet getDestinationOutlet() {
         return destinationOutlet;
     }
@@ -162,7 +162,7 @@ public class TransitDriverDispatch implements Serializable {
     /**
      * @return the rentalReservation
      */
-    @XmlTransient
+    //@XmlTransient
     public Reservation getRentalReservation() {
         return rentalReservation;
     }

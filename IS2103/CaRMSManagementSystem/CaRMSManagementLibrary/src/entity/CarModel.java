@@ -134,7 +134,7 @@ public class CarModel implements Serializable {
     /**
      * @return the belongsCategory
      */
-    @XmlTransient
+    //@XmlTransient
     public CarCategory getBelongsCategory() {
         return belongsCategory;
     }
@@ -155,7 +155,7 @@ public class CarModel implements Serializable {
     /**
      * @return the listOfCars
      */
-    @XmlTransient
+    //@XmlTransient
     public List<Car> getListOfCars() {
         return listOfCars;
     }

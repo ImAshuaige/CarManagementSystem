@@ -48,7 +48,7 @@ public interface ReservationSessionBeanLocal {
     
     public Long createNewPartnerRentalReservation(Long carCategoryId, Long partnerId, Long modelId, Long customerId, Long pickupOutletId, Long returnOutletId, Reservation newReservation) throws InputDataValidationException, UnknownPersistenceException, OutletNotFoundException, CustomerNotFoundException, CarCategoryNotFoundException, CarModelNotFoundException, PartnerNotFoundException;
     
-    
+    public List<Reservation> retrievePartnerReservations(Long partnerId);
     
     
 }

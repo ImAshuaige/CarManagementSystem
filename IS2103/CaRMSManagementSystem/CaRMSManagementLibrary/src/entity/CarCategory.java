@@ -111,7 +111,7 @@ public class CarCategory implements Serializable {
     /**
      * @return the rateList
      */
-    @XmlTransient
+    //@XmlTransient
     public List<RentalRate> getRateList() {
         return rateList;
     }

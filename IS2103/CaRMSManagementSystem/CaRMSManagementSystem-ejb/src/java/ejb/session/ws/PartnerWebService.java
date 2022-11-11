@@ -7,13 +7,11 @@ package ejb.session.ws;
 
 import ejb.session.stateless.CarCategorySessionBeanLocal;
 import ejb.session.stateless.CarModelSessionBeanLocal;
-import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.OutletSessionBeanLocal;
 import ejb.session.stateless.PartnerSessionBeanLocal;
 import ejb.session.stateless.ReservationSessionBeanLocal;
 import entity.CarCategory;
 import entity.CarModel;
-import entity.Customer;
 import entity.Outlet;
 import entity.Reservation;
 import java.math.BigDecimal;
@@ -28,13 +26,10 @@ import javax.enterprise.inject.Model;
 import javax.xml.bind.annotation.XmlTransient;
 import util.exception.CarCategoryNotFoundException;
 import util.exception.CarModelNotFoundException;
-import util.exception.CustomerNotFoundException;
-import util.exception.InputDataValidationException;
 import util.exception.InvalidLoginException;
 import util.exception.NoAvailableRentalRateException;
 import util.exception.OutletNotFoundException;
 import util.exception.PartnerNotFoundException;
-import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -43,9 +38,6 @@ import util.exception.UnknownPersistenceException;
 @WebService(serviceName = "PartnerWebService")
 @Stateless
 public class PartnerWebService {
-
-    @EJB
-    private CustomerSessionBeanLocal customerSessionBeanLocal;
 
     @EJB
     private ReservationSessionBeanLocal reservationSessionBeanLocal;
@@ -62,17 +54,6 @@ public class PartnerWebService {
     @EJB
     private PartnerSessionBeanLocal partnerSessionBeanLocal;
 
-    @WebMethod(operationName = "createNewPartnerCustomer")
-    public Long createNewPartnerCustomer(@WebParam(name = "partnerId") Long partnerId, @WebParam(name = "newCustomer") Customer newCustomer) throws PartnerNotFoundException, UnknownPersistenceException, InputDataValidationException {
-        return customerSessionBeanLocal.createNewPartnerCustomer(partnerId, newCustomer);
-    }
-    
-    @WebMethod(operationName = "createNewPartnerRentalReservation")
-    public Long createNewPartnerRentalReservation(@WebParam(name = "carCategoryId") Long carCategoryId, @WebParam(name = "partnerId") Long partnerId, @WebParam(name = "modelId") Long modelId, @WebParam(name = "customerId") Long customerId,
-            @WebParam(name = "pickupOutletId") Long pickupOutletId, @WebParam(name = "returnOutletId") Long returnOutletId, @WebParam(name = "newReservation") Reservation newReservation) throws InputDataValidationException, UnknownPersistenceException, OutletNotFoundException, CustomerNotFoundException, CarCategoryNotFoundException, CarModelNotFoundException, PartnerNotFoundException {
-        return reservationSessionBeanLocal.createNewPartnerRentalReservation(carCategoryId, partnerId, modelId, customerId, pickupOutletId, returnOutletId, newReservation);
-    }
-    
     @WebMethod(operationName = "partnerLogin")
     public Long partnerLogin(@WebParam(name = "partnerName") String partnerName, @WebParam(name = "partnerPassword") String password) throws InvalidLoginException, PartnerNotFoundException {
         return partnerSessionBeanLocal.partnerLogin(partnerName, password);
@@ -131,6 +112,5 @@ public class PartnerWebService {
     public List<Outlet> retrieveAllOutlets() {
         return outletSessionBeanLocal.retrieveAllOutlets();
     }
-   
 
 }
