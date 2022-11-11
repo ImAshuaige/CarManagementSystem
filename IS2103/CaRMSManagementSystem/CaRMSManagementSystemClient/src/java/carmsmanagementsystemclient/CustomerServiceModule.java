@@ -58,7 +58,7 @@ public class CustomerServiceModule {
               response = 0;
               
               while(response < 1 || response > 3) {
-                  System.out.print("> ");
+                  System.out.print("Your input: ");
                   response = sc.nextInt();
                   if(response == 1) {
                       pickUpCar();
@@ -97,9 +97,9 @@ public class CustomerServiceModule {
                 Long rentalReservationId = sc.nextLong();
                 Reservation reservation = reservationSessionBeanRemote.retrieveReservationByReservationId(rentalReservationId);
                 if(!reservation.getReservationStatus().equals(ReservationStatusEnum.PAID)) {
-                    System.out.print("Pay rental fee? (Enter 'Y' to pay) > ");
+                    System.out.print("Pay rental fee? (Enter 'YES' to pay) : ");
                     String input = sc.nextLine().trim();
-                    if (!input.equals("Y")) {
+                    if (!input.equals("YES")) {
                         try {
                             throw new UnpaidRentalReservationException("Please pay for the rental reservation ID: " + rentalReservationId + " !");
                         } catch (UnpaidRentalReservationException ex) {
@@ -118,7 +118,7 @@ public class CustomerServiceModule {
                     System.out.println("Car successfully picked up by customer");
                 }
                 
-                 System.out.print("Press any key to continue...> ");
+                 System.out.print("Press any key to continue. ");
                 sc.nextLine();
               } catch (ReservationNotFoundException ex) {
                   Logger.getLogger(CustomerServiceModule.class.getName()).log(Level.SEVERE, null, ex);
@@ -141,7 +141,7 @@ public class CustomerServiceModule {
                             sdf.format(reservation.getReservationStartDate()),
                             sdf.format(reservation.getReservationEndDate()));
             }
-            System.out.print("Enter Rental Reservation ID> ");
+            System.out.print("Enter Rental Reservation ID: ");
             Long rentalReservationId = sc.nextLong();
             sc.nextLine();
              try {
@@ -152,7 +152,7 @@ public class CustomerServiceModule {
             } catch (ReservationNotFoundException ex) {
                 System.out.println("No Rental Reservation of ID: " + rentalReservationId);
             }
-            System.out.print("Press any key to continue...> ");
+            System.out.print("Press any key to continue.");
             sc.nextLine();
         }
               

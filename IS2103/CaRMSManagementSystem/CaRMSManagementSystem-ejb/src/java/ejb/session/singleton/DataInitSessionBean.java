@@ -91,7 +91,7 @@ public class DataInitSessionBean {
             outletSessionBean.createNewOutlet(o1);
             Outlet o2 = new Outlet("Outlet B", "Changi", null, null);
             outletSessionBean.createNewOutlet(o2);
-            Outlet o3 = new Outlet("Outlet C", "Simei", new Date(2000, 1, 1, 10, 0, 0), new Date(2000, 1, 1, 22, 0, 0));
+            Outlet o3 = new Outlet("Outlet C", "Simei", new Date(2000, 1, 1, 8, 0, 0), new Date(2000, 1, 1, 22, 0, 0));
             outletSessionBean.createNewOutlet(o3);
             
             

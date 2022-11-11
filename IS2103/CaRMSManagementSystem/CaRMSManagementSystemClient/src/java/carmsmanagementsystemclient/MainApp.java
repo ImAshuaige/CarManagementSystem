@@ -84,8 +84,8 @@ public class MainApp {
         while (true) {
             System.out.println("***Welcome! CaRMS Management Client! ***");
             System.out.println("[1] Login");
-            System.out.println("[2] Manually Allocate Cars");
-            System.out.println("[3] Exit");
+            //System.out.println("[2] Manually Allocate Cars");
+            System.out.println("[2] Exit");
 
             input = 0;//set input/default input to 0
             while (input == 0) {//everytime want to do a new command
@@ -95,25 +95,21 @@ public class MainApp {
                 if (input == 1) {
                     try {
                         login();
-                        System.out.println("***Login Successfully***");
+                        System.out.println("*** Login Successfully ***");
                         operationsMenu();
                     } catch (InvalidLoginException ex) {
                         System.out.println("Invalid Login: " + ex.getMessage());
-                    } /*catch (Exception ex) {
+                    } catch (Exception ex) {
                         System.out.println("The User Does Not Exist. Please Enter the Correct Username!");
-                    }*/
+                    }
                 } else if (input == 2) {
-                    //Need to add in NoAllocatableCarException and RentalReservationNotFoundException
-                    manuallyAllocateCars();
-                    break;//to be written
-                } else if (input == 3) {
-                    break;
+                        break;
                 } else {
-                    System.out.println("Invalid input, please try again!");
+                    System.out.println("Invalid input! please try again!");
                 }
 
             }
-            if (input == 3) {
+            if (input == 2) {
                 break;//break the main true loop
             }
         }
@@ -149,11 +145,12 @@ public class MainApp {
             System.out.println("Your role is: " + currEmployee.getEmployeeRole().toString());
             System.out.println("[1] Sales Management Menu");
             System.out.println("[2] Customer Service Menu");
-            System.out.println("[3] Logout");
+            System.out.println("[3] Manually Allocate Cars");
+            System.out.println("[4] Logout");
 
             input = 0;
 
-            while (input < 1 || input > 3) {
+            while (input < 1 || input > 4) {
                 System.out.print("Your input: ");
                 input = sc.nextInt();
 
@@ -181,19 +178,16 @@ public class MainApp {
                 } 
                     break;//to be writtem
                 } else if (input == 3) {
+                    manuallyAllocateCars();
+                } else if (input == 4) {
                     break;
                 } else {
                     System.out.println("Invalid input, please try again!");
                 }
-                //to be uncomment
-                //} catch (InvalidAccessRightException ex) {
-                //    System.out.println("Invalid option, please try again!: " + ex.getMessage() + "\n");
-                //} catch (UnpaidRentalReservationException ex) {
-                //    System.out.println("Customer has not paid for the car rental reservation!");
-                //}
+
             }
-            if (input == 3) {
-                System.out.println("***Logout Successfully***");
+            if (input == 4) {
+                System.out.println("*** Logout Successfully ***");
                 break;
             }
         }
@@ -204,12 +198,12 @@ public class MainApp {
         Scanner sc = new Scanner(System.in);
         System.out.println("*** Allocating Cars to Reservation of a certain date ***");
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        System.out.print("Enter Date(DD/MM/YYYY)> ");
+        System.out.print("Enter Date(DD/MM/YYYY): ");
         String inputDate = sc.nextLine().trim();
         try {
             Date date = sdf.parse(inputDate);
             //Import the ejbTimerSessionBeanRemote
-            System.out.println(ejbTimerSessionBeanRemote);
+            //System.out.println(ejbTimerSessionBeanRemote);
             ejbTimerSessionBeanRemote.allocateCarsToCurrentDayReservations(date);
             System.out.println("*** Completed Allocation of Cars for reservations on " + inputDate + " ***\n");
         } catch (ParseException ex) {

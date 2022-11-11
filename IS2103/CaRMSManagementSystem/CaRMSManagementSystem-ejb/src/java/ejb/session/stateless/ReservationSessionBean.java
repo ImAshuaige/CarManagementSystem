@@ -199,28 +199,30 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
     }
 
     @Override
-    public Boolean searchCarByCategory(Date pickUpDateTime, Date returnDateTime, Long pickupOutletId, Long returnOutletId, Long carCategoryId) throws /*NoAvailableRentalRateException,*/ CarCategoryNotFoundException, OutletNotFoundException {
+    public Boolean searchCarByCategory(Date pickUpDateTime, Date returnDateTime, Long pickupOutletId, Long returnOutletId, Long carCategoryId) throws CarCategoryNotFoundException, OutletNotFoundException {
         List<Reservation> reservations = new ArrayList<>();
-        
+
         //select all reservations that ends earlier/then the current one 
-        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.reservedCarCategory.categoryId = :inCategoryId"
-                + " AND r.reservationStartDate < :inPickupDate AND r.reservationEndDate <= :inReturnDate"
+        /*Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.reservedCarCategory.categoryId = :inCategoryId"
+                + "AND r.reservationStartDate < :inPickupDate "
+                + " AND r.reservationEndDate <= :inReturnDate"
                 + " AND r.isCancelled = FALSE");
         query.setParameter("inCategoryId", carCategoryId);
         query.setParameter("inPickupDate", pickUpDateTime);
         query.setParameter("inReturnDate", returnDateTime);
         reservations.addAll(query.getResultList());
-
-        query = em.createQuery("SELECT r FROM Reservation r WHERE r.reservedCarCategory.categoryId = :inCategoryId"
+        System.out.println("1 - query.getResultList() : " + query.getResultList());*/
+        //CASE 1
+        /*Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.reservedCarCategory.categoryId = :inCategoryId"
                 + " AND r.reservationStartDate >= :inPickupDate AND r.reservationEndDate <= :inReturnDate"
                 + " AND r.isCancelled = FALSE");
         query.setParameter("inCategoryId", carCategoryId);
         query.setParameter("inPickupDate", pickUpDateTime);
         query.setParameter("inReturnDate", returnDateTime);
         reservations.addAll(query.getResultList());
-        //System.out.println("1 - query.getResultList() : " + query.getResultList());
+        System.out.println("1 - query.getResultList() : " + query.getResultList());
 
-        
+        //CORRECT2: reservations start day greater or equal then the curr 
         query = em.createQuery("SELECT r FROM Reservation r WHERE r.reservedCarCategory.categoryId = :inCategoryId"
                 + " AND r.reservationStartDate >= :inPickupDate AND r.reservationEndDate > :inReturnDate"
                 + " AND r.isCancelled = FALSE");
@@ -228,8 +230,9 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         query.setParameter("inPickupDate", pickUpDateTime);
         query.setParameter("inReturnDate", returnDateTime);
         reservations.addAll(query.getResultList());
-        //System.out.println("2 - query.getResultList() : " + query.getResultList());
+        System.out.println("2 - query.getResultList() : " + query.getResultList());
 
+        //CORRECT: exisiting reservations start earlier than the curr, and ends later than the curr
         query = em.createQuery("SELECT r FROM Reservation r WHERE r.reservedCarCategory.categoryId = :inCategoryId"
                 + " AND r.reservationStartDate <= :inPickupDate AND r.reservationEndDate >= :inReturnDate"
                 + " AND r.isCancelled = FALSE");
@@ -237,7 +240,17 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         query.setParameter("inPickupDate", pickUpDateTime);
         query.setParameter("inReturnDate", returnDateTime);
         reservations.addAll(query.getResultList());
-        //System.out.println("3 - query.getResultList() : " + query.getResultList());
+        System.out.println("3 - query.getResultList() : " + query.getResultList());*/
+
+        //--------------------------------------------------------------------------------------------
+        Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.reservedCarCategory.categoryId = :inCategoryId"
+                + " AND r.reservationEndDate > :inPickupDate"
+                + " AND r.isCancelled = FALSE");
+        query.setParameter("inCategoryId", carCategoryId);
+        query.setParameter("inPickupDate", pickUpDateTime);
+        //query.setParameter("inReturnDate", returnDateTime);
+        reservations.addAll(query.getResultList());
+        //System.out.println("1 - query.getResultList() : " + query.getResultList());
 
         GregorianCalendar calendar = new GregorianCalendar(pickUpDateTime.getYear() + 1900,
                 pickUpDateTime.getMonth(), pickUpDateTime.getDate(), pickUpDateTime.getHours(),
@@ -246,7 +259,8 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         Date transitDate = calendar.getTime();
 
         query = em.createQuery("SELECT r FROM Reservation r WHERE r.reservedCarCategory.categoryId = :inCategoryId"
-                + " AND r.reservationStartDate < :inPickupDate AND r.reservationEndDate > :inTransitDate"
+                + " AND r.reservationEndDate = :inPickupDate"
+                + " AND r.reservationEndDate > :inTransitDate"
                 + " AND r.reservationReturnOutlet.outletId <> :inPickupOutletId"
                 + " AND r.isCancelled = FALSE");
         query.setParameter("inCategoryId", carCategoryId);
@@ -254,15 +268,15 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         query.setParameter("inTransitDate", transitDate);
         query.setParameter("inPickupOutletId", pickupOutletId);
         reservations.addAll(query.getResultList());
-        //System.out.println("4 - query.getResultList() : " + query.getResultList());
+        //System.out.println("2 - query.getResultList() : " + query.getResultList());
 
         CarCategory carCategory = carCategorySessionBeanLocal.retrieveCarCategoryByCarCategoryId(carCategoryId);
         List<Car> cars = new ArrayList<>();
         for (CarModel model : carCategory.getModelList()) {
             cars.addAll(model.getListOfCars());
         }
-        //System.out.println("cars : " + cars.size());
-        //System.out.println("rentalReservations.size() : " + reservations.size());
+        System.out.println("cars : " + cars.size());
+        System.out.println("rentalReservations.size() : " + reservations.size());
 
         if (cars.size() > reservations.size()) {
             return true;
@@ -272,7 +286,7 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
     }
 
     @Override
-    public Boolean searchCarByModel(Date pickUpDateTime, Date returnDateTime, Long pickupOutletId, Long returnOutletId, Long modelId) throws /*NoAvailableRentalRateException,*/ CarCategoryNotFoundException, OutletNotFoundException, CarModelNotFoundException {
+    public Boolean searchCarByModel(Date pickUpDateTime, Date returnDateTime, Long pickupOutletId, Long returnOutletId, Long modelId) throws CarCategoryNotFoundException, OutletNotFoundException, CarModelNotFoundException {
         List<Reservation> reservations = new ArrayList<>();
 
         Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.reservedCarModel.modelId = :inModelId"
@@ -419,7 +433,7 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         }
 
     }
-    
+
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<Reservation>> constraintViolations) {
         String msg = "Input data validation error!:";
 
@@ -428,7 +442,7 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         }
         return msg;
     }
-    
+
     @Override
     public List<Reservation> retrievePartnerReservations(Long partnerId) {
         Query query = em.createQuery("SELECT r FROM Reservation r WHERE r.reservationPartner.partnerId = :inPartnerId");

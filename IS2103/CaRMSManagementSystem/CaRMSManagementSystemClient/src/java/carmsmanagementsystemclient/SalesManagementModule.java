@@ -82,7 +82,7 @@ public class SalesManagementModule {
      * @throws util.exception.InvalidAccessRightException
      */
     public void menuSalesManagement() throws InvalidAccessRightException {
-        System.out.println("*** Welcome to CarMS Sales Management Menu ***\n");
+        System.out.println("*** Welcome to the Sales Management Menu ***\n");
         if (currEmployee.getEmployeeRole() == EmployeeRoleEnum.SALES_MANAGER) {
             salesManagerMenu();
         } else if (currEmployee.getEmployeeRole() == EmployeeRoleEnum.OPERATIONS_MANAGER) {
@@ -103,8 +103,6 @@ public class SalesManagementModule {
             System.out.println("[1] Create New Rental Rate");
             System.out.println("[2] View All Rental Rates");
             System.out.println("[3] View Rental Rate Details");
-            //System.out.println("[4] Update Rental Rate");
-            //System.out.println("[5] Delete Rental Rate");
             System.out.println("[4] Exit");
 
             input = 0;
@@ -271,9 +269,9 @@ public class SalesManagementModule {
             sc.nextLine();
 
             System.out.println("Choose the rental rate type from the following: ");
-                System.out.println("1: DEFUALT Rate Type");
-                System.out.println("2: PEAK Rate Type");
-                System.out.println("3: PROMOTION Rate Type");
+                System.out.println("[1] DEFUALT Rate Type");
+                System.out.println("[2] PEAK Rate Type");
+                System.out.println("[3] PROMOTION Rate Type");
                 
                 int type = sc.nextInt();
                 if (type == 1) {
@@ -287,14 +285,14 @@ public class SalesManagementModule {
                     r.setRateType(RentalRateType.PROMOTION);
                 }
             
-            System.out.print("Enter validity period? (Enter 'Y' to set validity period) > ");
+            System.out.print("Enter validity period? (Enter 'YES' to set validity period) : ");
             String validity = sc.nextLine().trim();
 
-            if (validity.equals("Y")) {
+            if (validity.equals("YES")) {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                System.out.print("Enter start date (DD/MM/YYYY HH:MM)> ");
+                System.out.print("Enter start date (DD/MM/YYYY HH:MM): ");
                 Date startDate = sdf.parse(sc.nextLine().trim());
-                System.out.print("Enter end date (DD/MM/YYYY HH:MM)> ");
+                System.out.print("Enter end date (DD/MM/YYYY HH:MM): ");
                 Date endDate = sdf.parse(sc.nextLine().trim());
                 if (endDate.before(startDate)) {
                     throw new EndDateBeforeStartDateException();
@@ -330,20 +328,20 @@ public class SalesManagementModule {
         Scanner sc = new Scanner(System.in);
         Car car = new Car();
         System.out.println("*** Create new Car ***\n");
-        System.out.print("Enter license plate number> ");
+        System.out.print("Enter license plate number: ");
         car.setCarLicensePlateNum(sc.nextLine().trim());
-        System.out.print("Enter colour> ");
+        System.out.print("Enter colour: ");
         car.setColour(sc.nextLine().trim());
-        System.out.print("Enter model ID> ");
+        System.out.print("Enter model ID: ");
         Long modelId = sc.nextLong();
-        System.out.print("Enter outlet ID> ");
+        System.out.print("Enter outlet ID: ");
         Long outletId = sc.nextLong();
         
         
         System.out.println("Choose the Car's current status ");
-                System.out.println("1: AVAILABLE");
-                System.out.println("2: IN RENT");
-                System.out.println("3: REPAIR SERVICE");
+                System.out.println("[1] AVAILABLE");
+                System.out.println("[2] IN RENT");
+                System.out.println("[3] REPAIR SERVICE");
                 int carStatus = sc.nextInt();
                 if (carStatus == 1) {
                     sc.nextLine();
@@ -370,9 +368,9 @@ public class SalesManagementModule {
         } catch (InputDataValidationException ex) {
             System.out.println("Input data validation exception");
         } catch (ModelDisabledException ex) {
-            System.out.println("Model is disabled and new car record should not be created with the disabled model");
+            System.out.println("Model is disabled and new car record should not be created with the disabled model.");
         }
-        System.out.print("Press any key to continue...> ");
+        System.out.print("Press any key to continue.");
         sc.nextLine();
     }
 
@@ -380,9 +378,9 @@ public class SalesManagementModule {
         Scanner sc = new Scanner(System.in);
         System.out.println("*** View All Models ***");
         List<CarModel> models = carModelSessionBeanRemote.retrieveAllCarModels();
-        System.out.printf("%8s%30s%30s%30s\n", "Model Id", "Name", "Make", "Category");
+        System.out.printf("%8s%30s%30s%30s%30s\n", "Model Id", "Name", "Make", "Category","isDisabled");
         for (CarModel m : models) {
-            System.out.printf("%8s%30s%30s%30s\n", m.getModelId(), m.getModel(), m.getMake(), m.getBelongsCategory().getCarCategoryName());
+            System.out.printf("%8s%30s%30s%30s%30s\n", m.getModelId(), m.getModel(), m.getMake(), m.getBelongsCategory().getCarCategoryName(), m.getDisabled());
         }
         System.out.println();
     }
@@ -393,18 +391,18 @@ public class SalesManagementModule {
 
         List<RentalRate> rentalRates = rentalRateSessionBeanRemote.retrieveAllRentalRates();
 
-        System.out.printf("%4s%32%32s%32s%16s%16s%20s%20s\n", "ID", "Rental Rate Name", "Rental Rate Type", "Car Category", "Rate Per Day", "Is Applied?", "Start Period", "End Period");
+        System.out.printf("%4s%25s%20s%20s%16s%16s%20s%20s\n", "ID", "Rental Rate Name", "Rental Rate Type", "Car Category", "Rate Per Day", "Is Applied?", "Start Period", "End Period");
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         for (RentalRate rentalRate : rentalRates) {
-            String startDate = "null";
+            String startDate = "N/A";
             if (rentalRate.getRateStartDate() != null) {
                 startDate = sdf.format(rentalRate.getRateStartDate());
             }
-            String endDate = "null";
+            String endDate = "N/A";
             if (rentalRate.getRateEndDate() != null) {
                 endDate = sdf.format(rentalRate.getRateEndDate());
             }
-            System.out.printf("%4s%32s%32s%16s%16s%20s%20s\n", rentalRate.getRentalRateId(),
+            System.out.printf("%4s%25s%20s%20s%16s%16s%20s%20s\n", rentalRate.getRentalRateId(),
                     rentalRate.getRentalName(), rentalRate.getRateType(), rentalRate.getCarCategory().getCarCategoryName(),
                     rentalRate.getDailyRate(), true, startDate, endDate); //Change true to the isApplied attribute, although it should be the isEnabled attribute
         }
@@ -415,7 +413,7 @@ public class SalesManagementModule {
     private void viewRentalRateDetails() {
         Scanner sc = new Scanner(System.in);
 
-        System.out.print("Enter Rental Rate ID> ");
+        System.out.print("Enter Rental Rate ID: ");
         Long rentalRateId = sc.nextLong();
 
         try {
@@ -431,15 +429,15 @@ public class SalesManagementModule {
             if (r.getRateEndDate() != null) {
                 endDate = sdf.format(r.getRateEndDate());
             }
-            System.out.printf("%4s%32s%32s%32s%16s%16s%20s%20s\n", "ID", "Rental Rate Name", "Rental Rate Type", "Car Category", "Rate Per Day", "Is Enabled?", "Start Period", "End Period");
-            System.out.printf("%4s%32s%32s%16s%16s%20s%20s\n", r.getRentalRateId(),
+            System.out.printf("%4s%25s%20s%20s%16s%16s%20s%20s\n", "ID", "Rental Rate Name", "Rental Rate Type", "Car Category", "Rate Per Day", "Is Enabled?", "Start Period", "End Period");
+            System.out.printf("%4s%25s%20s%20s%16s%16s%20s%20s\n", r.getRentalRateId(),
                     r.getRentalName(), r.getRateType(), r.getCarCategory().getCarCategoryName(),
                     r.getDailyRate(), true, startDate, endDate);
             System.out.println("------------------------");
-            System.out.println("1: Update Rental Rate");
-            System.out.println("2: Delete Rental Rate");
-            System.out.println("3: Back\n");
-            System.out.print("> ");
+            System.out.println("[1] Update Rental Rate");
+            System.out.println("[2] Delete Rental Rate");
+            System.out.println("[3] Back\n");
+            System.out.print("Your input: ");
             Integer updateAndDeleteResponse = sc.nextInt();
             if (updateAndDeleteResponse == 1) {
                 //Still fixing
@@ -447,7 +445,7 @@ public class SalesManagementModule {
             } else if (updateAndDeleteResponse == 2) {
                 deleteRentalRate(r);
             }
-            System.out.print("Press any key to continue...> ");
+            System.out.print("Press any key to continue. ");
         } catch (RentalRateNotFoundException ex) {
             System.out.println("Rental Rate not found for ID: " + rentalRateId);
         }
@@ -458,35 +456,36 @@ public class SalesManagementModule {
         Scanner sc = new Scanner(System.in);
         System.out.println("*** View All Cars ***");
         List<Car> cars = carSessionBeanRemote.retrieveCars();
-        System.out.printf("%4s%32s%32s%32s%16s%16s%22s\n", "ID", "Car Status", "Car Colour","Car Category", "Make", "Model", "License Plate Number");
+        System.out.printf("%4s%16s%16s%16s%16s%16s%22s\n", "ID", "Car Status", "Car Colour","Car Category", "Make", "Model", "License Plate Number");
         for (Car car : cars) {
-            System.out.printf("%4s%32s%32s%32s%16s%16s%22s\n", car.getCarId(), car.getCarStatus(), car.getColour(),
+            System.out.printf("%4s%16s%16s%16s%16s%16s%22s\n"
+                    + "", car.getCarId(), car.getCarStatus(), car.getColour(),
                     car.getCarModel().getBelongsCategory().getCarCategoryName(),
                     car.getCarModel().getMake(), car.getCarModel().getModel(),
                     car.getCarLicensePlateNum());
         }
-        System.out.print("Press any key to continue...> ");
+        System.out.print("Press any key to continue. ");
         sc.nextLine();
     }
 
     private void viewCarDetails() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** View Car Details ***");
-        System.out.print("Enter Car ID> ");
+        System.out.print("Enter Car ID: ");
         Long carId = scanner.nextLong();
         scanner.nextLine();
         try {
             Car car = carSessionBeanRemote.retrieveCarByCarId(carId);
-            System.out.printf("%4s%32s%32s%32s%16s%16s%22s\n", "ID", "Car Status", "Car Colour", "Car Category", "Make", "Model", "License Plate Number");
-            System.out.printf("%4s%32s%32s%32s%16s%16s%22s\n", car.getCarId(), car.getCarStatus(), car.getColour(), car.getCarModel().getBelongsCategory().getCarCategoryName(),
+            System.out.printf("%4s%16s%16s%16s%16s%16s%22s\n", "ID", "Car Status", "Car Colour", "Car Category", "Make", "Model", "License Plate Number");
+            System.out.printf("%4s%16s%16s%16s%16s%16s%22s\n", car.getCarId(), car.getCarStatus(), car.getColour(), car.getCarModel().getBelongsCategory().getCarCategoryName(),
                     car.getCarModel().getMake(), car.getCarModel().getModel(),
                     car.getCarLicensePlateNum());
 
             System.out.println("------------------------");
-            System.out.println("1: Update Car");
-            System.out.println("2: Delete Car");
-            System.out.println("3: Back\n");
-            System.out.print("> ");
+            System.out.println("[1] Update Car");
+            System.out.println("[2] Delete Car");
+            System.out.println("[3] Back\n");
+            System.out.print("Your input: ");
             int response = scanner.nextInt();
 
             if (response == 1) {
@@ -498,7 +497,7 @@ public class SalesManagementModule {
         } catch (CarNotFoundException ex) {
             System.out.println("Car not found for ID: " + carId);
         }
-        System.out.print("Press any key to continue...> ");
+        System.out.print("Press any key to continue. ");
         scanner.nextLine();
     }
 
@@ -522,8 +521,9 @@ public class SalesManagementModule {
         System.out.print("Do you want to update the model name? [1]YES/[2]NO : ");
         int modelInput = sc.nextInt();
         if (modelInput == 1) {
+            sc.nextLine();
             System.out.print("Enter the new model name: ");
-            String updatedModel = sc.next();
+            String updatedModel = sc.nextLine();
             model.setModel(updatedModel);
         }
 
@@ -531,8 +531,9 @@ public class SalesManagementModule {
         System.out.print("Do you want to update the make name? [1]YES/[2]NO : ");
         int makeInput = sc.nextInt();
         if (makeInput == 1) {
+            sc.nextLine();
             System.out.print("Enter the new make name: ");
-            String updatedMake = sc.next();
+            String updatedMake = sc.nextLine();
             model.setMake(updatedMake);
         }
         long categoryId = model.getBelongsCategory().getCategoryId();
@@ -606,9 +607,9 @@ public class SalesManagementModule {
             if (typeInput == 1) {
                 sc.nextLine();
                 
-                System.out.println("1: DEFUALT Rate Type");
-                System.out.println("2: PEAK Rate Type");
-                System.out.println("3: PROMOTION Rate Type");
+                System.out.println("[1] DEFUALT Rate Type");
+                System.out.println("[2] PEAK Rate Type");
+                System.out.println("[3] PROMOTION Rate Type");
                 
                 int type = sc.nextInt();
                 if (type == 1) {
@@ -643,7 +644,7 @@ public class SalesManagementModule {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             if (startDateInput == 1) {
                 sc.nextLine();
-                System.out.print("Enter the new start date (DD/MM/YYYY HH:MM)> ");
+                System.out.print("Enter the new start date (DD/MM/YYYY HH:MM): ");
                 Date updatedStartDate = sdf.parse(sc.nextLine().trim());
                 newRentalRate.setRateStartDate(updatedStartDate);
             } else {
@@ -655,7 +656,7 @@ public class SalesManagementModule {
             int endDateInput = sc.nextInt();
             if (endDateInput == 1) {
                 sc.nextLine();
-                System.out.print("Enter the new end date (DD/MM/YYYY HH:MM)> ");
+                System.out.print("Enter the new end date (DD/MM/YYYY HH:MM): ");
                 Date updatedEndDate = sdf.parse(sc.nextLine().trim());
                 newRentalRate.setRateEndDate(updatedEndDate);
             } else {
@@ -747,7 +748,7 @@ public class SalesManagementModule {
             int updateModelInput = sc.nextInt();
             if (updateModelInput == 1) {
                 sc.nextLine();
-                System.out.print("Enter the new model id > ");
+                System.out.print("Enter the new model id : ");
                 long modelId = sc.nextLong();
                 sc.nextLine();
                 try {
@@ -763,7 +764,7 @@ public class SalesManagementModule {
             int updateOutletInput = sc.nextInt();
             if (updateOutletInput == 1) {
                 sc.nextLine();
-                System.out.print("Enter the new Outlet ID > ");
+                System.out.print("Enter the new Outlet ID : ");
                 long outletId = sc.nextLong();
                 sc.nextLine();
                 try {
@@ -831,7 +832,7 @@ public class SalesManagementModule {
         System.out.println("*** The rental rate has been successfully deleted ***");
         System.out.println("The deleted rental rate id is:[ " + rentalRateId + " ]");
 
-        System.out.print("Press any key to continue...> ");
+        System.out.print("Press any key to continue.");
         sc.nextLine();
 
     }
@@ -853,7 +854,7 @@ public class SalesManagementModule {
     private void viewTransitDriverDispatchRecordsForCurrentDayReservations() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** View Transit Driver Dispatch Records for Current Day Reservations ***\n");
-        System.out.print("Enter Current Date (DD/MM/YYYY) > ");
+        System.out.print("Enter Current Date (DD/MM/YYYY) : ");
         String inputDate = scanner.nextLine().trim();
         try {
             SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -891,7 +892,7 @@ public class SalesManagementModule {
         Scanner sc = new Scanner(System.in);
         try {
             System.out.println("*** Assign Transit Driver***");
-            System.out.print("Enter Date (DD/MM/YYYY) > ");
+            System.out.print("Enter Date (DD/MM/YYYY) : ");
             String inputDate = sc.nextLine().trim();
             System.out.println("Dispatch records for " + currEmployee.getOutlet().getOutletName() + " on " + inputDate + "\n");
             SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -919,9 +920,9 @@ public class SalesManagementModule {
                             dispatchDriverName, isCompleted, transitDate);
                 }
             }
-                System.out.print("Enter Transit Driver Dispatch Record ID> ");
+                System.out.print("Enter Transit Driver Dispatch Record ID: ");
                 Long transitDriverDispatchRecordId = sc.nextLong();
-                System.out.print("Enter Dispatch Driver ID> ");
+                System.out.print("Enter Dispatch Driver ID: ");
                 Long dispatchDriverId = sc.nextLong();
                 
                 transitDriverDispatchSessionBeanRemote.assignDriver(dispatchDriverId, transitDriverDispatchRecordId);
@@ -945,7 +946,7 @@ public class SalesManagementModule {
         Scanner scanner = new Scanner(System.in);
         try {
             System.out.println("*** Update Transit As Completed ***");
-            System.out.print("Enter the Current Date (DD/MM/YYYY) > ");
+            System.out.print("Enter the Current Date (DD/MM/YYYY) : ");
             String inputDate = scanner.nextLine().trim();
             System.out.println("Transit Driver Dispatch records for current Outlet:" + currEmployee.getOutlet().getOutletName() + " on " + inputDate + "\n");
             SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -975,7 +976,7 @@ public class SalesManagementModule {
                             transitDriverDispatchRecord.getDestinationOutlet().getOutletName(),
                             dispatchDriverName, completionStatus, transitDate);
                 }
-                System.out.print("Enter Transit Dispatch Record ID to Update As Completed > ");
+                System.out.print("Enter Transit Dispatch Record ID to Update As Completed : ");
                 Long transitDriverDispatchRecordId = scanner.nextLong();
                 scanner.nextLine();
                 transitDriverDispatchSessionBeanRemote.updateTransitAsCompleted(transitDriverDispatchRecordId);
@@ -986,7 +987,7 @@ public class SalesManagementModule {
         } catch (ParseException ex) {
             System.out.println("Invalid Input! Please Try Again!");
         }
-        System.out.print("Press any key to continue...> ");
+        System.out.print("Press any key to continue. ");
         scanner.nextLine();
     }
 }

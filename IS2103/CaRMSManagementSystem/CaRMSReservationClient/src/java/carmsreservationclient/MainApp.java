@@ -373,21 +373,21 @@ public class MainApp {
 
         try {
            Reservation reservation = reservationSessionBeanRemote.retrieveReservationByReservationId(reservationId);
-            System.out.printf("%4s%20s%20s%20s%12s%12s%25s%25s\n",
+            System.out.printf("%4s%20s%20s%20s%12s%12s%25s%25s%25s\n",
                     "ID", "Start Date",
                     "End Date", "Rental Fee",
                     "Paid", "Cancelled",
-                    "Car Category", "Model");
+                    "Car Category", "Model","isCancelled");
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             String modelName = "ANY";
             if (reservation.getReservedCarModel() != null) {
                 modelName = reservation.getReservedCarModel().getMake() + " " + reservation.getReservedCarModel().getModel();
             }
-            System.out.printf("%4s%20s%20s%20s%12s%12s%25s%25s\n",
+            System.out.printf("%4s%20s%20s%20s%12s%12s%25s%25s%25s\n",
                     reservation.getRentalReservationId(), sdf.format(reservation.getReservationStartDate()),
                     sdf.format(reservation.getReservationEndDate()), reservation.getReservationPrice().toString(),
                     reservation.getPaid().toString(), reservation.getIsCancelled().toString(),
-                    reservation.getReservedCarCategory().getCarCategoryName(), modelName);
+                    reservation.getReservedCarCategory().getCarCategoryName(), modelName, reservation.getIsCancelled());
             System.out.print("Do You Want to Cancel the Reservation? (Enter 'YES' to cancel): ");
             String input = scanner.nextLine().trim();
             if (input.equals("YES")) {
@@ -405,16 +405,17 @@ public class MainApp {
 
     private void viewAllMyReservations() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("*** View All Reservations ***\n");
+        System.out.println("*** View All My Reservations ***\n");
         List<Reservation> reservations = reservationSessionBeanRemote.retrieveCustomerReservations(currCustomer.getCustomerId());
-        System.out.printf("%4s%20s%20s\n", "ID", "Start Date", "End Date");
+        System.out.printf("%4s%20s%20s%20s\n", "ID", "Start Date", "End Date","Is Cancelled");
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         for (Reservation reservation : reservations) {
-            System.out.printf("%4s%20s%20s\n", reservation.getRentalReservationId(),
+            System.out.printf("%4s%20s%20s%20s\n", reservation.getRentalReservationId(),
                     sdf.format(reservation.getReservationStartDate()),
-                    sdf.format(reservation.getReservationEndDate()));
+                    sdf.format(reservation.getReservationEndDate()),
+                    reservation.getIsCancelled());
         }
-        System.out.print("Press any key to continue...> ");
+        System.out.print("Press any key to continue. ");
         sc.nextLine();
     }
 
@@ -428,11 +429,11 @@ public class MainApp {
             reservation.setReservationEndDate(returnDateTime);
             reservation.setReservationPrice(totalRentalFee);
             
-            System.out.print("Enter Credit Card Number> ");
+            System.out.print("Enter Credit Card Number: ");
             String creditCardNumber = sc.nextLine().trim();
             reservation.setCreditCardNumber(creditCardNumber);
             
-            System.out.print("Would you like to pay now? (Enter 'YES' to enter payment details)> ");
+            System.out.print("Would you like to pay now? (Enter 'YES'): ");
             String paymentInput = sc.nextLine().trim();
             if(paymentInput.equals("YES")) {
                 reservation.setPaid(Boolean.TRUE);
@@ -482,7 +483,7 @@ public class MainApp {
         } catch (ReservationNotFoundException ex) {
             System.out.println("Rental Reservation not found for ID " + reservationId);
         }
-        System.out.print("Press any key to continue...> ");
+        //System.out.print("Press any key to continue. ");
         sc.nextLine();
         
     }

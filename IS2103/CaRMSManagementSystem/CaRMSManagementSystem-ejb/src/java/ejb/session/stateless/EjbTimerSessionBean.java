@@ -51,7 +51,7 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanRemote, EjbTimerS
     @Override
     public void allocateCarsToCurrentDayReservations(Date date) {
         Date start = date;
-        
+
         start.setHours(2);
         start.setMinutes(0);
         start.setSeconds(0);
@@ -65,9 +65,9 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanRemote, EjbTimerS
         List<Reservation> requireTransitReservations = new ArrayList<>();
         for (Reservation reservation : reservations) {
             boolean isAllocated = false;
-            
+
             //CASE 1: the car (model) is available and allocatable
-            if (reservation.getReservedCarModel() != null) { 
+            if (reservation.getReservedCarModel() != null && reservation.getIsCancelled() == false) {
                 List<Car> cars = carSessionBeanLocal.retrieveCarsByModelId(reservation.getReservedCarModel().getModelId());
                 for (Car car : cars) {
                     if ((car.getCarStatus() == CarStatusEnum.AVAILABLE && car.getCurrentReservation() == null)
@@ -82,7 +82,7 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanRemote, EjbTimerS
                 if (isAllocated) {//break out the for loop
                     continue;
                 }
-                
+
                 //CASE 2: availble car, but return outlet different from pick up outlet, need transit 
                 for (Car car : cars) {
                     if (car.getCarStatus() == CarStatusEnum.AVAILABLE && car.getCurrentReservation() == null) {
@@ -94,6 +94,7 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanRemote, EjbTimerS
                     }
                 }
                 if (isAllocated) {
+                    System.out.print("the case 2 is triggered!!(avail & different outlet");
                     continue; //break out the for loop
                 }
                 //Case 3: Check those currently on rental returning to SAME outlet
@@ -101,7 +102,7 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanRemote, EjbTimerS
                 // This really need to check carefully when implementing add a reservation use case
                 // I change the codes. 
                 for (Car car : cars) {
-                    if ((car.getCarStatus() == CarStatusEnum.IN_RENT )/*&& car.getCurrentReservation() == null)*/
+                    if ((car.getCarStatus() == CarStatusEnum.IN_RENT)/*&& car.getCurrentReservation() == null)*/
                             && car.getCurrentReservation().getReservationReturnOutlet().getOutletId().equals(reservation.getReservationPickUpOutlet().getOutletId())) {
                         if (car.getCurrentReservation().getReservationEndDate().before(reservation.getReservationStartDate())) {
                             reservation.setCar(car);
@@ -113,14 +114,13 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanRemote, EjbTimerS
                     }
                 }
                 if (isAllocated) {//break out the for loop
+                    System.out.print("the case 2 is triggered!!(avail & different outlet1");
                     continue;
                 }
-                
-                
+
                 // CASE 4: then check those currently on rental returning to a DIFFERENT outlet
                 for (Car car : cars) {
-                    if (car.getCarStatus() == CarStatusEnum.IN_RENT/*) && car.getRentalReservation() == null*/
-                          /*  && car.getCurrentReservation().getReservationReturnOutlet().equals(reservation.getReservationPickupOutlet())*/) {
+                    if (car.getCarStatus() == CarStatusEnum.IN_RENT/*) && car.getRentalReservation() == null*/ /*  && car.getCurrentReservation().getReservationReturnOutlet().equals(reservation.getReservationPickupOutlet())*/) {
                         GregorianCalendar transitCalendar = new GregorianCalendar(
                                 car.getCurrentReservation().getReservationEndDate().getYear() + 1900,
                                 car.getCurrentReservation().getReservationEndDate().getMonth(),
@@ -137,17 +137,19 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanRemote, EjbTimerS
                     }
                 }
                 if (isAllocated) {
+                    System.out.print("the case 2 is triggered!!(avail & different outlet2");
                     continue;
+
                 }
-            } else { // Reservation By Car Category
-                
+            } else if (reservation.getIsCancelled() == false) { // Reservation By Car Category ---------------------------------------------------------------------------------------
+
                 //CASE 1: the car is available and allocatable
                 List<Car> cars = carSessionBeanLocal.retrieveCarsByCategoryId(reservation.getReservedCarCategory().getCategoryId());
                 for (Car car : cars) {
-                    if (car.getCarModel().getBelongsCategory().getCarCategoryName().equals(reservation.getReservedCarCategory().getCarCategoryName()) 
+                    if (car.getCarModel().getBelongsCategory().getCarCategoryName().equals(reservation.getReservedCarCategory().getCarCategoryName())
                             && car.getCurrentReservation() == null
                             && car.getLatestOutlet().getOutletId().equals(reservation.getReservationPickUpOutlet().getOutletId())) {
-                        
+
                         reservation.setCar(car);
                         car.setCurrentReservation(reservation);
                         isAllocated = true;
@@ -155,15 +157,15 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanRemote, EjbTimerS
                     }
                 }
                 if (isAllocated) {
+                    System.out.print("the case 2 is triggered!!(avail & different outlet3");
                     continue;
                 }
-                
-                
+
                 // //CASE 2: availble car, but return outlet different from pick up outlet, need transit
                 Long carCategoryId = reservation.getReservedCarCategory().getCategoryId();
                 List<Car> sameCategoryCars = carSessionBeanLocal.retrieveCarsByCategoryId(carCategoryId);
                 for (Car car : sameCategoryCars) {
-                    if ((car.getCarStatus() == CarStatusEnum.AVAILABLE) && car.getCurrentReservation() == null) { 
+                    if ((car.getCarStatus() == CarStatusEnum.AVAILABLE) && car.getCurrentReservation() == null) {
                         reservation.setCar(car);
                         car.setCurrentReservation(reservation);
                         isAllocated = true;
@@ -172,32 +174,14 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanRemote, EjbTimerS
                     }
                 }
                 if (isAllocated) {
+                    System.out.print("the case 2 is triggered!!(avail & different outlet4");
                     continue;
                 }
-                
-                
-                //Case 3: Check those currently on rental returning to SAME outlet
+
+                carCategoryId = reservation.getReservedCarCategory().getCategoryId();
+                sameCategoryCars = carSessionBeanLocal.retrieveCarsByCategoryId(carCategoryId);
                 for (Car car : sameCategoryCars) {
-                    if ((car.getCarStatus() == CarStatusEnum.IN_RENT) && car.getCurrentReservation().getReservationReturnOutlet().getOutletName()
-                            .equals(reservation.getReservationPickUpOutlet().getOutletName())) {
-                        if (car.getCurrentReservation().getReservationEndDate().before(reservation.getReservationStartDate())) {
-                            reservation.setCar(car);
-                            isAllocated = true;
-                            break;
-                        }
-                    }
-                }
-                if (isAllocated) {
-                    continue;
-                }
-                
-                
-                
-                //// CASE 4: then check those currently on rental returning to a DIFFERENT outlet
-                for (Car car : sameCategoryCars) {
-                    if ((car.getCarStatus() == CarStatusEnum.IN_RENT) 
-                            && car.getCurrentReservation().getReservationReturnOutlet().equals(reservation.getReservationPickUpOutlet())) {
-                        
+                    if ((car.getCarStatus() == CarStatusEnum.AVAILABLE) && car.getCurrentReservation() != null) {
                         GregorianCalendar transitCalendar = new GregorianCalendar(
                                 car.getCurrentReservation().getReservationEndDate().getYear() + 1900,
                                 car.getCurrentReservation().getReservationEndDate().getMonth(),
@@ -213,15 +197,61 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanRemote, EjbTimerS
                             requireTransitReservations.add(reservation);
                             break;
                         }
+                        if (isAllocated) {
+                            System.out.print("the case 2 is triggered!!(avail & different outlet4");
+                            continue;
+                        }
                     }
                 }
-                if (isAllocated) {
-                    continue;
+
+                        //Case 3: Check those currently on rental returning to SAME outlet
+                        for (Car car : sameCategoryCars) {
+                            if ((car.getCarStatus() == CarStatusEnum.IN_RENT) && car.getCurrentReservation().getReservationReturnOutlet().getOutletName()
+                                    .equals(reservation.getReservationPickUpOutlet().getOutletName())) {
+                                if (car.getCurrentReservation().getReservationEndDate().before(reservation.getReservationStartDate())) {
+                                    reservation.setCar(car);
+                                    isAllocated = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isAllocated) {
+                           System.out.print("the case 2 is triggered!!(avail & different outlet55");
+                            continue;
+                        }
+
+                        //// CASE 4: then check those currently on rental returning to a DIFFERENT outlet
+                        for (Car car : sameCategoryCars) {
+                            if (car.getCarStatus() == CarStatusEnum.IN_RENT) /*&& car.getCurrentReservation().getReservationReturnOutlet().equals(reservation.getReservationPickUpOutlet())*/ {
+
+                                GregorianCalendar transitCalendar = new GregorianCalendar(
+                                        car.getCurrentReservation().getReservationEndDate().getYear() + 1900,
+                                        car.getCurrentReservation().getReservationEndDate().getMonth(),
+                                        car.getCurrentReservation().getReservationEndDate().getDate(),
+                                        car.getCurrentReservation().getReservationEndDate().getHours(),
+                                        car.getCurrentReservation().getReservationEndDate().getMinutes(),
+                                        car.getCurrentReservation().getReservationEndDate().getSeconds());
+                                transitCalendar.add(Calendar.HOUR, 2);
+                                Date transitEndTime = transitCalendar.getTime();
+                                if (reservation.getReservationStartDate().after(transitEndTime)) {
+                                    reservation.setCar(car);
+                                    isAllocated = true;
+                                    requireTransitReservations.add(reservation);
+                                    break;
+                                }
+                            }
+                        }
+                        if (isAllocated) {
+                            System.out.print("the case 2 is triggered!!(avail & different outlet666");
+                            continue;
+                        }
+                    }
                 }
+                System.out.print("size############### " + requireTransitReservations.size());
+                generateTransitDriverDispatchRecords(date, requireTransitReservations);
             }
-        }
-        generateTransitDriverDispatchRecords(date, requireTransitReservations);
-    }
+
+    
 
     public void generateTransitDriverDispatchRecords(Date date, List<Reservation> rentalReservationsToBeAllocated) {
         try {
@@ -236,13 +266,11 @@ public class EjbTimerSessionBean implements EjbTimerSessionBeanRemote, EjbTimerS
                         rentalReservation.getReservationStartDate().getSeconds());
                 transitCalendar.add(Calendar.HOUR, -2);
                 transitStartDate = transitCalendar.getTime();
-                 transitDriverDispatchSessionBeanLocal.createNewTranspatchDriverRecord(rentalReservation.getReservationPickUpOutlet().getOutletId(),
-                                rentalReservation.getRentalReservationId(), transitStartDate);
+                transitDriverDispatchSessionBeanLocal.createNewTranspatchDriverRecord(rentalReservation.getReservationPickUpOutlet().getOutletId(),
+                        rentalReservation.getRentalReservationId(), transitStartDate);
             }
         } catch (ReservationNotFoundException | OutletNotFoundException ex) {
             System.out.println(ex.getMessage());
         }
     }
 }
-
-
